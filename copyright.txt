@@ -13,6 +13,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
-Ladybugs . If not, see <https://www.gnu.org/licenses/>.
+Ladybugs. If not, see <https://www.gnu.org/licenses/>.
 
 Source code is available at GitHub: https://github.com/MKGilby/Ladybugs
