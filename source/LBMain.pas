@@ -1,4 +1,9 @@
-unit Main;
+{
+  This file is part of the source code of Ladybugs.
+  See "copyright.txt" for details.
+}
+
+unit LBMain;
 
 {$mode Delphi}{$H+}
 
@@ -22,7 +27,7 @@ type
 implementation
 
 uses
-  MKStream, Logger, sdl2, MKToolbox, Shared;
+  MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map;
 
 { TMain }
 
@@ -54,29 +59,34 @@ begin
 
   MKStreamOpener.AddDirectory('.',0);
   SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, '1');
+  SDL_SetHint(SDL_HINT_RENDER_VSYNC,'1');
 
   fMainWindow:=TWindow.CreateDoubleSized(
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
     WINDOWWIDTH,
     WINDOWHEIGHT,
-    Format('Ladybug Chaos V%s (%s)',[iVersion,StringReplace(iBuildDate,'/','.',[rfReplaceAll])]));
+    Format(WINDOWCAPTION,[iVersion,iBuildDate]));
 
-  SetFPS(60);
+  LoadAssets;
 end;
 
 destructor TMain.Destroy;
 begin
-  if Assigned(fMainWindow) then FreeAndNil(fMainWindow);
+  FreeAssets;
+  fMainWindow.Free;
   inherited Destroy;
 end;
 
 procedure TMain.Run;
+var Play1Map:TPlay1Map;
 begin
-  repeat
-    Flip;
-    HandleMessages;
-  until keys[SDL_SCANCODE_ESCAPE];
+  Play1Map:=TPlay1Map.Create('map01.json');
+  try
+    Play1Map.Run;
+  finally
+    Play1Map.Free;
+  end;
 end;
 
 end.

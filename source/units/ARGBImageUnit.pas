@@ -129,6 +129,8 @@
 //   1.32 - Gilby - 2025.02.10
 //     * Added Create from another ARGBImage.
 //     * Added RecolorHSV with double type parameters (expecting values in 0..1 range)
+//   1.33 - Gilby - 2025.03.25
+//     * BugFix in FillImage. Used loop variable outside loop.
 
 
 {$ifdef fpc}
@@ -392,7 +394,7 @@ uses SysUtils, MKToolBox, Logger, MKStream;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.32';
+  Version='1.33';
   POSTPROCESSCOLOR=$00FF00FF;  // Fully transparent magenta is the magic color!
 
 var
@@ -1450,13 +1452,13 @@ begin
     for i:=0 to (Width div pSource.Width)-1 do
       pSource.CopyTo(0,0,pSource.Width,pSource.Height,i*pSource.Width,j*pSource.Height,Self);
     if Width mod pSource.Width>0 then
-      pSource.CopyTo(0,0,Width mod pSource.Width,pSource.Height,i*pSource.Width,j*pSource.Height,Self);
+      pSource.CopyTo(0,0,Width mod pSource.Width,pSource.Height,Width div pSource.Width*pSource.Width,j*pSource.Height,Self);
   end;
   if Height mod pSource.Height>0 then begin
     for i:=0 to (Width div pSource.Width)-1 do
-      pSource.CopyTo(0,0,pSource.Width,Height mod pSource.Height,i*pSource.Width,j*pSource.Height,Self);
+      pSource.CopyTo(0,0,pSource.Width,Height mod pSource.Height,i*pSource.Width,Height div pSource.Height*pSource.Height,Self);
     if Width mod pSource.Width>0 then
-      pSource.CopyTo(0,0,Width mod pSource.Width,Height mod pSource.Height,i*pSource.Width,j*pSource.Height,Self);
+      pSource.CopyTo(0,0,Width mod pSource.Width,Height mod pSource.Height,Width div pSource.Width*pSource.Width,Height div pSource.Height*pSource.Height,Self);
   end;
 end;
 

@@ -1,9 +1,35 @@
 {
   "Tiles" : [
-    "....OO....",
-    "....||....",
-    "....||....",
-    "....||....",
-    "....OO...."
-  ]
+    "...12...",
+    "...||...",
+    "...||...",
+    "...||...",
+    "...34..."
+  ],
+  "TileDefinitions" : {
+    "46" : {
+      "Type" : "SimplePath",
+      "Exits" : "None"
+    },
+    "124" : {
+      "Type" : "SimplePath",
+      "Exits" : "Up, Down"
+    },
+    "49" : {
+      "Type" : "Mushroom",
+      "Exits" : "Down, Right"
+    },
+    "50" : {
+      "Type" : "Mushroom",
+      "Exits" : "Down, Left"
+    },
+    "51" : {
+      "Type" : "Mushroom",
+      "Exits" : "Up, Right"
+    },
+    "52" : {
+      "Type" : "Mushroom",
+      "Exits" : "Up, Left"
+    }
+  }
 }
