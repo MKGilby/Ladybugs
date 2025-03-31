@@ -183,27 +183,39 @@ begin
 end;
 
 procedure TSimplePath.DrawBack(pBack:TARGBImage);
-var tmp:TARGBImage;
+var tmp:TARGBImage;px,py:integer;
 begin
+  px:=fX*5;
+  py:=fY*5+1;
   tmp:=MM.Images.ItemByName['Paths'];
   if (fExits and DIR_BIT_UP)=DIR_BIT_UP then begin
+    fMap.Tiles[pX+2,pY]:=0;
+    fMap.Tiles[pX+2,pY+1]:=0;
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,tmp,true);
   end;
   if (fExits and DIR_BIT_RIGHT)=DIR_BIT_RIGHT then begin
+    fMap.Tiles[pX+3,pY+2]:=0;
+    fMap.Tiles[pX+4,pY+2]:=0;
     pBack.PutImagePart(fLeft+48,fTop+32,16,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+64,fTop+32,16,0,16,16,tmp,true);
   end;
   if (fExits and DIR_BIT_DOWN)=DIR_BIT_DOWN then begin
+    fMap.Tiles[pX+2,pY+3]:=0;
+    fMap.Tiles[pX+2,pY+4]:=0;
     pBack.PutImagePart(fLeft+32,fTop+48,0,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+32,fTop+64,0,0,16,16,tmp,true);
   end;
   if (fExits and DIR_BIT_LEFT)=DIR_BIT_LEFT then begin
+    fMap.Tiles[pX,pY+2]:=0;
+    fMap.Tiles[pX+1,pY+2]:=0;
     pBack.PutImagePart(fLeft   ,fTop+32,16,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+16,fTop+32,16,0,16,16,tmp,true);
   end;
-  if fExits>0 then
+  if fExits>0 then begin
+    fMap.Tiles[pX+2,pY+2]:=0;
     pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits]*16,0,16,16,tmp,true);
+  end;
 end;
 
 {$endregion}
@@ -236,6 +248,9 @@ procedure TMushroom.DrawBack(pBack: TARGBImage);
 begin
   inherited DrawBack(pBack);
   if fY=0 then begin
+    fMap.Tiles[fX*5+2,fY*5+1]:=0;
+    fMap.Tiles[fX*5+2,fY*5+2]:=0;
+    pBack.PutImagePart(fLeft+32,fTop-16,PATHIMAGEINDEX[14]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits or DIR_BIT_UP]*16,0,16,16,MM.Images.ItemByName['Paths'],true);

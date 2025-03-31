@@ -27,7 +27,8 @@ type
 implementation
 
 uses
-  MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map;
+  MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map
+  {$ifndef debug},MAD4MidLevelUnit{$endif};
 
 { TMain }
 
@@ -43,16 +44,16 @@ begin
 // Set logging level
   Log.SetLogLevel(llStatus);
 // Try to mount the datafile.
-  if FileExists(ExtractFileDir(Parameters[0])+'\'+DATAFILE) then begin
+  if FileExists(ExtractFileDir(Paramstr(0))+'\'+DATAFILE) then begin
     try
-      MAD4:=TMAD4MidLevel.Create(ExtractFileDir(Parameters[0])+'\'+DATAFILE);
+      MAD4:=TMAD4MidLevel.Create(ExtractFileDir(Paramstr(0))+'\'+DATAFILE);
       MKStreamOpener.AddOtherSource(MAD4, 0);
     except
       on exception do ;
     end;
   end else begin
     Log.LogError('Datafile not found!');
-    Log.LogStatus(ExtractFileDir(Parameters[0])+'\'+DATAFILE);
+    Log.LogStatus(ExtractFileDir(Paramstr(0))+'\'+DATAFILE);
     raise Exception.Create('Datafile not found!');
   end;
 {$ENDIF}

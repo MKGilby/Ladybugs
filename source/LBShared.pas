@@ -10,9 +10,10 @@ unit LBShared;
 interface
 
 uses
-  MediaManagerUnit, LBMapEntities;
+  GFXManagerUnit, LBMapEntities;
 
 const
+  DATAFILE='Ladybugs.data';
   WINDOWWIDTH=640;
   WINDOWHEIGHT=480;
   WINDOWCAPTION='Ladybugs V%s (%s)';
@@ -29,7 +30,7 @@ const
   PATHIMAGEINDEX:array[1..15] of integer=(0,1,6,0,0,3,8,1,5,1,9,4,10,7,2);
 
 var
-  MM:TMediaManager;
+  MM:TGFXManager;
   Entities:TMapEntities;
 
 procedure LoadAssets;
@@ -39,11 +40,13 @@ implementation
 
 procedure LoadAssets;
 begin
-  MM:=TMediaManager.Create;
-  MM.Load('mushroom.png','Mushroom');
+  MM:=TGFXManager.Create;
+  MM.Load('mushroom.png','Mushroom',MM_DONTKEEPIMAGE);
   MM.Load('bugs.png','Bugs',MM_DONTKEEPIMAGE);
   MM.Load('grass.png','Grass');
   MM.Load('paths.png','Paths');
+  MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
+  MM.Fonts['Small'].SetColorKey(0,0,0);
 end;
 
 procedure FreeAssets;

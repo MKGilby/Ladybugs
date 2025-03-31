@@ -36,4 +36,9 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
 - Map is loaded in game.
 - Paths and rotating mushrooms are displayed. Upper path need a junction where mushrooms are below.
 
-
+## 2025.03.31 - Build 2
+- Added a small font for debugging purposes.
+- Press TAB to show map values.
+- Fixed release part of code.
+- Map entities sets map values accordingly.
+- Since no sound and music yet, changed MediaManager to GFXManager. (Don't need to include Bass and related units yet.)

@@ -21,6 +21,7 @@ type
     destructor Destroy; override;
     procedure ResetMap;
     procedure LoadFromFile(iFilename:string);
+    procedure ShowValues;
   private
     procedure CreateEntity(pX,pY:integer;pTileDef:string;pJ:TJSONData);
   end;
@@ -75,16 +76,20 @@ begin
         for x:=1 to min(length(s),MAPWIDTH) do begin
           Log.LogStatus(Format('x=%d, y=%d, value=%d',[x-1,y,ord(s[x])]));
           CreateEntity(x-1,y,inttostr(ord(s[x])),J)
-//                Entities.Add(TSimplePath.Create(Self,x-1,y,5));
-//            'O':Entities.Add(TSimplePath.Create(Self,x-1,y,15));
-//            else Entities.Add(TSimplePath.Create(Self,x-1,y,0));
-//          end;
         end;
       end;
     end;
   finally
     J.Free;
   end;
+end;
+
+procedure TMap.ShowValues;
+var i,j:integer;
+begin
+  for j:=0 to MAPHEIGHT-1 do
+    for i:=0 to MAPWIDTH-1 do
+      MM.Fonts['Small'].OutText(inttostr(Tiles[i,j]),i*16+8,(j+1)*16+3,1);
 end;
 
 procedure TMap.CreateEntity(pX, pY: integer; pTileDef: string; pJ: TJSONData);

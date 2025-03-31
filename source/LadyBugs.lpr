@@ -15,6 +15,7 @@ uses
   jsonparser,
   // For reading PNG files in TARGBImage
   ARGBImagePNGReaderUnit,
+  ARGBImageMKRReaderUnit,
   // The game itself.
   LBMain;
 

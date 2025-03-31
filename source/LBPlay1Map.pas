@@ -55,6 +55,7 @@ begin
     SDL_RenderClear(PrimaryWindow.Renderer);
     PutTexture(0,0,fBack);
     Entities.Draw;
+    if keys[SDL_SCANCODE_TAB] then fMap.ShowValues;
     FlipNoLimit;
     HandleMessages;
   until keys[SDL_SCANCODE_ESCAPE];
@@ -67,8 +68,10 @@ begin
   tmp:=TARGBImage.Create(WINDOWWIDTH,WINDOWHEIGHT);
   try
     tmp.FillImage(MM.Images.ItemByName['Grass']);
-    for i:=0 to WINDOWWIDTH div 16-1 do
+    for i:=0 to MAPWIDTH-1 do begin
+      fMap.Tiles[i,0]:=16;
       tmp.PutImagePart(i*16,16,16,0,16,16,MM.Images.ItemByName['Paths'],true);
+    end;
     for i:=0 to Entities.Count-1 do
       Entities[i].DrawBack(tmp);
     fBack:=TStaticTexture.Create(tmp);
