@@ -1,4 +1,6 @@
 @echo off
 echo This script copies maps to data.
 
-copy JSONMaps\*.json ..\..\data /Y
+call ..\setenv.bat
+
+copy JSONMaps\*.json %DATADIR% /Y

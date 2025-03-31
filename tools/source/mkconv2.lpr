@@ -11,12 +11,12 @@ program mkconv2;
 uses
   MKToolBox, Classes, MKINIFile, SysUtils, Lists, Logger,
   AnimationDataUnit, FontDataUnit, ARGBImageUnit,
-  ARGBImageGSDReaderUnit, ARGBImageGSDWriterUnit,
+//  ARGBImageGSDReaderUnit, ARGBImageGSDWriterUnit,
   ARGBImagePNGReaderUnit, ARGBImagePNGWriterUnit,
-  ARGBImageTGAReaderUnit, ARGBImageTGAWriterUnit,
-  ARGBImageCELReaderUnit, ARGBImageCELWriterUnit,
-  ARGBImageBMPReaderUnit,
-  ARGBImageBMFReaderUnit, ARGBImageGIFReaderUnit,
+//  ARGBImageTGAReaderUnit, ARGBImageTGAWriterUnit,
+//  ARGBImageCELReaderUnit, ARGBImageCELWriterUnit,
+//  ARGBImageBMPReaderUnit,
+//  ARGBImageBMFReaderUnit, ARGBImageGIFReaderUnit,
   CommandsUnit, TextureAtlasGeneratorUnit, MKStream,
   FileInfo,
   winpeimagereader, AnimXMLReader, AnimJSONReader;
