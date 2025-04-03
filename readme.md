@@ -31,10 +31,8 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
 [x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.2.zip "Download x64 version") or
 [x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.2.zip "Download x86 version").
 
-## 2025.03.31 - Build 1
-- Created first map in json format.
-- Map is loaded in game.
-- Paths and rotating mushrooms are displayed. Upper path need a junction where mushrooms are below.
+## 2025.04.02 - Build 3
+- First ladybug appears and moves in the top row.
 
 ## 2025.03.31 - Build 2
 - Added a small font for debugging purposes.
@@ -42,3 +40,9 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
 - Fixed release part of code.
 - Map entities sets map values accordingly.
 - Since no sound and music yet, changed MediaManager to GFXManager. (Don't need to include Bass and related units yet.)
+
+## 2025.03.31 - Build 1
+- Created first map in json format.
+- Map is loaded in game.
+- Paths and rotating mushrooms are displayed. Upper path need a junction where mushrooms are below.
+

@@ -10,7 +10,7 @@ unit LBShared;
 interface
 
 uses
-  GFXManagerUnit, LBMapEntities;
+  GFXManagerUnit, LBMapEntities, LBBugs;
 
 const
   DATAFILE='Ladybugs.data';
@@ -20,7 +20,13 @@ const
   MAPWIDTH=8*5;
   MAPHEIGHT=5*5+1;
 
+  BUGSPEED=32;  // pixels per second
   MAXTIMESLICE=1/128;
+
+  DIR_UP=1;
+  DIR_RIGHT=2;
+  DIR_DOWN=3;
+  DIR_LEFT=4;
 
   DIR_BIT_UP=1;
   DIR_BIT_RIGHT=2;
@@ -32,6 +38,7 @@ const
 var
   MM:TGFXManager;
   Entities:TMapEntities;
+  Bugs:TBugs;
 
 procedure LoadAssets;
 procedure FreeAssets;

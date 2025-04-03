@@ -28,13 +28,14 @@ type
 
 implementation
 
-uses LBShared, LBMapEntities, sdl2, ARGBImageUnit;
+uses LBShared, LBMapEntities, sdl2, ARGBImageUnit, LBBugs;
 
 { TPlay1Map }
 
 constructor TPlay1Map.Create(iMapFilename:string);
 begin
   Entities:=TMapEntities.Create;
+  Bugs:=TBugs.Create;
   fMap:=TMap.Create;
   fMap.LoadFromFile(iMapFilename);
   CreateBack;
@@ -44,17 +45,26 @@ destructor TPlay1Map.Destroy;
 begin
   fBack.Free;
   fMap.Free;
+  Bugs.Free;
   Entities.Free;
   inherited Destroy;
 end;
 
 function TPlay1Map.Run:integer;
+var pre,now:QWord;
 begin
+  Bugs.CreateNewBug(fMap);
+  pre:=GetTickCount64;
   repeat
+    now:=GetTickCount64;
+//    Entities.Move((now-pre)/1000);
+    Bugs.Move((now-pre)/1000);
+    pre:=now;
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);
     SDL_RenderClear(PrimaryWindow.Renderer);
     PutTexture(0,0,fBack);
     Entities.Draw;
+    Bugs.Draw;
     if keys[SDL_SCANCODE_TAB] then fMap.ShowValues;
     FlipNoLimit;
     HandleMessages;

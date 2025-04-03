@@ -13,7 +13,7 @@ uses
   winpeimagereader,
   // For parsing json files
   jsonparser,
-  // For reading PNG files in TARGBImage
+  // For reading PNG and MKR files in TARGBImage
   ARGBImagePNGReaderUnit,
   ARGBImageMKRReaderUnit,
   // The game itself.
