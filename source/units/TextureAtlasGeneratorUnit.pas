@@ -45,6 +45,8 @@
 //     * Bugfix in Addimage.
 //  V1.07: Gilby - 2024.06.22
 //     * Added full frame deduplication.
+//  V1.08: Gilby - 2025.04.03
+//     * Fix in cropping.
 
 unit TextureAtlasGeneratorUnit;
 
@@ -109,7 +111,7 @@ uses sysutils, AnimationDataUnit, Logger, MKToolbox;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.07';
+  Version='1.08';
 
 constructor TTextureLine.Create(iTop,iHeight,iMaxWidth,iPadding:integer);
 begin
@@ -269,10 +271,10 @@ end;
 procedure TTextureAtlasGenerator.Crop;
 var tmp:TARGBImage;
 begin
-  fTextureAtlas.Crop(0,0,0,0);
-  tmp:=TARGBImage.Create(fTextureAtlas.Width+fPadding*2,fTextureAtlas.Height+fPadding*2);
+  fTextureAtlas.CropRightBottom(0,0,0,0);
+  tmp:=TARGBImage.Create(fTextureAtlas.Width+fPadding,fTextureAtlas.Height+fPadding);
   tmp.Clear(0);
-  fTextureAtlas.CopyTo(0,0,fTextureAtlas.Width,fTextureAtlas.Height,fPadding,fPadding,tmp);
+  fTextureAtlas.CopyTo(0,0,fTextureAtlas.Width,fTextureAtlas.Height,0,0,tmp);
 
   fTextureAtlas.Resize(tmp.Width,tmp.Height);
   tmp.CopyTo(0,0,tmp.Width,tmp.Height,0,0,fTextureAtlas);

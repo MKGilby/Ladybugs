@@ -131,6 +131,9 @@
 //     * Added RecolorHSV with double type parameters (expecting values in 0..1 range)
 //   1.33 - Gilby - 2025.03.25
 //     * BugFix in FillImage. Used loop variable outside loop.
+//   1.34 - Gilby - 2025.04.03
+//     * Added CropRightBottom. It only crops from right and bottom.
+//       (Suitable for textureatlases)
 
 
 {$ifdef fpc}
@@ -298,6 +301,10 @@ type
     // not equal the given color.
     procedure Crop(r,g,b,a:integer);
 
+    // Crops the image to the smallest size possible containing all pixels
+    // not equal the given color. Only cropping at the right and the bottom.
+    procedure CropRightBottom(r,g,b,a:integer);
+
     // Resizes the image to the given size. Data outside the new dimensions is lost.
     procedure Resize(pNewWidth,pNewHeight:integer);
 
@@ -394,7 +401,7 @@ uses SysUtils, MKToolBox, Logger, MKStream;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.33';
+  Version='1.34';
   POSTPROCESSCOLOR=$00FF00FF;  // Fully transparent magenta is the magic color!
 
 var
@@ -1272,10 +1279,42 @@ begin
   // 3. Copy cropped data to allocated memory
   for j:=0 to h-1 do
     move((fRawData+((y1+j)*fWidth+x1)*4)^,(p+(j*w)*4)^,w*4);
-  // 4. Assign new data to image
+  // 4. Free old image data
   freemem(fRawData);
+  // 5. Assign new data to image
   fRawData:=p;
   // 5. Adjust size
+  fWidth:=w;
+  fHeight:=h;
+end;
+
+procedure TARGBImage.CropRightBottom(r,g,b,a:integer);
+var i,j,x2,y2,w,h:integer;p:pointer;
+begin
+  // 1. Determine smaller image
+  x2:=0;
+  y2:=0;
+  p:=fRawdata;
+  for j:=0 to fHeight-1 do
+    for i:=0 to fWidth-1 do begin
+      if (byte(p^)<>b) or (byte((p+1)^)<>g) or (byte((p+2)^)<>r) or (byte((p+3)^)<>a) then begin
+        if i>x2 then x2:=i;
+        if j>y2 then y2:=j;
+      end;
+      inc(p,4);
+    end;
+  w:=x2+1;
+  h:=y2+1;
+  // 2. Allocate memory for smaller image
+  p:=GetMem(w*h*4);
+  // 3. Copy cropped data to allocated memory
+  for j:=0 to h-1 do
+    move((fRawData+(j*fWidth)*4)^,(p+(j*w)*4)^,w*4);
+  // 4. Free old image data
+  freemem(fRawData);
+  // 5. Assign new data to image
+  fRawData:=p;
+  // 6. Adjust size
   fWidth:=w;
   fHeight:=h;
 end;

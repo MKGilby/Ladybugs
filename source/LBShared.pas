@@ -20,9 +20,10 @@ const
   MAPWIDTH=8*5;
   MAPHEIGHT=5*5+1;
 
-  BUGSPEED=32;  // pixels per second
+  BUGSPEED=48;  // pixels per second
   MAXTIMESLICE=1/128;
 
+  DIR_NONE=0;
   DIR_UP=1;
   DIR_RIGHT=2;
   DIR_DOWN=3;
@@ -32,6 +33,7 @@ const
   DIR_BIT_RIGHT=2;
   DIR_BIT_DOWN=4;
   DIR_BIT_LEFT=8;
+  DIR_BIT_ALL=DIR_BIT_UP or DIR_BIT_RIGHT or DIR_BIT_DOWN or DIR_BIT_LEFT;
 
   PATHIMAGEINDEX:array[1..15] of integer=(0,1,6,0,0,3,8,1,5,1,9,4,10,7,2);
 
@@ -39,6 +41,7 @@ var
   MM:TGFXManager;
   Entities:TMapEntities;
   Bugs:TBugs;
+  ShouldCreateNewBug:boolean;
 
 procedure LoadAssets;
 procedure FreeAssets;

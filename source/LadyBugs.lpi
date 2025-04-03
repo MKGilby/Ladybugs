@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="4"/>
       <StringTable CompanyName="MKSZTSZ" ProductName="Ladybugs"/>
     </VersionInfo>
     <BuildModes>
@@ -59,7 +59,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
+              <IgnoredMessages idx6058="True" idx3124="True" idx3123="True"/>
             </CompilerMessages>
           </Other>
         </CompilerOptions>

@@ -10,7 +10,7 @@ unit LBMapEntities;
 interface
 
 uses
-  SysUtils, fgl, ARGBImageUnit, LBMap, fpjson, Animation2Unit;
+  SysUtils, fgl, ARGBImageUnit, LBMap, fpjson, Animation2Unit, LBBugs;
 
 type
 
@@ -41,6 +41,10 @@ type
     procedure Draw;
     // Move all entities at once
     procedure Move(pElapsedTime:double);
+    // Is the entity at map position x,y mushroom?
+    function IsMushroomAt(pX,pY:integer):boolean;
+    // Add bug to the mushroom at px,py into the desired slot
+    procedure AddBug(pX,pY:integer;pBug:TBug;pFromDirection:integer);
   private
     // Move all entities for no more than MAXTIMESLICE
     procedure MoveEx(pElapsedTime:double);
@@ -62,6 +66,8 @@ type
     procedure Draw; override;
     // Draws static background image onto pBack.
     procedure DrawBack(pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
   private
     fExits:integer;
   end;
@@ -76,8 +82,11 @@ type
     procedure Draw; override;
     // Draws static background image onto pBack.
     procedure DrawBack(pBack:TARGBImage); override;
+    // Add bug to the desired slot
+    procedure AddBug(pBug:TBug;pFromDirection:integer);
   private
     fAnimation:TAnimation;
+    fBugs:array[0..3] of TBug;
   end;
 
 implementation
@@ -122,6 +131,16 @@ begin
   MoveEx(pElapsedTime);
 end;
 
+function TMapEntities.IsMushroomAt(pX,pY:integer):boolean;
+begin
+  Result:=(fGetEntityAt(pX,pY) is TMushroom);
+end;
+
+procedure TMapEntities.AddBug(pX,pY:integer; pBug:TBug; pFromDirection:integer);
+begin
+  TMushroom(fGetEntityAt(pX,py)).AddBug(pBug,pFromDirection);
+end;
+
 procedure TMapEntities.MoveEx(pElapsedTime:double);
 var i:integer;
 begin
@@ -157,20 +176,20 @@ begin
     s:='None';
   fExits:=0;
   none:=false;
-  Log.Trace('----');
-  Log.Trace(s);
+//  Log.Trace('----');
+//  Log.Trace(s);
   while length(s)>0 do begin
     s2:=copy(s,1,pos(',',s+',')-1);
     delete(s,1,length(s2)+1);
     s2:=Trim(s2);
-    Log.Trace('  '+s2);
+//    Log.Trace('  '+s2);
     if UpperCase(s2)='UP' then fExits:=fExits or DIR_BIT_UP
     else if UpperCase(s2)='RIGHT' then fExits:=fExits or DIR_BIT_RIGHT
     else if UpperCase(s2)='DOWN' then fExits:=fExits or DIR_BIT_DOWN
     else if UpperCase(s2)='LEFT' then fExits:=fExits or DIR_BIT_LEFT
     else if UpperCase(s2)='NONE' then none:=true;
   end;
-  Log.Trace(fExits);
+//  Log.Trace(fExits);
   if none and (fExits<>0) then
     raise Exception.Create('Both NONE and Directions are specified in Exits!');
   if not none and (fExits=0) then
@@ -218,6 +237,10 @@ begin
   end;
 end;
 
+procedure TSimplePath.Move(pElapsedTime:double);
+begin
+end;
+
 {$endregion}
 
 { TMushroom }
@@ -227,10 +250,8 @@ constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
 var i:integer;
 begin
   inherited Create(iMap,ipX,ipY,pJ);
-  for i:=0 to MM.Animations.Count-1 do
-    Log.Trace(MM.Animations.Strings[i]);
-  i:=MM.Animations.IndexOf('MushroomD');
   fAnimation:=MM.Animations.ItemByName['MushroomD'].SpawnAnimation;
+  for i:=0 to 3 do fBugs[i]:=nil;
 end;
 
 destructor TMushroom.Destroy;
@@ -240,21 +261,48 @@ begin
 end;
 
 procedure TMushroom.Draw;
+var i:integer;
 begin
   fAnimation.PutFrame(fX*80+8,fY*80+32+8);
+  for i:=0 to 3 do
+    if Assigned(fBugs[i]) then fBugs[i].Draw;
 end;
 
 procedure TMushroom.DrawBack(pBack: TARGBImage);
 begin
   inherited DrawBack(pBack);
   if fY=0 then begin
-    fMap.Tiles[fX*5+2,fY*5+1]:=0;
-    fMap.Tiles[fX*5+2,fY*5+2]:=0;
+    fMap.Tiles[fX*5+2,fY*5+1]:=DIR_BIT_ALL xor DIR_BIT_DOWN;
+    fMap.Tiles[fX*5+2,fY*5+2]:=DIR_BIT_ALL xor DIR_BIT_DOWN;
     pBack.PutImagePart(fLeft+32,fTop-16,PATHIMAGEINDEX[14]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits or DIR_BIT_UP]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
   end;
+end;
+
+procedure TMushroom.AddBug(pBug:TBug; pFromDirection:integer);
+const
+  SLOTPOSITIONS:array[0..3,0..1] of integer=((32,8),(56,32),(32,56),(8,32));
+  SLOTMAPPOS:array[0..3,0..1] of integer=((2,0),(4,2),(2,4),(0,2));
+
+  procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer); {inline;}
+  begin
+    if not assigned(fBugs[pSlot]) then begin
+      fBugs[pSlot]:=pBug;
+      pBug.SetDirection(pDirection);
+      pBug.X:=fX*80+SLOTPOSITIONS[pSlot,0];
+      pBug.Y:=fY*80+SLOTPOSITIONS[pSlot,1]+32;
+      fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=15;
+    end else
+      raise Exception.Create(Format('There''s already a bug in slot %d!',[pSlot]));
+  end;
+
+begin
+  if pFromDirection=DIR_UP then BugToSlot(0,pBug,pFromDirection)
+  else if pFromDirection=DIR_RIGHT then BugToSlot(1,pBug,pFromDirection)
+  else if pFromDirection=DIR_DOWN then BugToSlot(2,pBug,pFromDirection)
+  else if pFromDirection=DIR_LEFT then BugToSlot(3,pBug,pFromDirection);
 end;
 
 {$endregion}

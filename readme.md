@@ -28,8 +28,14 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.2.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.2.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.4.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.4.zip "Download x86 version").
+
+## 2025.04.03 - Build 4
+- Ladybugs fall into mushrooms. Cannot do anything with them yet.
+- Fixed a bug in BuildBugs: Animation coordinates didn't match with image.
+- Added SDL_Init and SDL_Quit. (It worked without this but don't be lazy.)
+- You can close window with X. (Only escape key worked before.)
 
 ## 2025.04.02 - Build 3
 - First ladybug appears and moves in the top row.

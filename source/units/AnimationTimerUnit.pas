@@ -30,6 +30,8 @@
 //              was more time to use.
 //  V1.02: Gilby - 2025.03.13
 //    * Fix in logging timer type.
+//  V1.03: Gilby - 2025.04.03
+//    * Added logging frame coordinates.
 
 {$mode delphi}
 
@@ -129,7 +131,7 @@ uses SysUtils, MKStream, Logger;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.02';
+  Version='1.03';
 
 { TAnimationTimer }
 
@@ -159,7 +161,7 @@ begin
 end;
 
 procedure TAnimationTimer.LogData;
-var s:string;
+var s:string;i:integer;
 begin
   Log.LogDebug('------ AnimationTimer data starts ------');
   Log.LogDebug(Format('Name: %s',[name]));
@@ -178,6 +180,9 @@ begin
   if PingPong then s[4]:='X';
   if ReverseAnim then s[5]:='X';
   Log.LogDebug('Looped ['+s[1]+']  RandomStart ['+s[2]+']  Paused ['+s[3]+']  PingPong ['+s[4]+']  ReverseAnim ['+s[5]+']');
+  s:='';
+  for i:=0 to length(fFrames)-1 do s:=s+Format('(%d,%d) ',[Frames[i].Left,Frames[i].Top]);
+  Log.LogDebug('Frames: '+s);
 end;
 
 function TAnimationTimer.fGetFrameCount:integer;

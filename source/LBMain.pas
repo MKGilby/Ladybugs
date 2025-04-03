@@ -35,6 +35,7 @@ uses
 constructor TMain.Create(iVersion,iBuildDate:string);
 {$IFNDEF DEBUG}var MAD4:TMAD4MidLevel;{$ENDIF}
 begin
+  randomize;
 {$IFDEF DEBUG}
   // Set logging level
   Log.SetLogLevel(llAll);
@@ -61,6 +62,7 @@ begin
   MKStreamOpener.AddDirectory('.',0);
   SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, '1');
   SDL_SetHint(SDL_HINT_RENDER_VSYNC,'1');
+  SDL_Init(SDL_INIT_VIDEO);
 
   fMainWindow:=TWindow.CreateDoubleSized(
     SDL_WINDOWPOS_CENTERED,
@@ -76,6 +78,7 @@ destructor TMain.Destroy;
 begin
   FreeAssets;
   fMainWindow.Free;
+  SDL_Quit;
   inherited Destroy;
 end;
 

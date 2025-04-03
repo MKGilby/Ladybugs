@@ -53,9 +53,10 @@ end;
 function TPlay1Map.Run:integer;
 var pre,now:QWord;
 begin
-  Bugs.CreateNewBug(fMap);
+  ShouldCreateNewBug:=true;
   pre:=GetTickCount64;
   repeat
+    if ShouldCreateNewBug then Bugs.CreateNewBug(fMap);
     now:=GetTickCount64;
 //    Entities.Move((now-pre)/1000);
     Bugs.Move((now-pre)/1000);
@@ -68,7 +69,7 @@ begin
     if keys[SDL_SCANCODE_TAB] then fMap.ShowValues;
     FlipNoLimit;
     HandleMessages;
-  until keys[SDL_SCANCODE_ESCAPE];
+  until keys[SDL_SCANCODE_ESCAPE] or Terminate;
   Result:=-1;
 end;
 

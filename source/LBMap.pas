@@ -74,7 +74,7 @@ begin
       for y:=0 to min(JA.Count-1,MAPHEIGHT-1) do begin
         s:=JA[y].AsString;
         for x:=1 to min(length(s),MAPWIDTH) do begin
-          Log.LogStatus(Format('x=%d, y=%d, value=%d',[x-1,y,ord(s[x])]));
+//          Log.LogStatus(Format('x=%d, y=%d, value=%d',[x-1,y,ord(s[x])]));
           CreateEntity(x-1,y,inttostr(ord(s[x])),J)
         end;
       end;
