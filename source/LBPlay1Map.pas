@@ -58,7 +58,7 @@ begin
   repeat
     if ShouldCreateNewBug then Bugs.CreateNewBug(fMap);
     now:=GetTickCount64;
-//    Entities.Move((now-pre)/1000);
+    Entities.Move((now-pre)/1000);
     Bugs.Move((now-pre)/1000);
     pre:=now;
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);
@@ -67,6 +67,7 @@ begin
     Entities.Draw;
     Bugs.Draw;
     if keys[SDL_SCANCODE_TAB] then fMap.ShowValues;
+    MM.Fonts['Small'].OutText('FPS:'+inttostr(FPS),0,0,0);
     FlipNoLimit;
     HandleMessages;
   until keys[SDL_SCANCODE_ESCAPE] or Terminate;

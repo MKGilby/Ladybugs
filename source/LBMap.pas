@@ -33,7 +33,6 @@ uses MKStream, LBShared, LBMapEntities, Logger;
 { TMap }
 
 constructor TMap.Create;
-var i,j:integer;
 begin
   inherited Create(MAPWIDTH,MAPHEIGHT);
   ResetMap;

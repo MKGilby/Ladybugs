@@ -32,6 +32,8 @@
 //    * Fix in logging timer type.
 //  V1.03: Gilby - 2025.04.03
 //    * Added logging frame coordinates.
+//  V1.04: Gilby - 2025.04.04
+//    * BUGFIX: There was a hang when restarted a finished time based animation.
 
 {$mode delphi}
 
@@ -131,7 +133,7 @@ uses SysUtils, MKStream, Logger;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.03';
+  Version='1.04';
 
 { TAnimationTimer }
 
@@ -369,6 +371,7 @@ begin
   inherited ResetFrameIndex;
   fFrameDelayCount:=fFrameDelay;
   fLoopDelayCount:=fLoopDelay;
+  fState:=sFrame;
 end;
 
 procedure TTimeBasedAnimationTimer.AnimateEx(var pTimeUsed:double);
@@ -378,8 +381,8 @@ begin
       if pTimeUsed>=fFrameDelayCount then begin
         pTimeUsed-=fFrameDelayCount;
         AnimateOneFrame;
-        if fFinished then pTimeUsed:=0;
         fFrameDelayCount:=fFrameDelay;
+        if fFinished then pTimeUsed:=0;
       end else begin
         fFrameDelayCount-=pTimeUsed;
         pTimeUsed:=0;

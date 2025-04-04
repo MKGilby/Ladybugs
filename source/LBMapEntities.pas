@@ -10,17 +10,17 @@ unit LBMapEntities;
 interface
 
 uses
-  SysUtils, fgl, ARGBImageUnit, LBMap, fpjson, Animation2Unit, LBBugs;
+  SysUtils, fgl, fpjson, MKMouse2, ARGBImageUnit, Animation2Unit, LBMap, LBBugs;
 
 type
 
   { TMapEntity }
 
-  TMapEntity=class
+  TMapEntity=class(TMouseObject)
     // ipX, ipY is in blocks (0..7,0..4)
     constructor Create(iMap:TMap;ipX,ipY:integer);
     // Draw the non-static part of the entity.
-    procedure Draw; virtual; abstract;
+//    procedure Draw; virtual; abstract;
     // Move and/or animate the entity based on elapsed time.
     procedure Move(pElapsedTime:double); virtual; abstract;
     // Draws static background image onto pBack.
@@ -84,14 +84,18 @@ type
     procedure DrawBack(pBack:TARGBImage); override;
     // Add bug to the desired slot
     procedure AddBug(pBug:TBug;pFromDirection:integer);
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
   private
     fAnimation:TAnimation;
+    fState:(mstIdle,mstRotating);
     fBugs:array[0..3] of TBug;
+    procedure MouseDown(Sender:TObject;x,y,buttons:integer);
   end;
 
 implementation
 
-uses LBShared, Logger;
+uses LBShared, Logger, SDL2;
 
 { TMapEntity }
 {$region /fold}
@@ -246,12 +250,23 @@ end;
 { TMushroom }
 {$region /fold}
 
+const
+  SLOTPOSITIONS:array[0..3,0..1] of integer=((32,9),(55,32),(32,55),(9,32));
+  SLOTMAPPOS:array[0..3,0..1] of integer=((2,0),(4,2),(2,4),(0,2));
+
 constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
 var i:integer;
 begin
   inherited Create(iMap,ipX,ipY,pJ);
+  SetBoundsWH(fLeft,fTop,80,80);
+  Visible:=true;
+  Enabled:=true;
+  fState:=mstIdle;
   fAnimation:=MM.Animations.ItemByName['MushroomD'].SpawnAnimation;
   for i:=0 to 3 do fBugs[i]:=nil;
+  OnMouseDown:=MouseDown;
+  Name:=Format('Mushroom (%d,%d)',[fX,fY]);
+  MouseObjects.Add(Self);
 end;
 
 destructor TMushroom.Destroy;
@@ -261,11 +276,24 @@ begin
 end;
 
 procedure TMushroom.Draw;
+const REORDER:array[0..3] of integer=(0,3,2,1);
 var i:integer;
 begin
   fAnimation.PutFrame(fX*80+8,fY*80+32+8);
-  for i:=0 to 3 do
-    if Assigned(fBugs[i]) then fBugs[i].Draw;
+  case fState of
+    mstIdle:begin
+      for i:=0 to 3 do
+        if Assigned(fBugs[i]) then
+          fBugs[i].Draw(fX*80+SLOTPOSITIONS[i,0],fY*80+SLOTPOSITIONS[i,1]+32);
+    end;
+    mstRotating:begin
+      for i:=0 to 3 do
+        if Assigned(fBugs[i]) then
+          fBugs[i].Draw(
+            fX*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0],
+            fY*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]+32);
+    end;
+  end;
 end;
 
 procedure TMushroom.DrawBack(pBack: TARGBImage);
@@ -282,9 +310,6 @@ begin
 end;
 
 procedure TMushroom.AddBug(pBug:TBug; pFromDirection:integer);
-const
-  SLOTPOSITIONS:array[0..3,0..1] of integer=((32,8),(56,32),(32,56),(8,32));
-  SLOTMAPPOS:array[0..3,0..1] of integer=((2,0),(4,2),(2,4),(0,2));
 
   procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer); {inline;}
   begin
@@ -303,6 +328,51 @@ begin
   else if pFromDirection=DIR_RIGHT then BugToSlot(1,pBug,pFromDirection)
   else if pFromDirection=DIR_DOWN then BugToSlot(2,pBug,pFromDirection)
   else if pFromDirection=DIR_LEFT then BugToSlot(3,pBug,pFromDirection);
+end;
+
+procedure TMushroom.Move(pElapsedTime:double);
+var tmpBug:TBug;
+begin
+  fAnimation.Animate(pElapsedTime);
+  if fAnimation.Timer.CurrentFrameIndex=7 then begin
+    if Assigned(fBugs[0]) then fBugs[0].SetDirection(DIR_LEFT);
+    if Assigned(fBugs[1]) then fBugs[1].SetDirection(DIR_UP);
+    if Assigned(fBugs[2]) then fBugs[2].SetDirection(DIR_RIGHT);
+    if Assigned(fBugs[3]) then fBugs[3].SetDirection(DIR_DOWN);
+  end;
+  if fAnimation.Timer.Finished then begin
+    fState:=mstIdle;
+    fAnimation.Timer.ResetFrameIndex;
+    fAnimation.Timer.Paused:=true;
+    tmpBug:=fBugs[0];
+    fBugs[0]:=fBugs[1];
+    fBugs[1]:=fBugs[2];
+    fBugs[2]:=fBugs[3];
+    fBugs[3]:=tmpBug;
+    if not Assigned(fBugs[0]) then fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=0;
+    if not Assigned(fBugs[1]) then fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=0;
+    if not Assigned(fBugs[2]) then fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=0;
+    if not Assigned(fBugs[3]) then fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=0;
+  end;
+end;
+
+procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
+begin
+  if buttons=SDL_BUTTON_LEFT then begin
+    // Release clicked ladybug
+  end
+  else if Buttons=SDL_BUTTON_RIGHT then begin
+    if fState=mstIdle then begin
+      fAnimation.Timer.Looped:=false;
+      fAnimation.Timer.Paused:=false;
+      fAnimation.LogData;
+      fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=15;
+      fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=15;
+      fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=15;
+      fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=15;
+      fState:=mstRotating;
+    end;
+  end;
 end;
 
 {$endregion}

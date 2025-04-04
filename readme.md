@@ -1,9 +1,7 @@
 # Ladybugs
 Remake of Logical (C) 1991 Rainbow Arts and Cat's Eye Chaos (C) 2003 JP Hamilton
-Written by Szabó "Gilby" Zsolt / MKSZTSZ
 
-This version written by Szabó "Gilby" Zsolt
-This version copyright 2025 MKSZTSZ
+This version written by Szabó "Gilby" Zsolt. This version copyright 2025 MKSZTSZ.
 
 ## Programming language
 FreePascal (Lazarus 4.0.0rc3 with FPC 3.2.2 Windows x64 or x86 version or cross-compiler to Win32 or Win64)
@@ -27,27 +25,33 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
 
-## Compiled binaries from current build with datafiles and DLLs
+## Compiled binaries from previous build with datafiles and DLLs
 [x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.4.zip "Download x64 version") or
 [x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.4.zip "Download x86 version").
 
-## 2025.04.03 - Build 4
+## What's new
+
+### 2025.04.04 - Build 5
+- Added FPS display.
+- You can rotate mushrooms with right mouse button. Bugs fall into empty slots. Cannot launch them yet.
+
+### 2025.04.03 - Build 4
 - Ladybugs fall into mushrooms. Cannot do anything with them yet.
 - Fixed a bug in BuildBugs: Animation coordinates didn't match with image.
 - Added SDL_Init and SDL_Quit. (It worked without this but don't be lazy.)
 - You can close window with X. (Only escape key worked before.)
-
-## 2025.04.02 - Build 3
+  
+### 2025.04.02 - Build 3
 - First ladybug appears and moves in the top row.
 
-## 2025.03.31 - Build 2
+### 2025.03.31 - Build 2
 - Added a small font for debugging purposes.
 - Press TAB to show map values.
 - Fixed release part of code.
 - Map entities sets map values accordingly.
 - Since no sound and music yet, changed MediaManager to GFXManager. (Don't need to include Bass and related units yet.)
 
-## 2025.03.31 - Build 1
+### 2025.03.31 - Build 1
 - Created first map in json format.
 - Map is loaded in game.
 - Paths and rotating mushrooms are displayed. Upper path need a junction where mushrooms are below.

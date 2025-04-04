@@ -1,13 +1,18 @@
 program BuildMushrooms;
 
 uses
+  SysUtils,
   ARGBImageUnit,
   ARGBImagePNGReaderUnit,
   ARGBImagePNGWriterUnit,
   TextureAtlasGeneratorUnit,
   AnimationDataUnit,
   GradientUnit,
+  Logger,
   MKStream;
+
+const
+  FPS=24;
 
 type
 
@@ -65,13 +70,15 @@ begin
 end;
 
 procedure TMain.Run;
-var i:integer;tmpA:TFrameBasedAnimationData;
+var i:integer;tmpA:TTimeBasedAnimationData;
 begin
   fColors:=TGradient.Create($FFD8D8D8,$FFAC6444);
   fColors.PingPong:=true;
   fColors.Reversed:=true;
-  tmpA:=TFrameBasedAnimationData.Create(64,64);
+  tmpA:=TTimeBasedAnimationData.Create(64,64);
+  tmpA.RandomStart:=false;
   tmpA.Paused:=true;
+  tmpA.FPS:=FPS;
   for i:=0 to 14 do begin
     CreateMushroom(i*64,i*6,fShroomTop);
     tmpA.AddFrame(i*64,0);
@@ -83,8 +90,10 @@ begin
   fColors.Free;
   fColors:=TGradient.Create($FFAC6444,$FF804620);
   fColors.PingPong:=true;
-  tmpA:=TFrameBasedAnimationData.Create(64,64);
+  tmpA:=TTimeBasedAnimationData.Create(64,64);
+  tmpA.RandomStart:=false;
   tmpA.Paused:=true;
+  tmpA.FPS:=FPS;
   for i:=0 to 14 do begin
     CreateMushroom(i*64,i*6,fShroomOverlay);
     tmpA.AddFrame(i*64,0);
@@ -149,6 +158,7 @@ var x,y:integer;
 begin
   x:=round(sin(pRotation*pirad)*23)+32+1;
   y:=round(cos(pRotation*pirad)*23)+32+1;
+  Log.LogStatus(Format('%.3d(%d, %d),',[pRotation,x-1,y-1]));
   fShroomSlot.CopyTo(0,0,16,16,x-8,y-8,pImage,true);
 end;
 

@@ -15,7 +15,8 @@ type
     constructor Create(iX,iY,iColor:integer;iMap:TMap);
     destructor Destroy; override;
     procedure Move(pElapsedTime:double);
-    procedure Draw;
+    procedure Draw; overload;
+    procedure Draw(pX,pY:integer); overload;
     procedure SetDirection(pDirection:integer);
   private
     fdX,fdY:double;
@@ -168,9 +169,12 @@ end;
 procedure TBug.Draw;
 begin
   if fMoving then
-    fAnimation.PutFrame(X+HorzDisplacement[Y mod 16],Y+VertDisplacement[X mod 16]+16)
-  else
-    fAnimation.PutFrame(X,Y);
+    fAnimation.PutFrame(X+HorzDisplacement[Y mod 16],Y+VertDisplacement[X mod 16]+16);
+end;
+
+procedure TBug.Draw(pX,pY:integer);
+begin
+  fAnimation.PutFrame(pX,pY);
 end;
 
 procedure TBug.SetDirection(pDirection:integer);
