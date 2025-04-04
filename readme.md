@@ -26,10 +26,13 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.5.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.5.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.6.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.6.zip "Download x86 version").
 
 ## What's new
+
+### 2025.04.04 - Build 6
+- You can click on bugs with the left mouse button to release them on paths (or into another mushroom). 
 
 ### 2025.04.04 - Build 5
 - Added FPS display.

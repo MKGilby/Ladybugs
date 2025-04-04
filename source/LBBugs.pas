@@ -18,6 +18,7 @@ type
     procedure Draw; overload;
     procedure Draw(pX,pY:integer); overload;
     procedure SetDirection(pDirection:integer);
+    procedure StartMove(pX,pY:integer);
   private
     fdX,fdY:double;
     fColor:integer;
@@ -117,7 +118,12 @@ begin
           fDirection:=DIR_DOWN;
           ShouldCreateNewBug:=true;
         end else
-        if not (CanMoveLeft(px,py)) then begin
+        if CanMoveLeft(px,py) then begin
+          if (Entities.EntityAt[px-1,py]) is TMushroom then begin
+            Entities.AddBug(pX-1,pY,Self,DIR_RIGHT);
+            fMoving:=false;
+          end;
+        end else begin
           if CanMoveDown(px,py) then fDirection:=DIR_DOWN
           else if CanMoveUp(px,py) then fDirection:=DIR_UP
           else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
@@ -129,7 +135,12 @@ begin
           fDirection:=DIR_DOWN;
           ShouldCreateNewBug:=true;
         end else
-        if not (CanMoveRight(px,py)) then begin
+        if CanMoveRight(px,py) then begin
+          if (Entities.EntityAt[px+1,py]) is TMushroom then begin
+            Entities.AddBug(pX+1,pY,Self,DIR_LEFT);
+            fMoving:=false;
+          end;
+        end else begin
           if CanMoveDown(px,py) then fDirection:=DIR_DOWN
           else if CanMoveUp(px,py) then fDirection:=DIR_UP
           else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
@@ -154,7 +165,12 @@ begin
         end;
       end;
       DIR_UP:begin
-        if not (CanMoveUp(px,py)) then begin
+        if CanMoveUp(px,py) then begin
+          if (Entities.EntityAt[px,py-1]) is TMushroom then begin
+            Entities.AddBug(pX,pY-1,Self,DIR_DOWN);
+            fMoving:=false;
+          end;
+        end else begin
           if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
           else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
           else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
@@ -181,6 +197,15 @@ procedure TBug.SetDirection(pDirection:integer);
 begin
   fDirection:=pDirection;
   SetAnimByDirection;
+end;
+
+procedure TBug.StartMove(pX, pY: integer);
+begin
+  X:=pX;
+  Y:=pY;
+  fdX:=X;
+  fdY:=Y;
+  fMoving:=true;
 end;
 
 procedure TBug.SetAnimByDirection;

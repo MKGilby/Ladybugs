@@ -157,6 +157,7 @@ var i:integer;
 begin
   Result:=nil;
   x:=x div 5;
+  if (y<1) then exit;
   y:=(y-1) div 5;
   for i:=0 to Count-1 do
     if (Items[i].X=x) and (Items[i].Y=y) then begin
@@ -360,6 +361,40 @@ procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
 begin
   if buttons=SDL_BUTTON_LEFT then begin
     // Release clicked ladybug
+    x:=x-fLeft;
+    y:=y-fTop;
+    if (fy>0) and (x>=SLOTPOSITIONS[0,0]) and (x<SLOTPOSITIONS[0,0]+16) and
+       (y>=SLOTPOSITIONS[0,1]) and (y<SLOTPOSITIONS[0,1]+16) and Assigned(fBugs[0]) then begin
+      if (fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]-1] and DIR_BIT_UP=0) then begin
+        fBugs[0].StartMove(fX*80+32,fY*80-8+16);
+        fBugs[0]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=0;
+      end;
+    end else
+    if (x>=SLOTPOSITIONS[1,0]) and (x<SLOTPOSITIONS[1,0]+16) and
+       (y>=SLOTPOSITIONS[1,1]) and (y<SLOTPOSITIONS[1,1]+16) and Assigned(fBugs[1]) then begin
+      if (fMap.Tiles[fX*5+SLOTMAPPOS[1,0]+1,fY*5+1+SLOTMAPPOS[1,1]] and DIR_BIT_RIGHT=0) then begin
+        fBugs[1].StartMove(fX*80+72,fY*80+32+16);
+        fBugs[1]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=0;
+      end;
+    end else
+    if (x>=SLOTPOSITIONS[2,0]) and (x<SLOTPOSITIONS[2,0]+16) and
+       (y>=SLOTPOSITIONS[2,1]) and (y<SLOTPOSITIONS[2,1]+16) and Assigned(fBugs[2]) then begin
+      if (fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]+1] and DIR_BIT_DOWN=0) then begin
+        fBugs[2].StartMove(fX*80+32,fY*80+72+16);
+        fBugs[2]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=0;
+      end;
+    end else
+    if (x>=SLOTPOSITIONS[3,0]) and (x<SLOTPOSITIONS[3,0]+16) and
+       (y>=SLOTPOSITIONS[3,1]) and (y<SLOTPOSITIONS[3,1]+16) and Assigned(fBugs[3]) then begin
+      if (fMap.Tiles[fX*5+SLOTMAPPOS[3,0]-1,fY*5+1+SLOTMAPPOS[3,1]] and DIR_BIT_LEFT=0) then begin
+        fBugs[3].StartMove(fX*80-8,fY*80+32+16);
+        fBugs[3]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=0;
+      end;
+    end;
   end
   else if Buttons=SDL_BUTTON_RIGHT then begin
     if fState=mstIdle then begin
