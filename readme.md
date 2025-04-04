@@ -25,9 +25,9 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
 
-## Compiled binaries from previous build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.4.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.4.zip "Download x86 version").
+## Compiled binaries from current build with datafiles and DLLs
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.5.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.5.zip "Download x86 version").
 
 ## What's new
 
