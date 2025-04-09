@@ -93,6 +93,8 @@
 //   - Removed TGenericList, use fgl unit instead.
 // V3.19 - Gilby - 2024.03.22
 //   - Fix in TDoubleValueList.
+// V3.20 - Gilby - 2025.04.09
+//   - TNamedList's default property is ItemByName now.
 
 {$ifdef fpc}
   {$smartlink on}
@@ -165,8 +167,8 @@ type
     function fGetItemS(index:string):T;
     procedure fSetItemS(index:string;item:T);
   public
-    property Items[index:integer]:T read fGetItem write fSetItem; default;
-    property ItemByName[index:string]:T read fGetItemS write fSetItemS;
+    property Items[index:integer]:T read fGetItem write fSetItem;
+    property ItemByName[index:string]:T read fGetItemS write fSetItemS; default;
   end;
 {$endif}
 
@@ -186,7 +188,7 @@ uses SysUtils, Logger, QuickSortUnit;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='3.19';
+  Version='3.20';
 
 constructor TFileSearchList.Create(iPath:string;iAttr:integer);
 begin

@@ -134,6 +134,8 @@
 //   1.34 - Gilby - 2025.04.03
 //     * Added CropRightBottom. It only crops from right and bottom.
 //       (Suitable for textureatlases)
+//   1.35 - Gilby - 2025.04.09
+//     * Following changes in Lists unit.
 
 
 {$ifdef fpc}
@@ -401,7 +403,7 @@ uses SysUtils, MKToolBox, Logger, MKStream;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.34';
+  Version='1.35';
   POSTPROCESSCOLOR=$00FF00FF;  // Fully transparent magenta is the magic color!
 
 var
@@ -458,11 +460,11 @@ begin
   end;
   if iImage.Animations.Count>0 then begin
     for i:=0 to iImage.Animations.Count-1 do
-      if iImage.Animations[i] is TFrameBasedAnimationData then
-        Animations.AddObject(iImage.Animations.Strings[i],TFrameBasedAnimationData(iImage.Animations[i]).Clone())
+      if iImage.Animations.Items[i] is TFrameBasedAnimationData then
+        Animations.AddObject(iImage.Animations.Strings[i],TFrameBasedAnimationData(iImage.Animations.Items[i]).Clone())
       else
-      if iImage.Animations[i] is TTimeBasedAnimationData then
-        Animations.AddObject(iImage.Animations.Strings[i],TTimeBasedAnimationData(iImage.Animations[i]).Clone());
+      if iImage.Animations.Items[i] is TTimeBasedAnimationData then
+        Animations.AddObject(iImage.Animations.Strings[i],TTimeBasedAnimationData(iImage.Animations.Items[i]).Clone());
   end;
 end;
 
@@ -1756,35 +1758,35 @@ begin
 end;
 
 procedure TARGBImage.ReadFile(iFileName: string);
-var ext:string;i:integer;s:string;Xs:TStream;
+var ext:string;s:string;Xs:TStream;tmp:TARGBImageReaderItem;
 begin
   s:=iFilename;
   if ExtractFileExt(s)='.ZL' then s:=ChangeFileExt(s,'');
   ext:=uppercase(ExtractFileExt(s));
   if length(ext)>1 then delete(ext,1,1);
-  i:=ARGBImageReaders.IndexOf(ext);
-  if i=-1 then raise Exception.Create('Extension not recognized! ('+ext+')');
+  tmp:=ARGBImageReaders[ext];
+  if not Assigned(tmp) then raise Exception.Create('Extension not recognized! ('+ext+')');
   Xs:=MKStreamOpener.OpenStream(iFileName);
-  if ARGBImageReaders[i].AffectsImage then begin
+  if tmp.AffectsImage then begin
     if (fRawdata<>nil) then Freemem(fRawdata);
     fAnimations.Clear;
     if Assigned(fFontData) then FreeAndNil(fFontData);
   end;
-  ARGBImageReaders[i].proc(Xs,fWidth,fHeight,fRawdata,fAnimations,fFontData);
+  tmp.proc(Xs,fWidth,fHeight,fRawdata,fAnimations,fFontData);
   FreeAndNil(Xs);
 end;
 
 procedure TARGBImage.ReadFile(pStream: TStream; pFileType: string);
-var i:integer;
+var tmp:TARGBImageReaderItem;
 begin
-  i:=ARGBImageReaders.IndexOf(uppercase(pFileType));
-  if i=-1 then raise Exception.Create('Filetype not recognized! ('+pFileType+')');
-  if ARGBImageReaders[i].AffectsImage then begin
+  tmp:=ARGBImageReaders[pFileType];
+  if not Assigned(tmp) then raise Exception.Create('Filetype not recognized! ('+pFileType+')');
+  if tmp.AffectsImage then begin
     if (fRawdata<>nil) then Freemem(fRawdata);
     fAnimations.Clear;
     if Assigned(fFontData) then FreeAndNil(fFontData);
   end;
-  ARGBImageReaders[i].proc(pStream,fWidth,fHeight,fRawdata,fAnimations,fFontData);
+  tmp.proc(pStream,fWidth,fHeight,fRawdata,fAnimations,fFontData);
 end;
 
 procedure TARGBImage.WriteFile(pFilename:string;pFormat:string);
@@ -1796,12 +1798,12 @@ begin
 end;
 
 procedure TARGBImage.WriteFile(pTarget:TStream;pFormat:string);
-var i:integer;
+var tmp:TARGBImageWriterItem;
 begin
   if ARGBImageWriters.Count=0 then raise Exception.Create('No RawPicture writers are registered!');
-  i:=ARGBImageWriters.IndexOf(pFormat);
-  if i=-1 then raise Exception.Create(pFormat+' writer is not registered!');
-  ARGBImageWriters[i].Proc(pTarget,fWidth,fHeight,fRawdata,fAnimations,fFontData);
+  tmp:=ARGBImageWriters[pFormat];
+  if not Assigned(tmp) then raise Exception.Create(pFormat+' writer is not registered!');
+  tmp.Proc(pTarget,fWidth,fHeight,fRawdata,fAnimations,fFontData);
 end;
 
 function TARGBImage.WriteFile(pFormat:string):TStream;

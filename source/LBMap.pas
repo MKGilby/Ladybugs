@@ -100,7 +100,9 @@ begin
     if UpperCase(EntityType)='SIMPLEPATH' then
       Entities.Add(TSimplePath.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='MUSHROOM' then
-      Entities.Add(TMushroom.Create(Self,pX,pY,JD));
+      Entities.Add(TMushroom.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='COUNTER' then
+      Entities.Add(TCounter.Create(Self,pX,pY,JD));
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;

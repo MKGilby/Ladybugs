@@ -26,17 +26,27 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.6.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.6.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.7.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.7.zip "Download x86 version").
 
 ## What's new
 
+### 2025.04.09 - Build 7
+- Added moving bug counter. You can't launch more bugs from mushrooms when
+  the limit of moving bugs is reached. (All pots have flowers in them.)
+  You can set this limit in each map json file in the range of 4-16.
+- Added flying bug sprites.  
+- Collected all sprites into one spritesheet.
+- Updated used units. 
+
 ### 2025.04.04 - Build 6
-- You can click on bugs with the left mouse button to release them on paths (or into another mushroom). 
+- You can click on bugs with the left mouse button to release them on paths 
+  (or into another mushroom).
 
 ### 2025.04.04 - Build 5
 - Added FPS display.
-- You can rotate mushrooms with right mouse button. Bugs fall into empty slots. Cannot launch them yet.
+- You can rotate mushrooms with right mouse button. Bugs fall into empty slots. 
+  Cannot launch them yet.
 
 ### 2025.04.03 - Build 4
 - Ladybugs fall into mushrooms. Cannot do anything with them yet.
@@ -52,10 +62,12 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
 - Press TAB to show map values.
 - Fixed release part of code.
 - Map entities sets map values accordingly.
-- Since no sound and music yet, changed MediaManager to GFXManager. (Don't need to include Bass and related units yet.)
+- Since no sound and music yet, changed MediaManager to GFXManager. 
+  (Don't need to include Bass and related units yet.)
 
 ### 2025.03.31 - Build 1
 - Created first map in json format.
 - Map is loaded in game.
-- Paths and rotating mushrooms are displayed. Upper path need a junction where mushrooms are below.
+- Paths and rotating mushrooms are displayed. Upper path need a junction 
+  where mushrooms are below.
 

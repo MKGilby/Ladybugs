@@ -10,7 +10,7 @@
              under the GNU GPL Version 2.
 
   Written by Gilby/MKSZTSZ
-  Hungary, 2008-2021
+  Hungary, 2008-2025
 
   --------------------------------------------------
 
@@ -82,6 +82,8 @@
 //    * Using fgl.TFGObjectList for TStreams instead of Lists.TGenericList
 //  V3.01a: 2023.06.26 - Gilby
 //    * Removed an unneeded variable declaration and two commented out lines.
+//  V3.02: 2025.04.09 - Gilby
+//    * Following changes in Lists unit.
 
 {$ifdef fpc}
   {$mode delphi}
@@ -170,7 +172,7 @@ uses SysUtils, MKToolBox, Logger;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='3.01a';
+  Version='3.02';
 
 var ExePath:string;
 
@@ -261,9 +263,8 @@ begin
 
   if fUseCache then begin
     Log.LogDebug('Check in cache ('+aFilename+')',Istr);
-    i:=fCache.IndexOf(aFilename);
-    if i>-1 then begin
-      atm:=fCache[i];
+    atm:=fCache[aFilename];
+    if Assigned(atm) then begin
       Result:=TMemoryStream.Create;
       Result.CopyFrom(atm._stream,atm._stream.Size);
       atm._stream.Seek(0,soFromBeginning);

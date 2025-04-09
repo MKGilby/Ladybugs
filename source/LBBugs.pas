@@ -62,7 +62,7 @@ begin
   if iColor<1 then iColor:=1
   else if iColor>4 then iColor:=4;
   fColor:=iColor;
-  fAnimation:=MM.Animations.ItemByName[Format('Bug%d',[iColor])].SpawnAnimation;
+  fAnimation:=MM.Animations[Format('Bug%d',[iColor])].SpawnAnimation;
   fAnimation.LogData;
   fDirection:=DIR_LEFT;
   fMoving:=true;
@@ -122,6 +122,7 @@ begin
           if (Entities.EntityAt[px-1,py]) is TMushroom then begin
             Entities.AddBug(pX-1,pY,Self,DIR_RIGHT);
             fMoving:=false;
+            dec(CurrentMovingBugs);
           end;
         end else begin
           if CanMoveDown(px,py) then fDirection:=DIR_DOWN
@@ -139,6 +140,7 @@ begin
           if (Entities.EntityAt[px+1,py]) is TMushroom then begin
             Entities.AddBug(pX+1,pY,Self,DIR_LEFT);
             fMoving:=false;
+            dec(CurrentMovingBugs);
           end;
         end else begin
           if CanMoveDown(px,py) then fDirection:=DIR_DOWN
@@ -156,6 +158,7 @@ begin
           if (Entities.EntityAt[px,py+1]) is TMushroom then begin
             Entities.AddBug(pX,pY+1,Self,DIR_UP);
             fMoving:=false;
+            if py>1 then dec(CurrentMovingBugs);
           end;
         end else begin
           if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
@@ -169,6 +172,7 @@ begin
           if (Entities.EntityAt[px,py-1]) is TMushroom then begin
             Entities.AddBug(pX,pY-1,Self,DIR_DOWN);
             fMoving:=false;
+            dec(CurrentMovingBugs);
           end;
         end else begin
           if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
@@ -206,6 +210,7 @@ begin
   fdX:=X;
   fdY:=Y;
   fMoving:=true;
+  inc(CurrentMovingBugs);
 end;
 
 procedure TBug.SetAnimByDirection;

@@ -40,6 +40,8 @@
 //     * PutFrame now uses HotPoint coordinates.
 //  V1.08: Gilby - 2025.01.17
 //     * AnimationData name is copied to animation name.
+//  V1.09: Gilby - 2025.04.09
+//     * Following changes in Lists unit.
 
 {$mode delphi}
 
@@ -144,7 +146,7 @@ end;
 procedure TAnimations.AnimateAll(pTimeUsed:double);
 var i:integer;
 begin
-  for i:=0 to Count-1 do Self[i].Animate(pTimeUsed);
+  for i:=0 to Count-1 do Self.Items[i].Animate(pTimeUsed);
 end;
 
 initialization

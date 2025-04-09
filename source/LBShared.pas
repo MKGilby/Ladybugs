@@ -57,6 +57,8 @@ var
   Entities:TMapEntities;
   Bugs:TBugs;
   ShouldCreateNewBug:boolean;
+  MaximumMovingBugs:integer;
+  CurrentMovingBugs:integer;
 
 procedure LoadAssets;
 procedure FreeAssets;
@@ -66,8 +68,7 @@ implementation
 procedure LoadAssets;
 begin
   MM:=TGFXManager.Create;
-  MM.Load('mushroom.png','Mushroom',MM_DONTKEEPIMAGE);
-  MM.Load('bugs.png','Bugs',MM_DONTKEEPIMAGE);
+  MM.Load('sprites.png','Sprites',MM_DONTKEEPIMAGE);
   MM.Load('grass.png','Grass');
   MM.Load('paths.png','Paths');
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);

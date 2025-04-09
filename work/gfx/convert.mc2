@@ -5,3 +5,22 @@ w png paths.png 1
 r png data\grass.png 1
 w png grass.png 1
 
+m createatlas 616 480 1 2
+r png mushroom.png 1
+m addall 1 2
+r png bugs.png 1
+m addall 1 2
+
+r png data\pot.png 1
+r json data\pot.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+r png data\flower.png 1
+r json data\flower.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+m crop2 2
+
+w png sprites.png 2

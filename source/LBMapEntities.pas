@@ -93,9 +93,26 @@ type
     procedure MouseDown(Sender:TObject;x,y,buttons:integer);
   end;
 
+  { TCounter }
+
+  TCounter=class(TMapEntity)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
+  private
+    fPotAnim,fFlowerAnim:TAnimation;
+    fPotsTop:integer;
+  end;
+
 implementation
 
-uses LBShared, Logger, SDL2;
+uses LBShared, Logger, SDL2, MKToolbox;
 
 { TMapEntity }
 {$region /fold}
@@ -263,7 +280,7 @@ begin
   Visible:=true;
   Enabled:=true;
   fState:=mstIdle;
-  fAnimation:=MM.Animations.ItemByName['MushroomD'].SpawnAnimation;
+  fAnimation:=MM.Animations['MushroomD'].SpawnAnimation;
   for i:=0 to 3 do fBugs[i]:=nil;
   OnMouseDown:=MouseDown;
   Name:=Format('Mushroom (%d,%d)',[fX,fY]);
@@ -359,7 +376,7 @@ end;
 
 procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
 begin
-  if buttons=SDL_BUTTON_LEFT then begin
+  if (buttons=SDL_BUTTON_LEFT) and (CurrentMovingBugs<MaximumMovingBugs) then begin
     // Release clicked ladybug
     x:=x-fLeft;
     y:=y-fTop;
@@ -408,6 +425,66 @@ begin
       fState:=mstRotating;
     end;
   end;
+end;
+
+{$endregion}
+
+{ TCounter }
+{$region /fold}
+
+constructor TCounter.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
+begin
+  inherited Create(iMap,ipX,ipY);
+  if Assigned(pj.FindPath('Maximum')) then
+    MaximumMovingBugs:=pj.FindPath('Maximum').AsInteger
+  else begin
+    Log.LogWarning('Maximum moving bug count is not specified in map! Setting it to 4.');
+    MaximumMovingBugs:=4;
+  end;
+  if MaximumMovingBugs<4 then begin
+    Log.LogWarning('Maximum moving bug count is below 4! Setting it to 4.');
+    MaximumMovingBugs:=4;
+  end else
+  if MaximumMovingBugs>16 then begin
+    Log.LogWarning('Maximum moving bug count is more than 16! Setting it to 16.');
+    MaximumMovingBugs:=16;
+  end;
+  CurrentMovingBugs:=0;
+  fPotAnim:=MM.Animations['Pot'].SpawnAnimation;
+  fFlowerAnim:=MM.Animations['Flower'].SpawnAnimation;
+  fPotsTop:=(80-((MaximumMovingBugs-1) div 4+1)*20) div 2;
+end;
+
+destructor TCounter.Destroy;
+begin
+  fFlowerAnim.Free;
+  fPotAnim.Free;
+  inherited Destroy;
+end;
+
+procedure TCounter.Draw;
+var i,j,k,r:integer;
+begin
+  r:=MaximumMovingBugs;
+  for j:=0 to (MaximumMovingBugs-1) div 4 do begin
+    k:=(80-((min(r,4)-1) mod 4+1)*20) div 2;
+    for i:=0 to min(r,4)-1 do begin
+      fPotAnim.PutFrame(fX*80+k+i*20+3,fY*80+32+fPotsTop+j*20+3);
+      if r>MaximumMovingBugs-CurrentMovingBugs then
+        fFlowerAnim.PutFrame(fX*80+k+i*20+1,fY*80+32+fPotsTop+j*20+1);
+      dec(r);
+    end;
+  end;
+end;
+
+procedure TCounter.DrawBack(pBack:TARGBImage);
+begin
+  // Nothing to do
+end;
+
+procedure TCounter.Move(pElapsedTime:double);
+begin
+  // Nothing to do
 end;
 
 {$endregion}
