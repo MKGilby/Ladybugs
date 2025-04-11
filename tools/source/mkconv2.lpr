@@ -110,7 +110,7 @@ begin
 end;
 
 procedure Comm_R(Parms:TStringList;Help:boolean);
-var area,bef,i:integer;
+var area,bef:integer;
 begin
   if not Help then begin
     area:=strtoint(parms[3]);
@@ -126,9 +126,9 @@ begin
       LoadAnimJSON(mems[area].Image,parms[2])
     else
       mems[area].Image.ReadFile(parms[2]);
-    Log.trace(mems[area].Image.Animations.Count);
-    for i:=0 to mems[area].Image.Animations.Count-1 do
-      mems[area].Image.Animations[i].LogData;
+//    Log.trace(mems[area].Image.Animations.Count);
+//    for i:=0 to mems[area].Image.Animations.Count-1 do
+//      mems[area].Image.Animations.Items[i].LogData;
     if (uppercase(Parms[1])='BMF') then
       writeln('File read.')
     else if (uppercase(Parms[1])='ANIMXML') or (uppercase(Parms[1])='JSON') then

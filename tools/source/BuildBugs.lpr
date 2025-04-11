@@ -114,7 +114,7 @@ begin
 end;
 
 procedure TMain.GenerateBug2(cnt, r, g, b: integer);
-var tmp:TARGBImage;tmpA:TFrameBasedAnimationData;i:integer;
+var tmp:TARGBImage;tmpA:TFrameBasedAnimationData;
 begin
   tmp:=TARGBImage.Create(96,48);
   try
@@ -156,13 +156,25 @@ begin
     tmpA.Paused:=true;
     tmpA.AddFrame(0,0);
     tmpA.AddFrame(0,24);
+    tmpA.Name:='FBug'+inttostr(cnt)+'1';
+    tmp.Animations.AddObject(tmpA.Name,tmpA);
+    tmpA:=TFrameBasedAnimationData.Create(24,24);
+    tmpA.Paused:=true;
     tmpA.AddFrame(24,0);
     tmpA.AddFrame(24,24);
+    tmpA.Name:='FBug'+inttostr(cnt)+'2';
+    tmp.Animations.AddObject(tmpA.Name,tmpA);
+    tmpA:=TFrameBasedAnimationData.Create(24,24);
+    tmpA.Paused:=true;
     tmpA.AddFrame(48,0);
     tmpA.AddFrame(48,24);
+    tmpA.Name:='FBug'+inttostr(cnt)+'3';
+    tmp.Animations.AddObject(tmpA.Name,tmpA);
+    tmpA:=TFrameBasedAnimationData.Create(24,24);
+    tmpA.Paused:=true;
     tmpA.AddFrame(72,0);
     tmpA.AddFrame(72,24);
-    tmpA.Name:='FBug'+inttostr(cnt);
+    tmpA.Name:='FBug'+inttostr(cnt)+'4';
     tmp.Animations.AddObject(tmpA.Name,tmpA);
     fAtlas.AddImage(tmp);
   finally

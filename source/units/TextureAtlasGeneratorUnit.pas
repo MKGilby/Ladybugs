@@ -47,6 +47,8 @@
 //     * Added full frame deduplication.
 //  V1.08: Gilby - 2025.04.03
 //     * Fix in cropping.
+//  V1.09: Gilby - 2025.04.11
+//     * Following changes in used units.
 
 unit TextureAtlasGeneratorUnit;
 
@@ -111,7 +113,7 @@ uses sysutils, AnimationDataUnit, Logger, MKToolbox;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.08';
+  Version='1.09';
 
 constructor TTextureLine.Create(iTop,iHeight,iMaxWidth,iPadding:integer);
 begin
@@ -184,12 +186,12 @@ begin
   x:=-1;
   i:=0;
   while not Result and (i<fTextureAtlas.Animations.Count) do begin
-    if (fTextureAtlas.Animations[i].Width=fFrame.Width) and
-       (fTextureAtlas.Animations[i].Height=fFrame.Height) then begin
+    if (fTextureAtlas.Animations.Items[i].Width=fFrame.Width) and
+       (fTextureAtlas.Animations.Items[i].Height=fFrame.Height) then begin
       tmp:=TARGBImage.Create(fFrame.Width,fFrame.Height);
       try
-        for j:=0 to fTextureAtlas.Animations[i].FrameCount-1 do
-          with fTextureAtlas.Animations[i].Frames[j] do begin
+        for j:=0 to fTextureAtlas.Animations.Items[i].FrameCount-1 do
+          with fTextureAtlas.Animations.Items[i].Frames[j] do begin
             fTextureAtlas.CopyTo(Left,Top,Width,Height,0,0,tmp);
             if fFrame.IsIdentical(tmp) then begin
               Result:=true;
@@ -215,18 +217,18 @@ begin
   PrevFrames:=TStringList.Create;
   try
     for anim:=0 to pImage.Animations.Count-1 do begin
-      if (pAnimationName='') or (pImage.Animations[anim].Name=pAnimationName) then begin
-        if pImage.Animations[anim] is TFrameBasedAnimationData then
-          atm:=TFrameBasedAnimationData(pImage.Animations[anim]).Clone(true)
-        else if pImage.Animations[anim] is TTimeBasedAnimationData then
-          atm:=TTimeBasedAnimationData(pImage.Animations[anim]).Clone(true);
+      if (pAnimationName='') or (pImage.Animations.Items[anim].Name=pAnimationName) then begin
+        if pImage.Animations.Items[anim] is TFrameBasedAnimationData then
+          atm:=TFrameBasedAnimationData(pImage.Animations.Items[anim]).Clone(true)
+        else if pImage.Animations.Items[anim] is TTimeBasedAnimationData then
+          atm:=TTimeBasedAnimationData(pImage.Animations.Items[anim]).Clone(true);
 
-        currentframe:=TARGBImage.Create(pImage.Animations[anim].Width,pImage.Animations[anim].Height);
+        currentframe:=TARGBImage.Create(pImage.Animations.Items[anim].Width,pImage.Animations.Items[anim].Height);
         try
-          for frame:=0 to pImage.Animations[anim].FrameCount-1 do begin
-            key:=Format('%d,%d',[pImage.Animations[anim].Frames[frame].Left,pImage.Animations[anim].Frames[frame].Top]);
+          for frame:=0 to pImage.Animations.Items[anim].FrameCount-1 do begin
+            key:=Format('%d,%d',[pImage.Animations.Items[anim].Frames[frame].Left,pImage.Animations.Items[anim].Frames[frame].Top]);
             if PrevFrames.Values[key]='' then begin
-              with pImage.Animations[anim] do
+              with pImage.Animations.Items[anim] do
                 pImage.CopyTo(Frames[frame].Left,Frames[frame].Top,atm.Width,atm.Height,0,0,currentframe);
               if SearchForIdenticalFrame(currentframe,x,y) then begin
                 atm.AddFrame(x,y);
@@ -238,7 +240,7 @@ begin
                   fLines.Add(Line);
                 end;
                 atm.AddFrame(Line.CurrentLeft,Line.Top);
-                with pImage.Animations[anim] do
+                with pImage.Animations.Items[anim] do
                   pImage.CopyTo(Frames[frame].Left,Frames[frame].Top,atm.Width,atm.Height,Line.CurrentLeft,Line.Top,fTextureAtlas);
                 PrevFrames.Add(Format('%s=%d,%d',[key,Line.CurrentLeft,Line.Top]));
                 Line.AddImage(atm.Width);
