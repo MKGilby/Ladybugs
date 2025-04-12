@@ -31,6 +31,7 @@ backups/
 *.log
 *.exe
 /release
+/original_resources
 /work/original_resources
 /source/lib
 backup.bat
