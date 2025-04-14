@@ -26,10 +26,16 @@ MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.7.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.7.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.8.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.8.zip "Download x86 version").
 
 ## What's new
+
+### 2025.04.14 - Build 8
+- Added transitioning mushroom animation.
+- When a mushroom is filled with the same colored bugs, it transitions to 
+  light version, and bugs are removed. (They should fly away, but that part
+  is not yet ready.)
 
 ### 2025.04.09 - Build 7
 - Added moving bug counter. You can't launch more bugs from mushrooms when

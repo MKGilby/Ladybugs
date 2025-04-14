@@ -88,7 +88,8 @@ type
     procedure Move(pElapsedTime:double); override;
   private
     fAnimation:TAnimation;
-    fState:(mstIdle,mstRotating);
+    fMovingState:(mstIdle,mstRotating,mstTransitioning);
+    fVisualState:(vstDark,vstLight);
     fBugs:array[0..3] of TBug;
     procedure MouseDown(Sender:TObject;x,y,buttons:integer);
   end;
@@ -269,8 +270,14 @@ end;
 {$region /fold}
 
 const
+  // Slot positions relative to tile top,left
   SLOTPOSITIONS:array[0..3,0..1] of integer=((32,9),(55,32),(32,55),(9,32));
+  // Slot positions on map relative to big tile*5
   SLOTMAPPOS:array[0..3,0..1] of integer=((2,0),(4,2),(2,4),(0,2));
+  // Slot positions for checking for road relative to big tile*5
+  SLOTCHECKMAPPOS:array[0..3,0..1] of integer=((2,-1),(5,2),(2,5),(-1,2));
+  // Bug start moving position relative to tile top,left
+  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-8),(72,32),(32,72),(-8,32));
 
 constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
 var i:integer;
@@ -279,7 +286,8 @@ begin
   SetBoundsWH(fLeft,fTop,80,80);
   Visible:=true;
   Enabled:=true;
-  fState:=mstIdle;
+  fMovingState:=mstIdle;
+  fVisualState:=vstDark;
   fAnimation:=MM.Animations['MushroomD'].SpawnAnimation;
   for i:=0 to 3 do fBugs[i]:=nil;
   OnMouseDown:=MouseDown;
@@ -298,7 +306,7 @@ const REORDER:array[0..3] of integer=(0,3,2,1);
 var i:integer;
 begin
   fAnimation.PutFrame(fX*80+8,fY*80+32+8);
-  case fState of
+  case fMovingState of
     mstIdle:begin
       for i:=0 to 3 do
         if Assigned(fBugs[i]) then
@@ -311,6 +319,7 @@ begin
             fX*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0],
             fY*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]+32);
     end;
+    mstTransitioning:;  // No additional drawing needed
   end;
 end;
 
@@ -328,8 +337,9 @@ begin
 end;
 
 procedure TMushroom.AddBug(pBug:TBug; pFromDirection:integer);
+var i:integer;
 
-  procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer); {inline;}
+  procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer);
   begin
     if not assigned(fBugs[pSlot]) then begin
       fBugs[pSlot]:=pBug;
@@ -342,79 +352,127 @@ procedure TMushroom.AddBug(pBug:TBug; pFromDirection:integer);
   end;
 
 begin
+  // Add bug to the appropriate slot
   if pFromDirection=DIR_UP then BugToSlot(0,pBug,pFromDirection)
   else if pFromDirection=DIR_RIGHT then BugToSlot(1,pBug,pFromDirection)
   else if pFromDirection=DIR_DOWN then BugToSlot(2,pBug,pFromDirection)
   else if pFromDirection=DIR_LEFT then BugToSlot(3,pBug,pFromDirection);
+  // Check if all slots have the bugs of same color
+  if Assigned(fBugs[0]) and Assigned(fBugs[1]) and Assigned(fBugs[2]) and Assigned(fBugs[3]) then
+    if (fBugs[0].Color=fBugs[1].Color) and
+       (fBugs[1].Color=fBugs[2].Color) and
+       (fBugs[2].Color=fBugs[3].Color) then begin
+      // If mushroom is not yet lighted
+      if fVisualState=vstDark then begin
+        // Moving state is transitioning, no clicking is allowed
+        fMovingState:=mstTransitioning;
+        // Free previous animation
+        fAnimation.Free;
+        // Set animation to transitioning mushroom
+        fAnimation:=MM.Animations['MushroomC'].SpawnAnimation;
+        // Unpause animation
+        fAnimation.Timer.Paused:=false;
+      end;
+      // Release bugs from mushroom and free up slot in map
+      for i:=0 to 3 do begin
+        fBugs[i]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
+      end;
+    end;
 end;
 
 procedure TMushroom.Move(pElapsedTime:double);
 var tmpBug:TBug;
 begin
+  // Animate animation
   fAnimation.Animate(pElapsedTime);
-  if fAnimation.Timer.CurrentFrameIndex=7 then begin
-    if Assigned(fBugs[0]) then fBugs[0].SetDirection(DIR_LEFT);
-    if Assigned(fBugs[1]) then fBugs[1].SetDirection(DIR_UP);
-    if Assigned(fBugs[2]) then fBugs[2].SetDirection(DIR_RIGHT);
-    if Assigned(fBugs[3]) then fBugs[3].SetDirection(DIR_DOWN);
-  end;
-  if fAnimation.Timer.Finished then begin
-    fState:=mstIdle;
-    fAnimation.Timer.ResetFrameIndex;
-    fAnimation.Timer.Paused:=true;
-    tmpBug:=fBugs[0];
-    fBugs[0]:=fBugs[1];
-    fBugs[1]:=fBugs[2];
-    fBugs[2]:=fBugs[3];
-    fBugs[3]:=tmpBug;
-    if not Assigned(fBugs[0]) then fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=0;
-    if not Assigned(fBugs[1]) then fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=0;
-    if not Assigned(fBugs[2]) then fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=0;
-    if not Assigned(fBugs[3]) then fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=0;
+  case fMovingState of
+    mstIdle:;  // No moving needed, waiting for clicking.
+    mstRotating:begin      // The mushroom is rotating
+      // If the rotating is half-time, set bugs new direction.
+      if fAnimation.Timer.CurrentFrameIndex=7 then begin
+        if Assigned(fBugs[0]) then fBugs[0].SetDirection(DIR_LEFT);
+        if Assigned(fBugs[1]) then fBugs[1].SetDirection(DIR_UP);
+        if Assigned(fBugs[2]) then fBugs[2].SetDirection(DIR_RIGHT);
+        if Assigned(fBugs[3]) then fBugs[3].SetDirection(DIR_DOWN);
+      end;
+      // If animation (thus rotating) is finished
+      if fAnimation.Timer.Finished then begin
+        // Moving state is idle, can be rotated by mouse again.
+        fMovingState:=mstIdle;
+        // Reset animation
+        fAnimation.Timer.ResetFrameIndex;
+        // Pause animation
+        fAnimation.Timer.Paused:=true;
+        // Move bugs around
+        tmpBug:=fBugs[0];
+        fBugs[0]:=fBugs[1];
+        fBugs[1]:=fBugs[2];
+        fBugs[2]:=fBugs[3];
+        fBugs[3]:=tmpBug;
+        // Set map free state for unused slots
+        // (occupied state is set when started rotating)
+        if not Assigned(fBugs[0]) then fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=0;
+        if not Assigned(fBugs[1]) then fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=0;
+        if not Assigned(fBugs[2]) then fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=0;
+        if not Assigned(fBugs[3]) then fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=0;
+      end;
+    end;
+    mstTransitioning:begin
+      // Transitioning from dark to light finished ?
+      if fAnimation.Timer.Finished then begin
+        // Visual state is light, don't need another transition.
+        fVisualState:=vstLight;
+        // Moving state is idle, can be rotated by mouse again.
+        fMovingState:=mstIdle;
+        // Free previous animation.
+        fAnimation.Free;
+        // Set animation to light mushroom.
+        fAnimation:=MM.Animations['MushroomL'].SpawnAnimation;
+      end;
+    end;
   end;
 end;
 
 procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
-begin
-  if (buttons=SDL_BUTTON_LEFT) and (CurrentMovingBugs<MaximumMovingBugs) then begin
-    // Release clicked ladybug
-    x:=x-fLeft;
-    y:=y-fTop;
-    if (fy>0) and (x>=SLOTPOSITIONS[0,0]) and (x<SLOTPOSITIONS[0,0]+16) and
-       (y>=SLOTPOSITIONS[0,1]) and (y<SLOTPOSITIONS[0,1]+16) and Assigned(fBugs[0]) then begin
-      if (fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]-1] and DIR_BIT_UP=0) then begin
-        fBugs[0].StartMove(fX*80+32,fY*80-8+16);
-        fBugs[0]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[0,0],fY*5+1+SLOTMAPPOS[0,1]]:=0;
-      end;
-    end else
-    if (x>=SLOTPOSITIONS[1,0]) and (x<SLOTPOSITIONS[1,0]+16) and
-       (y>=SLOTPOSITIONS[1,1]) and (y<SLOTPOSITIONS[1,1]+16) and Assigned(fBugs[1]) then begin
-      if (fMap.Tiles[fX*5+SLOTMAPPOS[1,0]+1,fY*5+1+SLOTMAPPOS[1,1]] and DIR_BIT_RIGHT=0) then begin
-        fBugs[1].StartMove(fX*80+72,fY*80+32+16);
-        fBugs[1]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=0;
-      end;
-    end else
-    if (x>=SLOTPOSITIONS[2,0]) and (x<SLOTPOSITIONS[2,0]+16) and
-       (y>=SLOTPOSITIONS[2,1]) and (y<SLOTPOSITIONS[2,1]+16) and Assigned(fBugs[2]) then begin
-      if (fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]+1] and DIR_BIT_DOWN=0) then begin
-        fBugs[2].StartMove(fX*80+32,fY*80+72+16);
-        fBugs[2]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=0;
-      end;
-    end else
-    if (x>=SLOTPOSITIONS[3,0]) and (x<SLOTPOSITIONS[3,0]+16) and
-       (y>=SLOTPOSITIONS[3,1]) and (y<SLOTPOSITIONS[3,1]+16) and Assigned(fBugs[3]) then begin
-      if (fMap.Tiles[fX*5+SLOTMAPPOS[3,0]-1,fY*5+1+SLOTMAPPOS[3,1]] and DIR_BIT_LEFT=0) then begin
-        fBugs[3].StartMove(fX*80-8,fY*80+32+16);
-        fBugs[3]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=0;
+
+  procedure CheckSlotClick(pSlot,pDirBit:integer);
+  begin
+    // If there's a bug in that slot and the slot is clicked
+    if Assigned(fBugs[pSlot]) and
+       (x>=SLOTPOSITIONS[pSlot,0]) and (x<SLOTPOSITIONS[pSlot,0]+16) and
+       (y>=SLOTPOSITIONS[pSlot,1]) and (y<SLOTPOSITIONS[pSlot,1]+16) then begin
+      // If there's road rightwards
+      if (fMap.Tiles[fX*5+SLOTCHECKMAPPOS[pSlot,0],fY*5+1+SLOTCHECKMAPPOS[pSlot,1]] and pDirBit=0) then begin
+        // Start moving the bug (direction is already set)
+        fBugs[pSlot].StartMove(fX*80+BUGSTARTMOVEPOS[pSlot,0],fY*80+16+BUGSTARTMOVEPOS[pSlot,1]);
+        // Remove bug from array (still referenced in LBShared.Bugs)
+        fBugs[pSlot]:=nil;
+        // Set map tile to free to allow another bug come in
+        fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=0;
       end;
     end;
+  end;
+
+begin
+  if (fMovingState=mstIdle) and (buttons=SDL_BUTTON_LEFT) and
+     (CurrentMovingBugs<MaximumMovingBugs) then begin
+    // Release clicked ladybug
+    // Set coordinates from window coordinates to inside object coordinates.
+    x:=x-fLeft;
+    y:=y-fTop;
+
+    // If not top row, check upper slot click
+    if (fY>0) then CheckSlotClick(0,DIR_BIT_UP);
+    // Check right slot click
+    CheckSlotClick(1,DIR_BIT_RIGHT);
+    // Check bottom slot click
+    CheckSlotClick(2,DIR_BIT_DOWN);
+    // Check left slot click
+    CheckSlotClick(3,DIR_BIT_LEFT);
   end
   else if Buttons=SDL_BUTTON_RIGHT then begin
-    if fState=mstIdle then begin
+    if fMovingState=mstIdle then begin
       fAnimation.Timer.Looped:=false;
       fAnimation.Timer.Paused:=false;
       fAnimation.LogData;
@@ -422,7 +480,7 @@ begin
       fMap.Tiles[fX*5+SLOTMAPPOS[1,0],fY*5+1+SLOTMAPPOS[1,1]]:=15;
       fMap.Tiles[fX*5+SLOTMAPPOS[2,0],fY*5+1+SLOTMAPPOS[2,1]]:=15;
       fMap.Tiles[fX*5+SLOTMAPPOS[3,0],fY*5+1+SLOTMAPPOS[3,1]]:=15;
-      fState:=mstRotating;
+      fMovingState:=mstRotating;
     end;
   end;
 end;

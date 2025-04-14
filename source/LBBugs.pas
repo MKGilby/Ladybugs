@@ -30,6 +30,7 @@ type
   public
     X:integer;
     Y:integer;
+    property Color:integer read fColor;
   end;
 
   { TBugs }
