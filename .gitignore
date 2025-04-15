@@ -26,6 +26,7 @@ Win64/
 *.~inc
 backup/
 backups/
+.burdockpaint/
 *.res
 /data
 *.log
