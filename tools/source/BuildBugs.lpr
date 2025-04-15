@@ -114,7 +114,7 @@ begin
 end;
 
 procedure TMain.GenerateBug2(cnt, r, g, b: integer);
-var tmp:TARGBImage;tmpA:TFrameBasedAnimationData;
+var tmp:TARGBImage;tmpA:TTimeBasedAnimationData;
 begin
   tmp:=TARGBImage.Create(96,48);
   try
@@ -152,28 +152,36 @@ begin
     fBug5.Rotate(1);
 
     tmp.SetColorkey(0,0,0);
-    tmpA:=TFrameBasedAnimationData.Create(24,24);
-    tmpA.Paused:=true;
+    tmpA:=TTimeBasedAnimationData.Create(24,24);
+    tmpA.Paused:=false;
     tmpA.AddFrame(0,0);
     tmpA.AddFrame(0,24);
     tmpA.Name:='FBug'+inttostr(cnt)+'1';
+    tmpA.Looped:=true;
+    tmpA.FPS:=16;
     tmp.Animations.AddObject(tmpA.Name,tmpA);
-    tmpA:=TFrameBasedAnimationData.Create(24,24);
-    tmpA.Paused:=true;
+    tmpA:=TTimeBasedAnimationData.Create(24,24);
+    tmpA.Paused:=false;
     tmpA.AddFrame(24,0);
     tmpA.AddFrame(24,24);
+    tmpA.Looped:=true;
+    tmpA.FPS:=16;
     tmpA.Name:='FBug'+inttostr(cnt)+'2';
     tmp.Animations.AddObject(tmpA.Name,tmpA);
-    tmpA:=TFrameBasedAnimationData.Create(24,24);
-    tmpA.Paused:=true;
+    tmpA:=TTimeBasedAnimationData.Create(24,24);
+    tmpA.Paused:=false;
     tmpA.AddFrame(48,0);
     tmpA.AddFrame(48,24);
+    tmpA.Looped:=true;
+    tmpA.FPS:=16;
     tmpA.Name:='FBug'+inttostr(cnt)+'3';
     tmp.Animations.AddObject(tmpA.Name,tmpA);
-    tmpA:=TFrameBasedAnimationData.Create(24,24);
-    tmpA.Paused:=true;
+    tmpA:=TTimeBasedAnimationData.Create(24,24);
+    tmpA.Paused:=false;
     tmpA.AddFrame(72,0);
     tmpA.AddFrame(72,24);
+    tmpA.Looped:=true;
+    tmpA.FPS:=16;
     tmpA.Name:='FBug'+inttostr(cnt)+'4';
     tmp.Animations.AddObject(tmpA.Name,tmpA);
     fAtlas.AddImage(tmp);

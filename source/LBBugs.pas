@@ -19,13 +19,14 @@ type
     procedure Draw(pX,pY:integer); overload;
     procedure SetDirection(pDirection:integer);
     procedure StartMove(pX,pY:integer);
+    procedure StartFly(pX,pY:integer);
   private
     fdX,fdY:double;
     fColor:integer;
     fMap:TMap;
     fDirection:integer;
     fAnimation:TAnimation;
-    fMoving:boolean;
+    fState:(bsIdle,bsMovingOnPath,bsFlying);
     procedure SetAnimByDirection;
   public
     X:integer;
@@ -66,7 +67,7 @@ begin
   fAnimation:=MM.Animations[Format('Bug%d',[iColor])].SpawnAnimation;
   fAnimation.LogData;
   fDirection:=DIR_LEFT;
-  fMoving:=true;
+  fState:=bsMovingOnPath;
   SetAnimByDirection;
 end;
 
@@ -100,97 +101,116 @@ var predir,px,py:integer;
   end;
 
 begin
-  if not fMoving then exit;
-  predir:=fDirection;
-  case fDirection of
-    DIR_UP:fdY:=fdY-BUGSPEED*pElapsedTime;
-    DIR_RIGHT:fdX:=fdX+BUGSPEED*pElapsedTime;
-    DIR_DOWN:fdY:=fdY+BUGSPEED*pElapsedTime;
-    DIR_LEFT:fdX:=fdX-BUGSPEED*pElapsedTime;
-  end;
-  X:=trunc(fdX);
-  Y:=trunc(fdY);
-  px:=X div 16;
-  py:=Y div 16;
-  if (X mod 16)=0 then begin
-    case fDirection of
-      DIR_LEFT:begin
-        if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
-          fDirection:=DIR_DOWN;
-          ShouldCreateNewBug:=true;
-        end else
-        if CanMoveLeft(px,py) then begin
-          if (Entities.EntityAt[px-1,py]) is TMushroom then begin
-            Entities.AddBug(pX-1,pY,Self,DIR_RIGHT);
-            fMoving:=false;
-            dec(CurrentMovingBugs);
+  case fState of
+    bsIdle: ; // No moving
+    bsMovingOnPath:begin
+      predir:=fDirection;
+      case fDirection of
+        DIR_UP:fdY:=fdY-BUGWALKINGSPEED*pElapsedTime;
+        DIR_RIGHT:fdX:=fdX+BUGWALKINGSPEED*pElapsedTime;
+        DIR_DOWN:fdY:=fdY+BUGWALKINGSPEED*pElapsedTime;
+        DIR_LEFT:fdX:=fdX-BUGWALKINGSPEED*pElapsedTime;
+      end;
+      X:=trunc(fdX);
+      Y:=trunc(fdY);
+      px:=X div 16;
+      py:=Y div 16;
+      if (X mod 16)=0 then begin
+        case fDirection of
+          DIR_LEFT:begin
+            if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
+              fDirection:=DIR_DOWN;
+              ShouldCreateNewBug:=true;
+            end else
+            if CanMoveLeft(px,py) then begin
+              if (Entities.EntityAt[px-1,py]) is TMushroom then begin
+                fState:=bsIdle;
+                Entities.AddBug(pX-1,pY,Self,DIR_RIGHT);
+                dec(CurrentMovingBugs);
+              end;
+            end else begin
+              if CanMoveDown(px,py) then fDirection:=DIR_DOWN
+              else if CanMoveUp(px,py) then fDirection:=DIR_UP
+              else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
+              else fDirection:=DIR_NONE;
+            end;
           end;
-        end else begin
-          if CanMoveDown(px,py) then fDirection:=DIR_DOWN
-          else if CanMoveUp(px,py) then fDirection:=DIR_UP
-          else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
-          else fDirection:=DIR_NONE;
+          DIR_RIGHT:begin
+            if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
+              fDirection:=DIR_DOWN;
+              ShouldCreateNewBug:=true;
+            end else
+            if CanMoveRight(px,py) then begin
+              if (Entities.EntityAt[px+1,py]) is TMushroom then begin
+                fState:=bsIdle;
+                Entities.AddBug(pX+1,pY,Self,DIR_LEFT);
+                dec(CurrentMovingBugs);
+              end;
+            end else begin
+              if CanMoveDown(px,py) then fDirection:=DIR_DOWN
+              else if CanMoveUp(px,py) then fDirection:=DIR_UP
+              else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
+              else fDirection:=DIR_NONE;
+            end;
+          end;
         end;
       end;
-      DIR_RIGHT:begin
-        if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
-          fDirection:=DIR_DOWN;
-          ShouldCreateNewBug:=true;
-        end else
-        if CanMoveRight(px,py) then begin
-          if (Entities.EntityAt[px+1,py]) is TMushroom then begin
-            Entities.AddBug(pX+1,pY,Self,DIR_LEFT);
-            fMoving:=false;
-            dec(CurrentMovingBugs);
+      if (Y mod 16)=0 then begin
+        case fDirection of
+          DIR_DOWN:begin
+            if CanMoveDown(px,py) then begin
+              if (Entities.EntityAt[px,py+1]) is TMushroom then begin
+                fState:=bsIdle;
+                Entities.AddBug(pX,pY+1,Self,DIR_UP);
+                if py>1 then dec(CurrentMovingBugs);
+              end;
+            end else begin
+              if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
+              else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
+              else if CanMoveUp(px,py) then fDirection:=DIR_UP
+              else fDirection:=DIR_NONE;
+            end;
           end;
-        end else begin
-          if CanMoveDown(px,py) then fDirection:=DIR_DOWN
-          else if CanMoveUp(px,py) then fDirection:=DIR_UP
-          else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
-          else fDirection:=DIR_NONE;
+          DIR_UP:begin
+            if CanMoveUp(px,py) then begin
+              if (Entities.EntityAt[px,py-1]) is TMushroom then begin
+                fState:=bsIdle;
+                Entities.AddBug(pX,pY-1,Self,DIR_DOWN);
+                dec(CurrentMovingBugs);
+              end;
+            end else begin
+              if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
+              else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
+              else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
+              else fDirection:=DIR_NONE;
+            end;
+          end;
         end;
       end;
+      if predir<>fDirection then SetAnimByDirection;
+    end;
+    bsFlying:begin
+      fAnimation.Animate(pElapsedTime);
+      case fDirection of
+        DIR_UP:fdY:=fdY-BUGFLYINGSPEED*pElapsedTime;
+        DIR_RIGHT:fdX:=fdX+BUGFLYINGSPEED*pElapsedTime;
+        DIR_DOWN:fdY:=fdY+BUGFLYINGSPEED*pElapsedTime;
+        DIR_LEFT:fdX:=fdX-BUGFLYINGSPEED*pElapsedTime;
+      end;
+      X:=trunc(fdX);
+      Y:=trunc(fdY);
+      if (X<-16) or (X>WINDOWWIDTH) or (Y<-16) or (Y>WINDOWHEIGHT) then fState:=bsIdle;
     end;
   end;
-  if (Y mod 16)=0 then begin
-    case fDirection of
-      DIR_DOWN:begin
-        if CanMoveDown(px,py) then begin
-          if (Entities.EntityAt[px,py+1]) is TMushroom then begin
-            Entities.AddBug(pX,pY+1,Self,DIR_UP);
-            fMoving:=false;
-            if py>1 then dec(CurrentMovingBugs);
-          end;
-        end else begin
-          if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
-          else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
-          else if CanMoveUp(px,py) then fDirection:=DIR_UP
-          else fDirection:=DIR_NONE;
-        end;
-      end;
-      DIR_UP:begin
-        if CanMoveUp(px,py) then begin
-          if (Entities.EntityAt[px,py-1]) is TMushroom then begin
-            Entities.AddBug(pX,pY-1,Self,DIR_DOWN);
-            fMoving:=false;
-            dec(CurrentMovingBugs);
-          end;
-        end else begin
-          if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
-          else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
-          else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
-          else fDirection:=DIR_NONE;
-        end;
-      end;
-    end;
-  end;
-  if predir<>fDirection then SetAnimByDirection;
 end;
 
 procedure TBug.Draw;
 begin
-  if fMoving then
-    fAnimation.PutFrame(X+HorzDisplacement[Y mod 16],Y+VertDisplacement[X mod 16]+16);
+  case fState of
+    bsIdle: ;  // No drawing (sitting in a mushroom)
+    bsMovingOnPath: fAnimation.PutFrame(X+HorzDisplacement[Y mod 16],Y+VertDisplacement[X mod 16]+16);
+    bsFlying: fAnimation.PutFrame(X,Y);
+  end;
 end;
 
 procedure TBug.Draw(pX,pY:integer);
@@ -210,8 +230,19 @@ begin
   Y:=pY;
   fdX:=X;
   fdY:=Y;
-  fMoving:=true;
+  fstate:=bsMovingOnPath;
   inc(CurrentMovingBugs);
+end;
+
+procedure TBug.StartFly(pX,pY:integer);
+begin
+  X:=pX;
+  Y:=pY;
+  fdX:=X;
+  fdY:=Y;
+  fstate:=bsFlying;
+  fAnimation.Free;
+  fAnimation:=MM.Animations[Format('FBug%d%d',[fColor,fDirection])].SpawnAnimation;
 end;
 
 procedure TBug.SetAnimByDirection;

@@ -20,15 +20,18 @@ const
   MAPWIDTH=8*5;
   MAPHEIGHT=5*5+1;
 
-  BUGSPEED=48;  // pixels per second
+  BUGWALKINGSPEED=48;  // pixels per second
+  BUGFLYINGSPEED=96;
   MAXTIMESLICE=1/128;
 
+  // Don't change these. There are some things wired to the values of these constants.
   DIR_NONE=0;
   DIR_UP=1;
   DIR_RIGHT=2;
   DIR_DOWN=3;
   DIR_LEFT=4;
 
+  // You can change these if you wish.
   DIR_BIT_UP=1;
   DIR_BIT_RIGHT=2;
   DIR_BIT_DOWN=4;
@@ -51,7 +54,6 @@ const
      (54,25), (53,23), (52,21), (51,18), (49,17), (47,15),
      (46,13), (43,12), (41,11), (39,10), (37,10), (34,9));
 
-
 var
   MM:TGFXManager;
   Entities:TMapEntities;
@@ -59,6 +61,7 @@ var
   ShouldCreateNewBug:boolean;
   MaximumMovingBugs:integer;
   CurrentMovingBugs:integer;
+  Paused:boolean;
 
 procedure LoadAssets;
 procedure FreeAssets;

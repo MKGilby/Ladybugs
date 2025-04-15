@@ -278,6 +278,8 @@ const
   SLOTCHECKMAPPOS:array[0..3,0..1] of integer=((2,-1),(5,2),(2,5),(-1,2));
   // Bug start moving position relative to tile top,left
   BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-8),(72,32),(32,72),(-8,32));
+  // Bug start flying position relative to tile top,left
+  BUGSTARTFLYPOS:array[0..3,0..1] of integer=((28,9),(47,28),(28,47),(9,28));
 
 constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
 var i:integer;
@@ -375,6 +377,7 @@ begin
       end;
       // Release bugs from mushroom and free up slot in map
       for i:=0 to 3 do begin
+        fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
         fBugs[i]:=nil;
         fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
       end;

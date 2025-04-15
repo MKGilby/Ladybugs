@@ -55,11 +55,14 @@ var pre,now:QWord;
 begin
   ShouldCreateNewBug:=true;
   pre:=GetTickCount64;
+  Paused:=false;
   repeat
     if ShouldCreateNewBug then Bugs.CreateNewBug(fMap);
     now:=GetTickCount64;
-    Entities.Move((now-pre)/1000);
-    Bugs.Move((now-pre)/1000);
+    if not Paused then begin
+      Entities.Move((now-pre)/1000);
+      Bugs.Move((now-pre)/1000);
+    end;
     pre:=now;
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);
     SDL_RenderClear(PrimaryWindow.Renderer);
@@ -70,6 +73,10 @@ begin
     MM.Fonts['Small'].OutText('FPS:'+inttostr(FPS),0,0,0);
     FlipNoLimit;
     HandleMessages;
+    if keys[SDL_SCANCODE_P] then begin
+      Paused:=not Paused;
+      keys[SDL_SCANCODE_P]:=false;
+    end;
   until keys[SDL_SCANCODE_ESCAPE] or Terminate;
   Result:=-1;
 end;
