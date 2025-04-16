@@ -26,7 +26,7 @@ type
     fMap:TMap;
     fDirection:integer;
     fAnimation:TAnimation;
-    fState:(bsIdle,bsMovingOnPath,bsFlying);
+    fState:(bsIdle,bsMovingOnPath,bsLeavingMushroom,bsFlying);
     procedure SetAnimByDirection;
   public
     X:integer;
@@ -103,7 +103,7 @@ var predir,px,py:integer;
 begin
   case fState of
     bsIdle: ; // No moving
-    bsMovingOnPath:begin
+    bsMovingOnPath,bsLeavingMushroom:begin
       predir:=fDirection;
       case fDirection of
         DIR_UP:fdY:=fdY-BUGWALKINGSPEED*pElapsedTime;
@@ -122,13 +122,7 @@ begin
               fDirection:=DIR_DOWN;
               ShouldCreateNewBug:=true;
             end else
-            if CanMoveLeft(px,py) then begin
-              if (Entities.EntityAt[px-1,py]) is TMushroom then begin
-                fState:=bsIdle;
-                Entities.AddBug(pX-1,pY,Self,DIR_RIGHT);
-                dec(CurrentMovingBugs);
-              end;
-            end else begin
+            if not CanMoveLeft(px,py) then begin
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
@@ -140,13 +134,7 @@ begin
               fDirection:=DIR_DOWN;
               ShouldCreateNewBug:=true;
             end else
-            if CanMoveRight(px,py) then begin
-              if (Entities.EntityAt[px+1,py]) is TMushroom then begin
-                fState:=bsIdle;
-                Entities.AddBug(pX+1,pY,Self,DIR_LEFT);
-                dec(CurrentMovingBugs);
-              end;
-            end else begin
+            if not CanMoveRight(px,py) then begin
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
@@ -154,17 +142,35 @@ begin
             end;
           end;
         end;
+      end else
+      if (X mod 16)=8 then begin
+        case fDirection of
+          DIR_LEFT:begin
+            if (px mod 5=3) and (Entities.EntityAt[px,py] is TMushroom) then begin
+              if TMushRoom(Entities.EntityAt[px,py]).AddBug(Self,DIR_RIGHT) then begin
+                if fState<>bsFlying then fState:=bsIdle;
+                dec(CurrentMovingBugs);
+              end else begin
+                fDirection:=DIR_RIGHT;
+              end;
+            end;
+          end;
+          DIR_RIGHT:begin
+            if (px mod 5=0) and (Entities.EntityAt[px+1,py] is TMushroom) then begin
+              if TMushRoom(Entities.EntityAt[px+1,py]).AddBug(Self,DIR_LEFT) then begin
+                if fState<>bsFlying then fState:=bsIdle;
+                dec(CurrentMovingBugs);
+              end else begin
+                fDirection:=DIR_LEFT;
+              end;
+            end;
+          end;
+        end;
       end;
       if (Y mod 16)=0 then begin
         case fDirection of
           DIR_DOWN:begin
-            if CanMoveDown(px,py) then begin
-              if (Entities.EntityAt[px,py+1]) is TMushroom then begin
-                fState:=bsIdle;
-                Entities.AddBug(pX,pY+1,Self,DIR_UP);
-                if py>1 then dec(CurrentMovingBugs);
-              end;
-            end else begin
+            if not CanMoveDown(px,py) then begin
               if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
@@ -172,17 +178,35 @@ begin
             end;
           end;
           DIR_UP:begin
-            if CanMoveUp(px,py) then begin
-              if (Entities.EntityAt[px,py-1]) is TMushroom then begin
-                fState:=bsIdle;
-                Entities.AddBug(pX,pY-1,Self,DIR_DOWN);
-                dec(CurrentMovingBugs);
-              end;
-            end else begin
+            if not CanMoveUp(px,py) then begin
               if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else fDirection:=DIR_NONE;
+            end;
+          end;
+        end;
+      end;
+      if (Y mod 16)=8 then begin
+        case fDirection of
+          DIR_DOWN:begin
+            if ((py-1) mod 5=0) and (Entities.EntityAt[px,py+1] is TMushroom) then begin
+              if TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
+                if fState<>bsFlying then fState:=bsIdle;
+                if py>1 then dec(CurrentMovingBugs);
+              end else begin
+                fDirection:=DIR_UP;
+              end;
+            end;
+          end;
+          DIR_UP:begin
+            if ((py-1) mod 5=3) and (Entities.EntityAt[px,py] is TMushroom) then begin
+              if TMushRoom(Entities.EntityAt[px,py]).AddBug(Self,DIR_DOWN) then begin
+                if fState<>bsFlying then fState:=bsIdle;
+                dec(CurrentMovingBugs);
+              end else begin
+                fDirection:=DIR_DOWN;
+              end;
             end;
           end;
         end;

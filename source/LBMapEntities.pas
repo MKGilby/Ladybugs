@@ -83,7 +83,7 @@ type
     // Draws static background image onto pBack.
     procedure DrawBack(pBack:TARGBImage); override;
     // Add bug to the desired slot
-    procedure AddBug(pBug:TBug;pFromDirection:integer);
+    function AddBug(pBug:TBug;pFromDirection:integer):boolean;
     // Move entity for no more than MAXTIMESLICE
     procedure Move(pElapsedTime:double); override;
   private
@@ -277,7 +277,8 @@ const
   // Slot positions for checking for road relative to big tile*5
   SLOTCHECKMAPPOS:array[0..3,0..1] of integer=((2,-1),(5,2),(2,5),(-1,2));
   // Bug start moving position relative to tile top,left
-  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-8),(72,32),(32,72),(-8,32));
+//  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-8),(72,32),(32,72),(-8,32));
+  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,9),(55,32),(32,55),(9,32));
   // Bug start flying position relative to tile top,left
   BUGSTARTFLYPOS:array[0..3,0..1] of integer=((28,9),(47,28),(28,47),(9,28));
 
@@ -338,22 +339,29 @@ begin
   end;
 end;
 
-procedure TMushroom.AddBug(pBug:TBug; pFromDirection:integer);
+function TMushroom.AddBug(pBug:TBug; pFromDirection:integer):boolean;
 var i:integer;
 
   procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer);
   begin
+    // If no bug in the slot
     if not assigned(fBugs[pSlot]) then begin
+      // Put bug into slot
       fBugs[pSlot]:=pBug;
+      // Set bug direction
       pBug.SetDirection(pDirection);
-      pBug.X:=fX*80+SLOTPOSITIONS[pSlot,0];
-      pBug.Y:=fY*80+SLOTPOSITIONS[pSlot,1]+32;
+//      pBug.X:=fX*80+SLOTPOSITIONS[pSlot,0];
+//      pBug.Y:=fY*80+SLOTPOSITIONS[pSlot,1]+32;
+      // Set map tile to occupied
       fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=15;
     end else
       raise Exception.Create(Format('There''s already a bug in slot %d!',[pSlot]));
   end;
 
 begin
+  Result:=false;
+  // No bug can be added when the mushroom is rotating.
+  if fMovingState=mstRotating then exit;
   // Add bug to the appropriate slot
   if pFromDirection=DIR_UP then BugToSlot(0,pBug,pFromDirection)
   else if pFromDirection=DIR_RIGHT then BugToSlot(1,pBug,pFromDirection)
@@ -382,6 +390,7 @@ begin
         fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
       end;
     end;
+  Result:=true;
 end;
 
 procedure TMushroom.Move(pElapsedTime:double);
@@ -467,12 +476,12 @@ begin
 
     // If not top row, check upper slot click
     if (fY>0) then CheckSlotClick(0,DIR_BIT_UP);
-    // Check right slot click
-    CheckSlotClick(1,DIR_BIT_RIGHT);
-    // Check bottom slot click
-    CheckSlotClick(2,DIR_BIT_DOWN);
-    // Check left slot click
-    CheckSlotClick(3,DIR_BIT_LEFT);
+    // If not rightmost column, check right slot click
+    if (fX<BIGTILEMAPWIDTH-1) then CheckSlotClick(1,DIR_BIT_RIGHT);
+    // If not bottom row, check bottom slot click
+    if (fY<BIGTILEMAPHEIGHT-1) then CheckSlotClick(2,DIR_BIT_DOWN);
+    // If not leftmost column, check left slot click
+    if (fX>0) then CheckSlotClick(3,DIR_BIT_LEFT);
   end
   else if Buttons=SDL_BUTTON_RIGHT then begin
     if fMovingState=mstIdle then begin

@@ -19,17 +19,24 @@ PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
 
 ## Compiling
-1. Go into tools\source and run BuildTools.bat
-2. Go into work and run BuildData.bat
-3. Go into source and run BuildRelease_x64.bat (or x86 as you wish.)
+1. Go into work and edit setenv.bat, set FPCDIR to point to the folder 
+containing your fpc.exe
+2. Go into tools\source and run BuildTools.bat
+3. Go into work and run BuildData.bat
+4. Go into source and run BuildRelease_x64.bat (or x86 as you wish.)
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.9.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.9.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.10.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.10.zip "Download x86 version").
 
 ## What's new
+
+### 2025.04.16 - Build 10
+- Bugs start move from the mushroom exactly where they were.
+- Bugs move all the way to the mushroom. If you start rotating it before they
+  hop on the mushroom, they will turn back. 
 
 ### 2025.04.15 - Build 9
 - Bugs fly away from completed mushrooms.
