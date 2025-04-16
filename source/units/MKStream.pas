@@ -84,6 +84,8 @@
 //    * Removed an unneeded variable declaration and two commented out lines.
 //  V3.02: 2025.04.09 - Gilby
 //    * Following changes in Lists unit.
+//  V3.02a: 2025.04.16 - Gilby
+//    * Bugfix in moving cache item to the end to prevent dropping out.
 
 {$ifdef fpc}
   {$mode delphi}
@@ -172,7 +174,7 @@ uses SysUtils, MKToolBox, Logger;
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='3.02';
+  Version='3.02a';
 
 var ExePath:string;
 
@@ -270,7 +272,7 @@ begin
       atm._stream.Seek(0,soFromBeginning);
       Result.Seek(0,soFromBeginning);
       // Move the object to the end of the cache to keep it from dropping out.
-      fCache.Exchange(i,fCache.Count-1);
+      fCache.Exchange(fCache.IndexOfObject(atm),fCache.Count-1);
 //      fCache.Delete(i);
 //      fCache.AddObject(atm._filename,atm);
       exit;
