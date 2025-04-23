@@ -8,6 +8,9 @@ rem C:\lazarus\fpc\3.2.2\bin\x86_64-win64\fpc.exe -MDelphi -Scghi -CX -O3 -XX -l
 echo Compiling MAD4...
 %FPCDIR%\fpc.exe -l- -MDelphi -Scghi -CX -O3 -XX -v0 -vm6058,5024 -Filib -Fu..\..\source\units -Fu..\..\source\units\* -Fu. -FUlib -FE..\ -oMAD4.exe MAD4.lpr
 
+echo Compiling FontBuild2...
+%FPCDIR%\fpc.exe -l- -MDelphi -Scghi -CX -O3 -XX -v0 -vm6058,5024 -Filib -Fu..\..\source\units -Fu..\..\source\units\* -Fu. -FUlib -FE..\ -oFontBuild2.exe FontBuild2.lpr
+
 echo Compiling BuildBugs...
 %FPCDIR%\fpc.exe -l- -MDelphi -Scghi -CX -O3 -XX -v0 -vm6058,5024 -Filib -Fu..\..\source\units -Fu..\..\source\units\* -Fu. -FUlib -FE..\ -oBuildBugs.exe BuildBugs.lpr
 
