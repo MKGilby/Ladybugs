@@ -12,7 +12,7 @@ uses
   MKStream;
 
 const
-  FPS=24;
+  FPS=48;
 
 type
 

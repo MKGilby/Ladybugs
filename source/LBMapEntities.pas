@@ -111,6 +111,22 @@ type
     fPotsTop:integer;
   end;
 
+  { TTimer }
+
+  TTimer=class(TMapEntity)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
+  private
+    fTime:double;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -555,6 +571,53 @@ end;
 procedure TCounter.Move(pElapsedTime:double);
 begin
   // Nothing to do
+end;
+
+{$endregion}
+
+{ TTimer }
+{$region /fold}
+
+constructor TTimer.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
+begin
+  inherited Create(iMap,ipX,ipY);
+  if Assigned(pJ.FindPath('Seconds')) then
+    fTime:=pJ.FindPath('Seconds').AsFloat
+  else begin
+    Log.LogWarning('Timer.Seconds is not specified in map! Setting it to 180.');
+    fTime:=180;
+  end;
+  if fTime<0 then begin
+    Log.LogWarning('Timer.Seconds is below 0! Setting it to 180.');
+    fTime:=180;
+  end else
+  if fTime>600 then begin
+    Log.LogWarning('Timer.Seconds is more than 600! Setting it to 600.');
+    fTime:=600;
+  end;
+end;
+
+destructor TTimer.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TTimer.Draw;
+begin
+  MM.Fonts['Timer'].OutText(Format('%d:%.2d',[trunc(fTime) div 60,trunc(fTime) mod 60]),fX*80+40,fY*80+32,1);
+end;
+
+procedure TTimer.DrawBack(pBack:TARGBImage);
+begin
+  // Nothing to do
+end;
+
+procedure TTimer.Move(pElapsedTime:double);
+begin
+  if fTime>0 then begin
+    fTime:=fTime-pElapsedTime;
+    if fTime<0 then fTime:=0;
+  end;
 end;
 
 {$endregion}

@@ -22,7 +22,7 @@ const
   MAPWIDTH=BIGTILEMAPWIDTH*5;
   MAPHEIGHT=BIGTILEMAPHEIGHT*5+1;
 
-  BUGWALKINGSPEED=48;  // pixels per second
+  BUGWALKINGSPEED=64;  // pixels per second
   BUGFLYINGSPEED=96;
   MAXTIMESLICE=1/128;
 
@@ -78,6 +78,7 @@ begin
   MM.Load('paths.png','Paths');
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
+  MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);
 end;
 
 procedure FreeAssets;

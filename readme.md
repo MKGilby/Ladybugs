@@ -16,22 +16,31 @@ The rest of source code is licensed under GNU GPL v3 (or later).
 ## Tools
 PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 
-MKConv2, MAD4, BuildBugs and BuildMushrooms tools are made by me.
+MKConv2, MAD4, FontBuild2, BuildBugs and BuildMushrooms tools are made by me.
 
 ## Compiling
-1. Go into work and edit setenv.bat, set FPCDIR to point to the folder 
+1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder 
 containing your fpc.exe
-2. Go into tools\source and run BuildTools.bat
-3. Go into work and run BuildData.bat
-4. Go into source and run BuildRelease_x64.bat (or x86 as you wish.)
+2. Go into folder "tools\source" and run BuildTools.bat
+3. Go into folder "work" and run BuildData.bat
+4. Go into folder "source" and run BuildRelease_x64.bat (or x86 as you wish.)
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.10.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.10.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.11.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.11.zip "Download x86 version").
 
 ## What's new
+
+### 2025.04.23 - Build 11
+- Added timer font.
+- Added timer entity. It shows the remaining time for the map.
+- Added timer to the map. (It stops when reaching 0 but nothing will happen.)
+- Increased bug moving speed.
+- Increased mushroom rotating speed.
+- Bugs flying off a little angled.  
+- Bug entities are freed when flew off-screen (they were set to idle before).
 
 ### 2025.04.16 - Build 10
 - Bugs start move from the mushroom exactly where they were.

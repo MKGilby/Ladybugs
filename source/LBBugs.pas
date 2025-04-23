@@ -216,14 +216,29 @@ begin
     bsFlying:begin
       fAnimation.Animate(pElapsedTime);
       case fDirection of
-        DIR_UP:fdY:=fdY-BUGFLYINGSPEED*pElapsedTime;
-        DIR_RIGHT:fdX:=fdX+BUGFLYINGSPEED*pElapsedTime;
-        DIR_DOWN:fdY:=fdY+BUGFLYINGSPEED*pElapsedTime;
-        DIR_LEFT:fdX:=fdX-BUGFLYINGSPEED*pElapsedTime;
+        DIR_UP:begin
+          fdY:=fdY-BUGFLYINGSPEED*pElapsedTime;
+          fdX:=fdX+BUGFLYINGSPEED*pElapsedTime/6;
+        end;
+        DIR_RIGHT:begin
+          fdX:=fdX+BUGFLYINGSPEED*pElapsedTime;
+          fdY:=fdY+BUGFLYINGSPEED*pElapsedTime/6;
+        end;
+        DIR_DOWN:begin
+          fdY:=fdY+BUGFLYINGSPEED*pElapsedTime;
+          fdX:=fdX-BUGFLYINGSPEED*pElapsedTime/6;
+        end;
+        DIR_LEFT:begin
+          fdX:=fdX-BUGFLYINGSPEED*pElapsedTime;
+          fdY:=fdY-BUGFLYINGSPEED*pElapsedTime/6;
+        end;
       end;
       X:=trunc(fdX);
       Y:=trunc(fdY);
-      if (X<-16) or (X>WINDOWWIDTH) or (Y<-16) or (Y>WINDOWHEIGHT) then fState:=bsIdle;
+      if (X<-16) or (X>WINDOWWIDTH) or (Y<-16) or (Y>WINDOWHEIGHT) then begin
+        Bugs.Delete(Bugs.IndexOf(Self));
+//        fState:=bsIdle;
+      end;
     end;
   end;
 end;
@@ -281,7 +296,7 @@ end;
 
 procedure TBugs.CreateNewBug(pMap:TMap);
 begin
-  Add(TBug.Create((MAPWIDTH-1)*16,0,random(4)+1,pMap));
+  Add(TBug.Create((MAPWIDTH-1)*16,0,{random(4)+}1,pMap));
   ShouldCreateNewBug:=false;
 end;
 
@@ -304,7 +319,8 @@ end;
 procedure TBugs.MoveEx(pElapsedTime:double);
 var i:integer;
 begin
-  for i:=0 to Count-1 do
+  // Must be backwards, may remove self from the list when moving.
+  for i:=Count-1 downto 0 do
     Items[i].Move(pElapsedTime);
 end;
 
