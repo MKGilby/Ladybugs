@@ -38,6 +38,7 @@ begin
   Bugs:=TBugs.Create;
   fMap:=TMap.Create;
   fMap.LoadFromFile(iMapFilename);
+  NextBugColor:=TBugs.GetRandomBugColor;
   CreateBack;
 end;
 
@@ -82,11 +83,16 @@ begin
 end;
 
 procedure TPlay1Map.CreateBack;
-var tmp:TARGBImage;i:integer;
+var tmp:TARGBImage;i,j:integer;
 begin
   tmp:=TARGBImage.Create(WINDOWWIDTH,WINDOWHEIGHT);
   try
-    tmp.FillImage(MM.Images.ItemByName['Grass']);
+    tmp.FillImagePart(0,32,WINDOWWIDTH,WINDOWHEIGHT-32,MM.Images.ItemByName['Grass1']);
+    for i:=0 to BIGTILEMAPWIDTH-1 do
+      for j:=0 to BIGTILEMAPHEIGHT-1 do
+        tmp.PutImage(i*80,j*80+32,MM.Images.ItemByName[Format('Grass%d',[random(4)+1])]);
+    for i:=0 to BIGTILEMAPWIDTH-1 do
+      tmp.PutImagePart(i*80,0,0,80-32,80,32,MM.Images.ItemByName[Format('Grass%d',[random(4)+1])]);
     for i:=0 to MAPWIDTH-1 do begin
       fMap.Tiles[i,0]:=16;
       tmp.PutImagePart(i*16,16,16,0,16,16,MM.Images.ItemByName['Paths'],true);

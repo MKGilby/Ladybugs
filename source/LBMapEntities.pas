@@ -127,6 +127,23 @@ type
     fTime:double;
   end;
 
+  { TNext }
+
+  TNext=class(TMapEntity)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
+  private
+    fBugAnims:array[1..4] of TAnimation;
+    fBugTop:integer;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -143,7 +160,7 @@ begin
   fX:=ipX;
   fY:=ipY;
   fLeft:=fX*80;
-  fTop:=fY*80+32;
+  fTop:=fY*80+REALMAPTOP;
   fMap:=iMap;
 end;
 
@@ -324,19 +341,19 @@ procedure TMushroom.Draw;
 const REORDER:array[0..3] of integer=(0,3,2,1);
 var i:integer;
 begin
-  fAnimation.PutFrame(fX*80+8,fY*80+32+8);
+  fAnimation.PutFrame(fLeft+8,fTop+8);
   case fMovingState of
     mstIdle:begin
       for i:=0 to 3 do
         if Assigned(fBugs[i]) then
-          fBugs[i].Draw(fX*80+SLOTPOSITIONS[i,0],fY*80+SLOTPOSITIONS[i,1]+32);
+          fBugs[i].Draw(fLeft+SLOTPOSITIONS[i,0],fTop+SLOTPOSITIONS[i,1]);
     end;
     mstRotating:begin
       for i:=0 to 3 do
         if Assigned(fBugs[i]) then
           fBugs[i].Draw(
-            fX*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0],
-            fY*80+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]+32);
+            fLeft+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0],
+            fTop+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]);
     end;
     mstTransitioning:;  // No additional drawing needed
   end;
@@ -555,9 +572,9 @@ begin
   for j:=0 to (MaximumMovingBugs-1) div 4 do begin
     k:=(80-((min(r,4)-1) mod 4+1)*20) div 2;
     for i:=0 to min(r,4)-1 do begin
-      fPotAnim.PutFrame(fX*80+k+i*20+3,fY*80+32+fPotsTop+j*20+3);
+      fPotAnim.PutFrame(fLeft+k+i*20+3,fTop+fPotsTop+j*20+3);
       if r>MaximumMovingBugs-CurrentMovingBugs then
-        fFlowerAnim.PutFrame(fX*80+k+i*20+1,fY*80+32+fPotsTop+j*20+1);
+        fFlowerAnim.PutFrame(fLeft+k+i*20+1,fTop+fPotsTop+j*20+1);
       dec(r);
     end;
   end;
@@ -604,7 +621,7 @@ end;
 
 procedure TTimer.Draw;
 begin
-  MM.Fonts['Timer'].OutText(Format('%d:%.2d',[trunc(fTime) div 60,trunc(fTime) mod 60]),fX*80+40,fY*80+32,1);
+  MM.Fonts['Timer'].OutText(Format('%d:%.2d',[trunc(fTime) div 60,trunc(fTime) mod 60]),fLeft+40,fTop+24,1);
 end;
 
 procedure TTimer.DrawBack(pBack:TARGBImage);
@@ -618,6 +635,48 @@ begin
     fTime:=fTime-pElapsedTime;
     if fTime<0 then fTime:=0;
   end;
+end;
+
+{$endregion}
+
+{ TNext }
+{$region /fold}
+
+constructor TNext.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
+begin
+  inherited Create(iMap,ipX,ipY);
+  fBugAnims[1]:=MM.Animations[Format('Bug%d',[1])].SpawnAnimation;
+  fBugAnims[2]:=MM.Animations[Format('Bug%d',[2])].SpawnAnimation;
+  fBugAnims[3]:=MM.Animations[Format('Bug%d',[3])].SpawnAnimation;
+  fBugAnims[4]:=MM.Animations[Format('Bug%d',[4])].SpawnAnimation;
+end;
+
+destructor TNext.Destroy;
+begin
+  fBugAnims[4].Free;
+  fBugAnims[3].Free;
+  fBugAnims[2].Free;
+  fBugAnims[1].Free;
+  inherited Destroy;
+  fBugTop:=0;
+end;
+
+procedure TNext.Draw;
+begin
+  fBugAnims[NextBugColor].PutFrame(fLeft+32,fTop+fBugTop);
+end;
+
+procedure TNext.DrawBack(pBack:TARGBImage);
+var tmp:TARGBImage;
+begin
+  tmp:=MM.Images['Next'];
+  pBack.PutImage(fLeft+(80-tmp.Width) div 2,fTop+(80-tmp.Height) div 2,tmp,true);
+  fBugTop:=(80-tmp.Height) div 2+20;
+end;
+
+procedure TNext.Move(pElapsedTime:double);
+begin
+  // Nothing to do
 end;
 
 {$endregion}

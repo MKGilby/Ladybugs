@@ -5,6 +5,9 @@ w png paths.png 1
 r png data\grass.png 1
 w png grass.png 1
 
+r png data\next.png 1
+w png next.png 1
+
 m createatlas 616 480 1 2
 r png mushroom.png 1
 m addall 1 2

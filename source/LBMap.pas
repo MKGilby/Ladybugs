@@ -104,7 +104,9 @@ begin
     else if UpperCase(EntityType)='COUNTER' then
       Entities.Add(TCounter.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='TIMER' then
-      Entities.Add(TTimer.Create(Self,pX,pY,JD));
+      Entities.Add(TTimer.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='NEXT' then
+      Entities.Add(TNext.Create(Self,pX,pY,JD));
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;

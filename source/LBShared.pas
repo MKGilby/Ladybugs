@@ -21,6 +21,7 @@ const
   BIGTILEMAPHEIGHT=5;
   MAPWIDTH=BIGTILEMAPWIDTH*5;
   MAPHEIGHT=BIGTILEMAPHEIGHT*5+1;
+  REALMAPTOP=32;
 
   BUGWALKINGSPEED=64;  // pixels per second
   BUGFLYINGSPEED=96;
@@ -64,6 +65,7 @@ var
   MaximumMovingBugs:integer;
   CurrentMovingBugs:integer;
   Paused:boolean;
+  NextBugColor:integer;
 
 procedure LoadAssets;
 procedure FreeAssets;
@@ -74,8 +76,15 @@ procedure LoadAssets;
 begin
   MM:=TGFXManager.Create;
   MM.Load('sprites.png','Sprites',MM_DONTKEEPIMAGE);
-  MM.Load('grass.png','Grass');
+  MM.Load('grass.png','Grass1');
+  MM.Load('grass.png','Grass2');
+  MM.Images['Grass2'].Rotate(1);
+  MM.Load('grass.png','Grass3');
+  MM.Images['Grass3'].Rotate(2);
+  MM.Load('grass.png','Grass4');
+  MM.Images['Grass4'].Rotate(3);
   MM.Load('paths.png','Paths');
+  MM.Load('next.png','Next');
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
   MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);

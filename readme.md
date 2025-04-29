@@ -18,7 +18,7 @@ PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 
 MKConv2, MAD4, FontBuild2, BuildBugs and BuildMushrooms tools are made by me.
 
-## Compiling
+## Compiling in windows environment
 1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder 
 containing your fpc.exe
 2. Go into folder "tools\source" and run BuildTools.bat
@@ -28,10 +28,15 @@ containing your fpc.exe
    to compile x64 on x86 systems and vice-versa.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.11.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.11.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.12.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.12.zip "Download x86 version").
 
 ## What's new
+
+### 2025.04.29 - Build 12
+- Fixed bug horizontal displacement. It now follows the curves of the road.
+- Path made brighter and a bit more yellow. It is more pleasant now.
+- Added next indicator. It shows the color of the next bug. 
 
 ### 2025.04.23 - Build 11
 - Added timer font.

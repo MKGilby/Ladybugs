@@ -1,3 +1,8 @@
+{
+  This file is part of the source code of Ladybugs.
+  See "copyright.txt" for details.
+}
+
 unit LBBugs;
 
 {$mode Delphi}
@@ -40,6 +45,7 @@ type
     procedure CreateNewBug(pMap:TMap);
     procedure Move(pElapsedTime:double);
     procedure Draw;
+    class function GetRandomBugColor:integer;
   private
     procedure MoveEx(pElapsedTime:double);
   end;
@@ -49,7 +55,7 @@ implementation
 uses LBShared, LBMapEntities;
 
 const
-  HorzDisplacement:array[0..15] of integer=(0,0,-1,-1,-1,-1,0,0,0,0,1,1,1,1,0,0);
+  HorzDisplacement:array[0..15] of integer=(0,0,1,1,1,1,0,0,0,0,-1,-1,-1,-1,0,0);
   VertDisplacement:array[0..15] of integer=(0,0,-1,-1,-1,-1,0,0,0,0,1,1,1,1,0,0);
 
 { TBug }
@@ -296,7 +302,8 @@ end;
 
 procedure TBugs.CreateNewBug(pMap:TMap);
 begin
-  Add(TBug.Create((MAPWIDTH-1)*16,0,{random(4)+}1,pMap));
+  Add(TBug.Create((MAPWIDTH-1)*16,0,NextBugColor,pMap));
+  NextBugColor:=TBugs.GetRandomBugColor;
   ShouldCreateNewBug:=false;
 end;
 
@@ -314,6 +321,11 @@ var i:integer;
 begin
   for i:=0 to Count-1 do
     Items[i].Draw;
+end;
+
+class function TBugs.GetRandomBugColor:integer;
+begin
+  Result:=random(4)+1;
 end;
 
 procedure TBugs.MoveEx(pElapsedTime:double);
