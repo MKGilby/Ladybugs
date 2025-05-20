@@ -68,8 +68,9 @@ begin
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);
     SDL_RenderClear(PrimaryWindow.Renderer);
     PutTexture(0,0,fBack);
-    Entities.Draw;
+    Entities.DrawBackground;
     Bugs.Draw;
+    Entities.DrawForeground;
     if keys[SDL_SCANCODE_TAB] then fMap.ShowValues;
     MM.Fonts['Small'].OutText('FPS:'+inttostr(FPS),0,0,0);
     FlipNoLimit;

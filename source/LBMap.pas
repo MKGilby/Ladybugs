@@ -28,7 +28,7 @@ type
 
 implementation
 
-uses MKStream, LBShared, LBMapEntities, Logger;
+uses MKStream, MKToolbox,LBShared, LBMapEntities, Logger;
 
 { TMap }
 
@@ -68,6 +68,17 @@ begin
     Xs.Free;
   end;
   try
+    if Assigned(J.FindPath('Path')) then begin
+      JA:=TJSONArray(J.FindPath('Path'));
+      for y:=0 to min(JA.Count-1,MAPHEIGHT-1) do begin
+        s:=JA[y].AsString;
+        for x:=1 to min(length(s),MAPWIDTH) do begin
+          OrigTiles[x-1,y]:=HexToInt(s[x]);
+//          Log.LogStatus(Format('x=%d, y=%d, value=%d',[x-1,y,ord(s[x])]));
+        end;
+      end;
+    end else
+      raise Exception.Create('No Path data found in map!');
     if Assigned(J.FindPath('Tiles')) then begin
       JA:=TJSONArray(J.FindPath('Tiles'));
       for y:=0 to min(JA.Count-1,MAPHEIGHT-1) do begin
@@ -77,7 +88,8 @@ begin
           CreateEntity(x-1,y,inttostr(ord(s[x])),J)
         end;
       end;
-    end;
+    end else
+      raise Exception.Create('No Tiles data found in map!');
   finally
     J.Free;
   end;
@@ -97,7 +109,9 @@ begin
   JD:=pJ.FindPath('TileDefinitions.'+pTileDef);
   if Assigned(JD) then begin
     EntityType:=JD.FindPath('Type').AsString;
-    if UpperCase(EntityType)='SIMPLEPATH' then
+    if UpperCase(EntityType)='EMPTY' then
+      Entities.Add(TSimplePath.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='SIMPLEPATH' then
       Entities.Add(TSimplePath.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='MUSHROOM' then
       Entities.Add(TMushroom.Create(Self,pX,pY,JD))
@@ -106,7 +120,9 @@ begin
     else if UpperCase(EntityType)='TIMER' then
       Entities.Add(TTimer.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='NEXT' then
-      Entities.Add(TNext.Create(Self,pX,pY,JD));
+      Entities.Add(TNext.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='BLOCKER' then
+      Entities.Add(TBlocker.Create(Self,pX,pY,JD));
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;

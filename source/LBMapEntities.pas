@@ -13,6 +13,7 @@ uses
   SysUtils, fgl, fpjson, MKMouse2, ARGBImageUnit, Animation2Unit, LBMap, LBBugs;
 
 type
+  TZIndex=(ziBackground,ziForeground);
 
   { TMapEntity }
 
@@ -29,16 +30,20 @@ type
     fLeft,fTop:integer;
     fX,fY:integer;
     fMap:TMap;
+    fZIndex:TZIndex;
   public
     property X:integer read fX;
     property Y:integer read fY;
+    property ZIndex:TZIndex read fZIndex;
   end;
 
   { TMapEntities }
 
   TMapEntities=class(TFPGObjectList<TMapEntity>)
-    // Draw all entities at once
-    procedure Draw;
+    // Draw all entities at once where ZIndex=ziBackground
+    procedure DrawBackground;
+    // Draw all entities at once where ZIndex=ziForeground
+    procedure DrawForeground;
     // Move all entities at once
     procedure Move(pElapsedTime:double);
     // Is the entity at map position x,y mushroom?
@@ -144,6 +149,25 @@ type
     fBugTop:integer;
   end;
 
+  { TBlocker }
+
+  TBlocker=class(TSimplePath)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(pElapsedTime:double); override;
+  private
+    fAnimation:TAnimation;
+    fColor:integer;
+  public
+    property Color:integer read fColor;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -162,6 +186,7 @@ begin
   fLeft:=fX*80;
   fTop:=fY*80+REALMAPTOP;
   fMap:=iMap;
+  fZIndex:=ziBackground;
 end;
 
 {$endregion}
@@ -169,11 +194,18 @@ end;
 { TMapEntities }
 {$region /fold}
 
-procedure TMapEntities.Draw;
+procedure TMapEntities.DrawBackground;
 var i:integer;
 begin
   for i:=0 to Self.Count-1 do
-    Self[i].Draw;
+    if Self[i].ZIndex=ziBackground then Self[i].Draw;
+end;
+
+procedure TMapEntities.DrawForeground;
+var i:integer;
+begin
+  for i:=0 to Self.Count-1 do
+    if Self[i].ZIndex=ziForeground then Self[i].Draw;
 end;
 
 procedure TMapEntities.Move(pElapsedTime:double);
@@ -230,8 +262,8 @@ begin
     s:=pj.FindPath('Exits').AsString
   else
     s:='None';
-  fExits:=0;
-  none:=false;
+  fExits:=fMap.OrigTiles[ipX,ipY];
+{  none:=false;
 //  Log.Trace('----');
 //  Log.Trace(s);
   while length(s)>0 do begin
@@ -239,17 +271,17 @@ begin
     delete(s,1,length(s2)+1);
     s2:=Trim(s2);
 //    Log.Trace('  '+s2);
-    if UpperCase(s2)='UP' then fExits:=fExits or DIR_BIT_UP
-    else if UpperCase(s2)='RIGHT' then fExits:=fExits or DIR_BIT_RIGHT
-    else if UpperCase(s2)='DOWN' then fExits:=fExits or DIR_BIT_DOWN
-    else if UpperCase(s2)='LEFT' then fExits:=fExits or DIR_BIT_LEFT
+    if UpperCase(s2)='UP' then fExits:=fExits or MAP_DIR_BIT_UP
+    else if UpperCase(s2)='RIGHT' then fExits:=fExits or MAP_DIR_BIT_RIGHT
+    else if UpperCase(s2)='DOWN' then fExits:=fExits or MAP_DIR_BIT_DOWN
+    else if UpperCase(s2)='LEFT' then fExits:=fExits or MAP_DIR_BIT_LEFT
     else if UpperCase(s2)='NONE' then none:=true;
   end;
 //  Log.Trace(fExits);
   if none and (fExits<>0) then
     raise Exception.Create('Both NONE and Directions are specified in Exits!');
   if not none and (fExits=0) then
-    raise Exception.Create('Neither NONE nor Directions are specified in Exits!');
+    raise Exception.Create('Neither NONE nor Directions are specified in Exits!');}
 end;
 
 procedure TSimplePath.Draw;
@@ -263,25 +295,25 @@ begin
   px:=fX*5;
   py:=fY*5+1;
   tmp:=MM.Images.ItemByName['Paths'];
-  if (fExits and DIR_BIT_UP)=DIR_BIT_UP then begin
+  if (fExits and MAP_DIR_BIT_UP)=MAP_DIR_BIT_UP then begin
     fMap.Tiles[pX+2,pY]:=0;
     fMap.Tiles[pX+2,pY+1]:=0;
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,tmp,true);
   end;
-  if (fExits and DIR_BIT_RIGHT)=DIR_BIT_RIGHT then begin
+  if (fExits and MAP_DIR_BIT_RIGHT)=MAP_DIR_BIT_RIGHT then begin
     fMap.Tiles[pX+3,pY+2]:=0;
     fMap.Tiles[pX+4,pY+2]:=0;
     pBack.PutImagePart(fLeft+48,fTop+32,16,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+64,fTop+32,16,0,16,16,tmp,true);
   end;
-  if (fExits and DIR_BIT_DOWN)=DIR_BIT_DOWN then begin
+  if (fExits and MAP_DIR_BIT_DOWN)=MAP_DIR_BIT_DOWN then begin
     fMap.Tiles[pX+2,pY+3]:=0;
     fMap.Tiles[pX+2,pY+4]:=0;
     pBack.PutImagePart(fLeft+32,fTop+48,0,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+32,fTop+64,0,0,16,16,tmp,true);
   end;
-  if (fExits and DIR_BIT_LEFT)=DIR_BIT_LEFT then begin
+  if (fExits and MAP_DIR_BIT_LEFT)=MAP_DIR_BIT_LEFT then begin
     fMap.Tiles[pX,pY+2]:=0;
     fMap.Tiles[pX+1,pY+2]:=0;
     pBack.PutImagePart(fLeft   ,fTop+32,16,0,16,16,tmp,true);
@@ -363,12 +395,12 @@ procedure TMushroom.DrawBack(pBack: TARGBImage);
 begin
   inherited DrawBack(pBack);
   if fY=0 then begin
-    fMap.Tiles[fX*5+2,fY*5+1]:=DIR_BIT_ALL xor DIR_BIT_DOWN;
-    fMap.Tiles[fX*5+2,fY*5+2]:=DIR_BIT_ALL xor DIR_BIT_DOWN;
+    fMap.Tiles[fX*5+2,fY*5+1]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
+    fMap.Tiles[fX*5+2,fY*5+2]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
     pBack.PutImagePart(fLeft+32,fTop-16,PATHIMAGEINDEX[14]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,MM.Images.ItemByName['Paths'],true);
-    pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits or DIR_BIT_UP]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
+    pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits or MAP_DIR_BIT_UP]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
   end;
 end;
 
@@ -508,13 +540,13 @@ begin
     y:=y-fTop;
 
     // If not top row, check upper slot click
-    if (fY>0) then CheckSlotClick(0,DIR_BIT_UP);
+    if (fY>0) then CheckSlotClick(0,MAP_DIR_BIT_UP);
     // If not rightmost column, check right slot click
-    if (fX<BIGTILEMAPWIDTH-1) then CheckSlotClick(1,DIR_BIT_RIGHT);
+    if (fX<BIGTILEMAPWIDTH-1) then CheckSlotClick(1,MAP_DIR_BIT_RIGHT);
     // If not bottom row, check bottom slot click
-    if (fY<BIGTILEMAPHEIGHT-1) then CheckSlotClick(2,DIR_BIT_DOWN);
+    if (fY<BIGTILEMAPHEIGHT-1) then CheckSlotClick(2,MAP_DIR_BIT_DOWN);
     // If not leftmost column, check left slot click
-    if (fX>0) then CheckSlotClick(3,DIR_BIT_LEFT);
+    if (fX>0) then CheckSlotClick(3,MAP_DIR_BIT_LEFT);
   end
   else if Buttons=SDL_BUTTON_RIGHT then begin
     if fMovingState=mstIdle then begin
@@ -608,9 +640,9 @@ begin
     Log.LogWarning('Timer.Seconds is below 0! Setting it to 180.');
     fTime:=180;
   end else
-  if fTime>600 then begin
-    Log.LogWarning('Timer.Seconds is more than 600! Setting it to 600.');
-    fTime:=600;
+  if fTime>900 then begin
+    Log.LogWarning('Timer.Seconds is more than 900! Setting it to 900.');
+    fTime:=900;
   end;
 end;
 
@@ -677,6 +709,50 @@ end;
 procedure TNext.Move(pElapsedTime:double);
 begin
   // Nothing to do
+end;
+
+{$endregion}
+
+{ TBlocker }
+{$region /fold}
+
+constructor TBlocker.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+var s:String;
+begin
+  inherited Create(iMap,ipX,ipY,pJ);
+  if Assigned(pJ.FindPath('Color')) then begin
+    s:=pJ.FindPath('Color').AsString;
+    if uppercase(s)='RED' then fColor:=1
+    else if uppercase(s)='YELLOW' then fColor:=2
+    else if uppercase(s)='BLUE' then fColor:=3
+    else if UpperCase(s)='GREEN' then fColor:=4
+    else raise Exception.Create(Format('Unknown color in blocker! (%s)',[s]));
+  end else
+    raise Exception.Create('Color is not specified in blocker!');
+  fMap.Tiles[ipX*5+2,ipY*5+2]:=fMap.Tiles[ipX*5+2,ipY*5+2] or MAP_BIT_BLOCKER;
+  fAnimation:=MM.Animations[Format('Blocker%d',[fColor])].SpawnAnimation;
+  fZIndex:=ziForeground;
+end;
+
+destructor TBlocker.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TBlocker.Draw;
+begin
+  fAnimation.PutFrame(fLeft+29,fTop+29);
+end;
+
+procedure TBlocker.DrawBack(pBack: TARGBImage);
+begin
+  inherited DrawBack(pBack);
+end;
+
+procedure TBlocker.Move(pElapsedTime: double);
+begin
+  fAnimation.Animate(pElapsedTime);
 end;
 
 {$endregion}

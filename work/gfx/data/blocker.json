@@ -1,0 +1,58 @@
+{ "Animations" : [
+  { "Type" : "TimeBased",
+    "Name" : "Blocker1",
+    "Width" : 22,
+    "Height" : 22,
+    "HotPoint" : { "x" : 0, "y" : 0 },
+    "FPS" : 1.4,
+    "LoopDelay" : 0,
+    "StartFrame" : 0,
+    "Looped" : true,
+    "Paused" : false,
+    "Frames" : [
+      { "x" : 0, "y" : 0 },
+      { "x" : 0, "y" : 22 }
+    ] },
+  { "Type" : "TimeBased",
+    "Name" : "Blocker2",
+    "Width" : 22,
+    "Height" : 22,
+    "HotPoint" : { "x" : 0, "y" : 0 },
+    "FPS" : 1.4,
+    "LoopDelay" : 0,
+    "StartFrame" : 0,
+    "Looped" : true,
+    "Paused" : false,
+    "Frames" : [
+      { "x" : 22, "y" : 0 },
+      { "x" : 22, "y" : 22 }
+    ] },
+  { "Type" : "TimeBased",
+    "Name" : "Blocker3",
+    "Width" : 22,
+    "Height" : 22,
+    "HotPoint" : { "x" : 0, "y" : 0 },
+    "FPS" : 1.4,
+    "LoopDelay" : 0,
+    "StartFrame" : 0,
+    "Looped" : true,
+    "Paused" : false,
+    "Frames" : [
+      { "x" : 44, "y" : 0 },
+      { "x" : 44, "y" : 22 }
+    ] },
+  { "Type" : "TimeBased",
+    "Name" : "Blocker4",
+    "Width" : 22,
+    "Height" : 22,
+    "HotPoint" : { "x" : 0, "y" : 0 },
+    "FPS" : 1.4,
+    "LoopDelay" : 0,
+    "StartFrame" : 0,
+    "Looped" : true,
+    "Paused" : false,
+    "Frames" : [
+      { "x" : 66, "y" : 0 },
+      { "x" : 66, "y" : 22 }
+    ] }
+] }

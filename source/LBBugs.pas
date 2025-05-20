@@ -88,22 +88,22 @@ var predir,px,py:integer;
 
   function CanMoveUp(px,py:integer):boolean; inline;
   begin
-    Result:=(py>1) and (fMap.Tiles[px,py-1] and DIR_BIT_UP=0);
+    Result:=(py>1) and (fMap.Tiles[px,py-1] and MAP_DIR_BIT_UP=0);
   end;
 
   function CanMoveRight(px,py:integer):boolean; inline;
   begin
-    Result:=(px<MAPWIDTH-1) and (fMap.Tiles[px+1,py] and DIR_BIT_RIGHT=0);
+    Result:=(px<MAPWIDTH-1) and (fMap.Tiles[px+1,py] and MAP_DIR_BIT_RIGHT=0);
   end;
 
   function CanMoveDown(px,py:integer):boolean; inline;
   begin
-    Result:=(py<MAPHEIGHT-1) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0);
+    Result:=(py<MAPHEIGHT-1) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0);
   end;
 
   function CanMoveLeft(px,py:integer):boolean; inline;
   begin
-    Result:=(px>0) and (fMap.Tiles[px-1,py] and DIR_BIT_LEFT=0);
+    Result:=(px>0) and (fMap.Tiles[px-1,py] and MAP_DIR_BIT_LEFT=0);
   end;
 
 begin
@@ -124,7 +124,7 @@ begin
       if (X mod 16)=0 then begin
         case fDirection of
           DIR_LEFT:begin
-            if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
               fDirection:=DIR_DOWN;
               ShouldCreateNewBug:=true;
             end else
@@ -133,10 +133,14 @@ begin
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else fDirection:=DIR_NONE;
+            end else begin
+              if (px mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_RIGHT;
+              end;
             end;
           end;
           DIR_RIGHT:begin
-            if (py=0) and (fMap.Tiles[px,py+1] and DIR_BIT_DOWN=0) then begin
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
               fDirection:=DIR_DOWN;
               ShouldCreateNewBug:=true;
             end else
@@ -145,6 +149,10 @@ begin
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else fDirection:=DIR_NONE;
+            end else begin
+              if (px mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_LEFT;
+              end;
             end;
           end;
         end;
@@ -181,6 +189,10 @@ begin
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else fDirection:=DIR_NONE;
+            end else begin
+              if (py mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_UP;
+              end;
             end;
           end;
           DIR_UP:begin
@@ -189,6 +201,10 @@ begin
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else fDirection:=DIR_NONE;
+            end else begin
+              if (py mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_DOWN;
+              end;
             end;
           end;
         end;

@@ -4,7 +4,7 @@ Remake of Logical (C) 1991 Rainbow Arts and Cat's Eye Chaos (C) 2003 JP Hamilton
 This version written by Szabó "Gilby" Zsolt. This version copyright 2025 MKSZTSZ.
 
 ## Programming language
-FreePascal (Lazarus 4.0.0rc3 with FPC 3.2.2 Windows x64 or x86 version or cross-compiler to Win32 or Win64)
+FreePascal (Lazarus 4.0.0 with FPC 3.2.2 Windows x64 or x86 version or cross-compiler to Win32 or Win64)
 [Lazarus homepage](https://www.lazarus-ide.org/)
 
 ## Source codes
@@ -26,12 +26,22 @@ containing your fpc.exe
 4. Go into folder "source" and run BuildRelease_x64.bat (or x86 as you wish.)
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
+5. Download and extract the latest SDL2.dll into \release\x64 or x86 
+   (be aware of bitness!). The latest DLLs can be found on the [SDL releases page](https://github.com/libsdl-org/SDL/releases).
+   Scroll down to the latest 2.xx version, click assets and download file.
+   At the time of writing of this document the latest SDL2 version is 2.32.6.      
 
 ## Compiled binaries from current build with datafiles and DLLs
 [x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.12.zip "Download x64 version") or
 [x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.12.zip "Download x86 version").
 
 ## What's new
+
+### 2025.05.20 - Build 13
+- Added color blocker. It only lets the matching color bug to pass,
+  all the others are turned back.
+- Map structure changed, path data is separated from tiles.  
+- Added a few more maps. 
 
 ### 2025.04.29 - Build 12
 - Fixed bug horizontal displacement. It now follows the curves of the road.
