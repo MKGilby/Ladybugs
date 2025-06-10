@@ -1,8 +1,9 @@
+@echo off
 rem This script prepares all data needed by the debug version of the game.
 rem This is required before building a release version!
 
-@echo off
-if not exist ..\data\ (mkdir ..\data) else (del /Q ..\data\*)
+call setenv.bat
+if not exist %SOURCEDATADIR%\ (mkdir %SOURCEDATADIR%) else (del /Q %SOURCEDATADIR%\*)
 
 cd gfx
 call run.bat
