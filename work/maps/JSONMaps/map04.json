@@ -1,0 +1,39 @@
+{
+  "Path" : [
+    "0006C000",
+    "6805502C",
+    "50055005",
+    "50055005",
+    "3AABBAA9"
+  ],
+  "Tiles" : [
+    "...OO.N.",
+    "Ot....tO",
+    ".T....C.",
+    "........",
+    "O..OO..O"
+  ],
+  "TileDefinitions" : {
+    "46" : {
+      "Type" : "Empty"
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 900
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    }
+  }
+}

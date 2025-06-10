@@ -38,11 +38,11 @@ type
   private
     fType:TMemoryAreaType;
     fImage:TARGBImage;
-    fAtlas:TTextureAtlasGenerator;
+    fAtlas:TTextureAtlasGeneratorLines;
     function fGetImage:TARGBImage;
   public
     property Image:TARGBImage read fGetImage;
-    property Atlas:TTextureAtlasGenerator read fAtlas;
+    property Atlas:TTextureAtlasGeneratorLines read fAtlas;
     property AreaType:TMemoryAreaType read fType;
   end;
 
@@ -953,7 +953,7 @@ constructor TMemoryArea.CreateTextureAtlas(iWidth, iHeight, iPadding: integer);
 begin
   fType:=maTextureAtlas;
   fImage:=nil;
-  fAtlas:=TTextureAtlasGenerator.Create(iWidth,iHeight,iPadding);
+  fAtlas:=TTextureAtlasGeneratorLines.Create(iWidth,iHeight,iPadding);
 end;
 
 destructor TMemoryArea.Destroy;

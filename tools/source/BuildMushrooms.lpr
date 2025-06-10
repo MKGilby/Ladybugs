@@ -12,6 +12,7 @@ uses
   MKStream;
 
 const
+  MUSHROOMSIZE=80;
   FPS=48;
 
 type
@@ -27,7 +28,7 @@ type
     fShroomInside,
     fShroomSlot,
     fShroomTop:TARGBImage;
-    fAtlas:TTextureAtlasGenerator;
+    fAtlas:TTextureAtlasGeneratorFree;
     fRaw:TARGBImage;
     fColors:TGradient;
     function CreateMushroom(pRotation:integer;pOverlay:TARGBImage):TARGBImage;
@@ -53,8 +54,8 @@ begin
   fShroomSlot:=TARGBImage.Create('shroomslot.png');
   fShroomSlot.SetColorkey(0,0,0);
   fShroomTop:=TARGBImage.Create('shroomtop.png');
-  fRaw:=TARGBImage.Create(15*64,64);
-  fAtlas:=TTextureAtlasGenerator.Create(15*65+1,66*2+65,1);
+  fRaw:=TARGBImage.Create(15*MUSHROOMSIZE,MUSHROOMSIZE);
+  fAtlas:=TTextureAtlasGeneratorFree.Create(15*(MUSHROOMSIZE+1)+1,(MUSHROOMSIZE+1)*3+1,1);
 end;
 
 destructor TMain.Destroy;
@@ -77,11 +78,11 @@ var
   i:integer;
   tmpA:TTimeBasedAnimationData;
 begin
-  tmpfrom:=TARGBImage.Create(64,64);
-  tmpto:=TARGBImage.Create(64,64);
-  raw:=TARGBImage.Create(64*15,64);
+  tmpfrom:=TARGBImage.Create(MUSHROOMSIZE,MUSHROOMSIZE);
+  tmpto:=TARGBImage.Create(MUSHROOMSIZE,MUSHROOMSIZE);
+  raw:=TARGBImage.Create(MUSHROOMSIZE*15,MUSHROOMSIZE);
   try
-    tmpA:=TTimeBasedAnimationData.Create(64,64);
+    tmpA:=TTimeBasedAnimationData.Create(MUSHROOMSIZE,MUSHROOMSIZE);
     tmpA.RandomStart:=false;
     tmpA.Paused:=true;
     tmpA.FPS:=FPS;
@@ -90,8 +91,8 @@ begin
       tmp:=CreateMushroom(i*6,fShroomTop);
       try
         if i=0 then tmpto.PutImage(0,0,tmp);
-        raw.PutImage(i*64,0,tmp,false);
-        tmpA.AddFrame(i*64,0);
+        raw.PutImage(i*MUSHROOMSIZE,0,tmp,false);
+        tmpA.AddFrame(i*MUSHROOMSIZE,0);
       finally
         tmp.Free;
       end;
@@ -105,9 +106,9 @@ begin
   fColors:=TGradient.Create($FFAC6444,$FF804620);
   try
     fColors.PingPong:=true;
-    raw:=TARGBImage.Create(64*15,64);
+    raw:=TARGBImage.Create(MUSHROOMSIZE*15,MUSHROOMSIZE);
     try
-      tmpA:=TTimeBasedAnimationData.Create(64,64);
+      tmpA:=TTimeBasedAnimationData.Create(MUSHROOMSIZE,MUSHROOMSIZE);
       tmpA.RandomStart:=false;
       tmpA.Paused:=true;
       tmpA.FPS:=FPS;
@@ -115,8 +116,8 @@ begin
         tmp:=CreateMushroom(i*6,fShroomOverlay);
         try
           if i=0 then tmpfrom.PutImage(0,0,tmp);
-          raw.PutImage(i*64,0,tmp,false);
-          tmpA.AddFrame(i*64,0);
+          raw.PutImage(i*MUSHROOMSIZE,0,tmp,false);
+          tmpA.AddFrame(i*MUSHROOMSIZE,0);
         finally
           tmp.Free;
         end;
@@ -131,17 +132,17 @@ begin
   finally
     FreeAndNil(fColors);
   end;
-  raw:=TARGBImage.Create(64*15,64);
+  raw:=TARGBImage.Create(MUSHROOMSIZE*15,MUSHROOMSIZE);
   try
-    tmpA:=TTimeBasedAnimationData.Create(64,64);
+    tmpA:=TTimeBasedAnimationData.Create(MUSHROOMSIZE,MUSHROOMSIZE);
     tmpA.RandomStart:=false;
     tmpA.Paused:=true;
     tmpA.FPS:=FPS;
     for i:=0 to 14 do begin
       tmp:=CreateMushroom2(i,tmpFrom,tmpTo);
       try
-        raw.PutImage(i*64,0,tmp,false);
-        tmpA.AddFrame(i*64,0);
+        raw.PutImage(i*MUSHROOMSIZE,0,tmp,false);
+        tmpA.AddFrame(i*MUSHROOMSIZE,0);
       finally
         tmp.Free;
       end;
@@ -159,8 +160,8 @@ end;
 
 function TMain.CreateMushroom(pRotation: integer; pOverlay: TARGBImage): TARGBImage;
 begin
-  Result:=TARGBImage.Create(64,64);
-  Result.Bar(0,0,64,64,0);
+  Result:=TARGBImage.Create(MUSHROOMSIZE,MUSHROOMSIZE);
+  Result.Bar(0,0,Result.Width,Result.Height,0);
   Result.SetColorkey(0,0,0);
   if Assigned(fColors) then FillInside(Result,pRotation);
   Result.PutImage(0,0,pOverlay,true);
@@ -173,11 +174,11 @@ end;
 function TMain.CreateMushroom2(pFrameNo: integer; pFrom, pTo: TARGBImage): TARGBImage;
 var i,j,angle:integer;
 begin
-  Result:=TARGBImage.Create(64,64);
-  Result.Bar(0,0,64,64,0);
+  Result:=TARGBImage.Create(MUSHROOMSIZE,MUSHROOMSIZE);
+  Result.Bar(0,0,Result.Width,Result.Height,0);
   Result.SetColorkey(0,0,0);
-  for j:=0 to 63 do
-    for i:=0 to 63 do begin
+  for j:=0 to MUSHROOMSIZE-1 do
+    for i:=0 to MUSHROOMSIZE-1 do begin
       angle:=GetAngleAt(i,j) mod 90;
       if (angle<43-pFrameNo*3) or (angle>47+pFrameNo*3) then
         Result.Putpixel(i,j,pFrom.GetPixel(i,j))
@@ -189,8 +190,8 @@ end;
 procedure TMain.FillInside(pImage:TARGBImage; pRotation:integer);
 var i,j:integer;
 begin
-  for i:=0 to 63 do
-    for j:=0 to 63 do
+  for i:=0 to MUSHROOMSIZE-1 do
+    for j:=0 to MUSHROOMSIZE-1 do
       if fShroomInside.GetPixel(i,j)<>$ff000000 then
         pImage.PutPixel(i,j,GetColorAt(i,j,pRotation));
 end;
@@ -209,21 +210,21 @@ procedure TMain.PutSlot(pImage: TARGBImage; pRotation: integer);
 const pirad=PI/180;
 var x,y:integer;
 begin
-  x:=round(sin(pRotation*pirad)*23)+32+1;
-  y:=round(cos(pRotation*pirad)*23)+32+1;
+  x:=round(sin(pRotation*pirad)*27)+(MUSHROOMSIZE div 2)+1;
+  y:=round(cos(pRotation*pirad)*27)+(MUSHROOMSIZE div 2)+1;
   Log.LogStatus(Format('%.3d(%d, %d),',[pRotation,x-1,y-1]));
   fShroomSlot.CopyTo(0,0,16,16,x-8,y-8,pImage,true);
 end;
 
 function TMain.GetAngleAt(pX, pY: integer): integer;
 begin
-  if (32>pX) then begin
-    Result:=trunc(arctan((32-pY)/(32-pX))*180/pi)+270;
+  if ((MUSHROOMSIZE div 2)>pX) then begin
+    Result:=trunc(arctan(((MUSHROOMSIZE div 2)-pY)/((MUSHROOMSIZE div 2)-pX))*180/pi)+270;
   end else
-  if (32<pX) then begin
-    Result:=trunc(arctan((32-pY)/(32-pX))*180/pi)+90;
+  if ((MUSHROOMSIZE div 2)<pX) then begin
+    Result:=trunc(arctan(((MUSHROOMSIZE div 2)-pY)/((MUSHROOMSIZE div 2)-pX))*180/pi)+90;
   end else begin
-    if (32>=pY) then begin
+    if ((MUSHROOMSIZE div 2)>=pY) then begin
       Result:=0;
     end else begin
       Result:=180;

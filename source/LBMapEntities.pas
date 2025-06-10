@@ -21,11 +21,11 @@ type
     // ipX, ipY is in blocks (0..7,0..4)
     constructor Create(iMap:TMap;ipX,ipY:integer);
     // Draw the non-static part of the entity.
-//    procedure Draw; virtual; abstract;
+    procedure Draw; override;
     // Move and/or animate the entity based on elapsed time.
-    procedure Move(pElapsedTime:double); virtual; abstract;
+    procedure Move(const pElapsedTime:double); virtual;
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); virtual; abstract;
+    procedure DrawBack(const pBack:TARGBImage); virtual;
   protected
     fLeft,fTop:integer;
     fX,fY:integer;
@@ -66,13 +66,11 @@ type
 
   TSimplePath=class(TMapEntity)
     // ipX, ipY is in big blocks (0..7,0..4)
-    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
-    // Draw the non-static part of the entity.
-    procedure Draw; override;
+    constructor Create(iMap:TMap;ipX,ipY:integer);
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
+    procedure DrawBack(const pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    // procedure Move(const pElapsedTime:double); override;
   private
     fExits:integer;
   end;
@@ -81,16 +79,16 @@ type
 
   TMushroom=class(TSimplePath)
     // ipX, ipY is in big blocks (0..7,0..4)
-    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    constructor Create(iMap:TMap;ipX,ipY:integer);
     destructor Destroy; override;
     // Draw the non-static part of the entity.
     procedure Draw; override;
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
+    procedure DrawBack(const pBack:TARGBImage); override;
     // Add bug to the desired slot
     function AddBug(pBug:TBug;pFromDirection:integer):boolean;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    procedure Move(const pElapsedTime:double); override;
   private
     fAnimation:TAnimation;
     fMovingState:(mstIdle,mstRotating,mstTransitioning);
@@ -108,9 +106,9 @@ type
     // Draw the non-static part of the entity.
     procedure Draw; override;
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
+    // procedure DrawBack(const pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    // procedure Move(const pElapsedTime:double); override;
   private
     fPotAnim,fFlowerAnim:TAnimation;
     fPotsTop:integer;
@@ -125,9 +123,9 @@ type
     // Draw the non-static part of the entity.
     procedure Draw; override;
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
+    // procedure DrawBack(pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    procedure Move(const pElapsedTime:double); override;
   private
     fTime:double;
   end;
@@ -136,14 +134,14 @@ type
 
   TNext=class(TMapEntity)
     // ipX, ipY is in big blocks (0..7,0..4)
-    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    constructor Create(iMap:TMap;ipX,ipY:integer);
     destructor Destroy; override;
     // Draw the non-static part of the entity.
     procedure Draw; override;
     // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
+    procedure DrawBack(const pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    // procedure Move(pElapsedTime:double); override;
   private
     fBugAnims:array[1..4] of TAnimation;
     fBugTop:integer;
@@ -157,15 +155,32 @@ type
     destructor Destroy; override;
     // Draw the non-static part of the entity.
     procedure Draw; override;
-    // Draws static background image onto pBack.
-    procedure DrawBack(pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
-    procedure Move(pElapsedTime:double); override;
+    procedure Move(const pElapsedTime:double); override;
   private
     fAnimation:TAnimation;
     fColor:integer;
   public
     property Color:integer read fColor;
+  end;
+
+  { TTeleport }
+
+  TTeleport=class(TSimplePath)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(const pElapsedTime:double); override;
+    procedure AddTarget(pTeleport:TTeleport);
+  private
+    fAnimation:TAnimation;
+    fGroup:integer;
+    fTargets:array of TTeleport;
+  public
+    property Group:integer read fGroup;
   end;
 
 implementation
@@ -187,6 +202,21 @@ begin
   fTop:=fY*80+REALMAPTOP;
   fMap:=iMap;
   fZIndex:=ziBackground;
+end;
+
+procedure TMapEntity.Draw;
+begin
+  // Override if want to draw something
+end;
+
+procedure TMapEntity.Move(const pElapsedTime:double);
+begin
+  // Override if want to do something
+end;
+
+procedure TMapEntity.DrawBack(const pBack:TARGBImage);
+begin
+  // Override if want to do draw something to the background
 end;
 
 {$endregion}
@@ -254,42 +284,13 @@ end;
 { TSimplePath }
 {$region /fold}
 
-constructor TSimplePath.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
-var s,s2:String;none:boolean;
+constructor TSimplePath.Create(iMap: TMap; ipX, ipY: integer);
 begin
   inherited Create(iMap,ipX,ipY);
-  if Assigned(pj.FindPath('Exits')) then
-    s:=pj.FindPath('Exits').AsString
-  else
-    s:='None';
   fExits:=fMap.OrigTiles[ipX,ipY];
-{  none:=false;
-//  Log.Trace('----');
-//  Log.Trace(s);
-  while length(s)>0 do begin
-    s2:=copy(s,1,pos(',',s+',')-1);
-    delete(s,1,length(s2)+1);
-    s2:=Trim(s2);
-//    Log.Trace('  '+s2);
-    if UpperCase(s2)='UP' then fExits:=fExits or MAP_DIR_BIT_UP
-    else if UpperCase(s2)='RIGHT' then fExits:=fExits or MAP_DIR_BIT_RIGHT
-    else if UpperCase(s2)='DOWN' then fExits:=fExits or MAP_DIR_BIT_DOWN
-    else if UpperCase(s2)='LEFT' then fExits:=fExits or MAP_DIR_BIT_LEFT
-    else if UpperCase(s2)='NONE' then none:=true;
-  end;
-//  Log.Trace(fExits);
-  if none and (fExits<>0) then
-    raise Exception.Create('Both NONE and Directions are specified in Exits!');
-  if not none and (fExits=0) then
-    raise Exception.Create('Neither NONE nor Directions are specified in Exits!');}
 end;
 
-procedure TSimplePath.Draw;
-begin
-  // Nothing to do.
-end;
-
-procedure TSimplePath.DrawBack(pBack:TARGBImage);
+procedure TSimplePath.DrawBack(const pBack:TARGBImage);
 var tmp:TARGBImage;px,py:integer;
 begin
   px:=fX*5;
@@ -325,10 +326,6 @@ begin
   end;
 end;
 
-procedure TSimplePath.Move(pElapsedTime:double);
-begin
-end;
-
 {$endregion}
 
 { TMushroom }
@@ -336,21 +333,23 @@ end;
 
 const
   // Slot positions relative to tile top,left
-  SLOTPOSITIONS:array[0..3,0..1] of integer=((32,9),(55,32),(32,55),(9,32));
+  SLOTPOSITIONS:array[0..3,0..1] of integer=((32,5),(59,32),(32,59),(5,32));
   // Slot positions on map relative to big tile*5
   SLOTMAPPOS:array[0..3,0..1] of integer=((2,0),(4,2),(2,4),(0,2));
   // Slot positions for checking for road relative to big tile*5
   SLOTCHECKMAPPOS:array[0..3,0..1] of integer=((2,-1),(5,2),(2,5),(-1,2));
   // Bug start moving position relative to tile top,left
 //  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-8),(72,32),(32,72),(-8,32));
-  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,9),(55,32),(32,55),(9,32));
+  BUGSTARTMOVEPOS:array[0..3,0..1] of integer=((32,-16),(80,32),(32,80),(-16,32));
   // Bug start flying position relative to tile top,left
-  BUGSTARTFLYPOS:array[0..3,0..1] of integer=((28,9),(47,28),(28,47),(9,28));
+  BUGSTARTFLYPOS:array[0..3,0..1] of integer=((28,5),(51,28),(28,51),(5,28));
+  // Slot-direction pairs
+  SLOTFROMDIRECTIONS:array[0..3] of integer=(DIR_DOWN,DIR_LEFT,DIR_UP,DIR_RIGHT);
 
-constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+constructor TMushroom.Create(iMap: TMap; ipX, ipY: integer);
 var i:integer;
 begin
-  inherited Create(iMap,ipX,ipY,pJ);
+  inherited Create(iMap,ipX,ipY);
   SetBoundsWH(fLeft,fTop,80,80);
   Visible:=true;
   Enabled:=true;
@@ -373,7 +372,7 @@ procedure TMushroom.Draw;
 const REORDER:array[0..3] of integer=(0,3,2,1);
 var i:integer;
 begin
-  fAnimation.PutFrame(fLeft+8,fTop+8);
+  fAnimation.PutFrame(fLeft,fTop);
   case fMovingState of
     mstIdle:begin
       for i:=0 to 3 do
@@ -384,14 +383,14 @@ begin
       for i:=0 to 3 do
         if Assigned(fBugs[i]) then
           fBugs[i].Draw(
-            fLeft+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0],
-            fTop+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]);
+            fLeft+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,0]-8,
+            fTop+SLOTROTATEPOSITIONS[REORDER[i]*15+fAnimation.Timer.CurrentFrameIndex,1]-8);
     end;
     mstTransitioning:;  // No additional drawing needed
   end;
 end;
 
-procedure TMushroom.DrawBack(pBack: TARGBImage);
+procedure TMushroom.DrawBack(const pBack: TARGBImage);
 begin
   inherited DrawBack(pBack);
   if fY=0 then begin
@@ -458,7 +457,7 @@ begin
   Result:=true;
 end;
 
-procedure TMushroom.Move(pElapsedTime:double);
+procedure TMushroom.Move(const pElapsedTime:double);
 var tmpBug:TBug;
 begin
   // Animate animation
@@ -521,12 +520,23 @@ procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
        (y>=SLOTPOSITIONS[pSlot,1]) and (y<SLOTPOSITIONS[pSlot,1]+16) then begin
       // If there's road rightwards
       if (fMap.Tiles[fX*5+SLOTCHECKMAPPOS[pSlot,0],fY*5+1+SLOTCHECKMAPPOS[pSlot,1]] and pDirBit=0) then begin
-        // Start moving the bug (direction is already set)
-        fBugs[pSlot].StartMove(fX*80+BUGSTARTMOVEPOS[pSlot,0],fY*80+16+BUGSTARTMOVEPOS[pSlot,1]);
-        // Remove bug from array (still referenced in LBShared.Bugs)
-        fBugs[pSlot]:=nil;
-        // Set map tile to free to allow another bug come in
-        fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=0;
+        // Check if the adjacent tile is Mushroom
+        if (Entities.EntityAt[fX*5+SLOTCHECKMAPPOS[pSlot,0],fY*5+1+SLOTCHECKMAPPOS[pSlot,1]] is TMushroom) then begin
+          // If mushroom accepts bug
+          if TMushroom(Entities.EntityAt[fX*5+SLOTCHECKMAPPOS[pSlot,0],fY*5+1+SLOTCHECKMAPPOS[pSlot,1]]).AddBug(fBugs[pSlot],SLOTFROMDIRECTIONS[pSlot]) then begin
+            // Remove bug from array (still referenced in LBShared.Bugs)
+            fBugs[pSlot]:=nil;
+            // Set map tile to free to allow another bug come in
+            fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=0;
+          end;
+        end else begin  // If not
+          // Start moving the bug (direction is already set)
+          fBugs[pSlot].StartMove(fX*80+BUGSTARTMOVEPOS[pSlot,0],fY*80+16+BUGSTARTMOVEPOS[pSlot,1]);
+          // Remove bug from array (still referenced in LBShared.Bugs)
+          fBugs[pSlot]:=nil;
+          // Set map tile to free to allow another bug come in
+          fMap.Tiles[fX*5+SLOTMAPPOS[pSlot,0],fY*5+1+SLOTMAPPOS[pSlot,1]]:=0;
+        end;
       end;
     end;
   end;
@@ -612,16 +622,6 @@ begin
   end;
 end;
 
-procedure TCounter.DrawBack(pBack:TARGBImage);
-begin
-  // Nothing to do
-end;
-
-procedure TCounter.Move(pElapsedTime:double);
-begin
-  // Nothing to do
-end;
-
 {$endregion}
 
 { TTimer }
@@ -656,12 +656,7 @@ begin
   MM.Fonts['Timer'].OutText(Format('%d:%.2d',[trunc(fTime) div 60,trunc(fTime) mod 60]),fLeft+40,fTop+24,1);
 end;
 
-procedure TTimer.DrawBack(pBack:TARGBImage);
-begin
-  // Nothing to do
-end;
-
-procedure TTimer.Move(pElapsedTime:double);
+procedure TTimer.Move(const pElapsedTime:double);
 begin
   if fTime>0 then begin
     fTime:=fTime-pElapsedTime;
@@ -674,7 +669,7 @@ end;
 { TNext }
 {$region /fold}
 
-constructor TNext.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
+constructor TNext.Create(iMap:TMap; ipX,ipY:integer);
 begin
   inherited Create(iMap,ipX,ipY);
   fBugAnims[1]:=MM.Animations[Format('Bug%d',[1])].SpawnAnimation;
@@ -698,17 +693,12 @@ begin
   fBugAnims[NextBugColor].PutFrame(fLeft+32,fTop+fBugTop);
 end;
 
-procedure TNext.DrawBack(pBack:TARGBImage);
+procedure TNext.DrawBack(const pBack:TARGBImage);
 var tmp:TARGBImage;
 begin
   tmp:=MM.Images['Next'];
   pBack.PutImage(fLeft+(80-tmp.Width) div 2,fTop+(80-tmp.Height) div 2,tmp,true);
   fBugTop:=(80-tmp.Height) div 2+20;
-end;
-
-procedure TNext.Move(pElapsedTime:double);
-begin
-  // Nothing to do
 end;
 
 {$endregion}
@@ -719,7 +709,7 @@ end;
 constructor TBlocker.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
 var s:String;
 begin
-  inherited Create(iMap,ipX,ipY,pJ);
+  inherited Create(iMap,ipX,ipY);
   if Assigned(pJ.FindPath('Color')) then begin
     s:=pJ.FindPath('Color').AsString;
     if uppercase(s)='RED' then fColor:=1
@@ -745,14 +735,55 @@ begin
   fAnimation.PutFrame(fLeft+29,fTop+29);
 end;
 
-procedure TBlocker.DrawBack(pBack: TARGBImage);
-begin
-  inherited DrawBack(pBack);
-end;
-
-procedure TBlocker.Move(pElapsedTime: double);
+procedure TBlocker.Move(const pElapsedTime: double);
 begin
   fAnimation.Animate(pElapsedTime);
+end;
+
+{$endregion}
+
+{ TTeleport }
+{$region /fold}
+
+constructor TTeleport.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
+var i:integer;
+begin
+  inherited Create(iMap,ipX,ipY);
+  fAnimation:=MM.Animations['Teleport'].SpawnAnimation;
+  if Assigned(pJ.FindPath('Group')) then
+    fGroup:=pJ.FindPath('Group').AsInteger
+  else
+    Log.LogWarning('No group specified for teleport, assigning to group 1.');
+  fZIndex:=ziForeground;
+  SetLength(fTargets,0);
+  for i:=0 to Entities.Count-1 do
+    if (Entities[i] is TTeleport) then
+      if TTeleport(Entities[i]).Group=fGroup then begin
+        AddTarget(TTeleport(Entities[i]));
+        TTeleport(Entities[i]).AddTarget(Self);
+      end;
+end;
+
+destructor TTeleport.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TTeleport.Draw;
+begin
+  fAnimation.PutFrame(fLeft+24,fTop+24);
+end;
+
+procedure TTeleport.Move(const pElapsedTime:double);
+begin
+  inherited Move(pElapsedTime);
+end;
+
+procedure TTeleport.AddTarget(pTeleport: TTeleport);
+begin
+  SetLength(fTargets,length(fTargets)+1);
+  fTargets[length(fTargets)-1]:=pTeleport;
 end;
 
 {$endregion}

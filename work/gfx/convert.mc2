@@ -8,7 +8,7 @@ w png grass.png 1
 r png data\next.png 1
 w png next.png 1
 
-m createatlas 616 480 1 2
+m createatlas 1216 640 1 2
 r png mushroom.png 1
 m addall 1 2
 r png bugs.png 1
@@ -26,6 +26,11 @@ m addall 1 2
 
 r png data\blocker.png 1
 r json data\blocker.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+r png data\teleport.png 1
+r json data\teleport.json 1
 m setcolorkey 0 0 0 1
 m addall 1 2
 

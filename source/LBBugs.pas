@@ -121,118 +121,140 @@ begin
       Y:=trunc(fdY);
       px:=X div 16;
       py:=Y div 16;
+      // When standing on whole block horizontally
       if (X mod 16)=0 then begin
-        case fDirection of
+        case predir of
           DIR_LEFT:begin
-            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
-              fDirection:=DIR_DOWN;
+            // If moving in the top row and can hop onto a mushroom
+            // (we ensure at map loading that only mushrooms are accessible
+            // from top row!)
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
+                TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
+              // If the bug did not start flying out, it will be idling on the mushroom
+              if fState<>bsFlying then fState:=bsIdle;
+              // We should create a new bug to the upper row
               ShouldCreateNewBug:=true;
+              // Bug faces upwards
+              fDirection:=DIR_UP;
             end else
-            if not CanMoveLeft(px,py) then begin
+            if not CanMoveLeft(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
-              else fDirection:=DIR_NONE;
-            end else begin
+              else fDirection:=DIR_NONE;  // This shouldn't be happening ever
+            end else begin  // Can move to the left, check special blocks
+              // Mushroow
+              if (px mod 5=0) and (Entities.EntityAt[px-1,py] is TMushroom) then begin
+                // If mushroom accepts bug
+                if TMushRoom(Entities.EntityAt[px-1,py]).AddBug(Self,DIR_RIGHT) then begin
+                  // Decrease moving bug count
+                  dec(CurrentMovingBugs);
+                  // If the bug did not start flying out, it will be idling on the mushroom
+                  if fState<>bsFlying then fState:=bsIdle;
+                end else  // Turn back
+                  fDirection:=DIR_RIGHT;
+              end else
+              // Color blocker
               if (px mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_RIGHT;
               end;
             end;
           end;
           DIR_RIGHT:begin
-            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
-              fDirection:=DIR_DOWN;
+            // If moving in the top row and can hop onto a mushroom
+            // (we ensure at map loading that only mushrooms are accessible
+            // from top row!)
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
+                TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
+              // If the bug did not start flying out, it will be idling on the mushroom
+              if fState<>bsFlying then fState:=bsIdle;
+              // We should create a new bug to the upper row
               ShouldCreateNewBug:=true;
+              // Bug faces upwards
+              fDirection:=DIR_UP;
             end else
-            if not CanMoveRight(px,py) then begin
+            if not CanMoveRight(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
-              else fDirection:=DIR_NONE;
-            end else begin
+              else fDirection:=DIR_NONE;  // This shouldn't be happening ever
+            end else begin  // Can move to the right, check special blocks
+              // Mushroom
+              if (px mod 5=4) and (Entities.EntityAt[px+1,py] is TMushroom) then begin
+                // If mushroom accepts bug
+                if TMushRoom(Entities.EntityAt[px+1,py]).AddBug(Self,DIR_LEFT) then begin
+                  // Decrease moving bug count
+                  dec(CurrentMovingBugs);
+                  // If the bug did not start flying out, it will be idling on the mushroom
+                  if fState<>bsFlying then fState:=bsIdle;
+                end else // Turn back
+                  fDirection:=DIR_LEFT;
+              end else
+              // Color blocker
               if (px mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_LEFT;
-              end;
-            end;
-          end;
-        end;
-      end else
-      if (X mod 16)=8 then begin
-        case fDirection of
-          DIR_LEFT:begin
-            if (px mod 5=3) and (Entities.EntityAt[px,py] is TMushroom) then begin
-              if TMushRoom(Entities.EntityAt[px,py]).AddBug(Self,DIR_RIGHT) then begin
-                if fState<>bsFlying then fState:=bsIdle;
-                dec(CurrentMovingBugs);
-              end else begin
-                fDirection:=DIR_RIGHT;
-              end;
-            end;
-          end;
-          DIR_RIGHT:begin
-            if (px mod 5=0) and (Entities.EntityAt[px+1,py] is TMushroom) then begin
-              if TMushRoom(Entities.EntityAt[px+1,py]).AddBug(Self,DIR_LEFT) then begin
-                if fState<>bsFlying then fState:=bsIdle;
-                dec(CurrentMovingBugs);
-              end else begin
-                fDirection:=DIR_LEFT;
               end;
             end;
           end;
         end;
       end;
       if (Y mod 16)=0 then begin
-        case fDirection of
+        case predir of
           DIR_DOWN:begin
-            if not CanMoveDown(px,py) then begin
+            if not CanMoveDown(px,py) then begin  // Can't move down any more
               if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveUp(px,py) then fDirection:=DIR_UP
-              else fDirection:=DIR_NONE;
-            end else begin
+              else fDirection:=DIR_NONE;  // This shouldn't be happening ever
+            end else begin  // Can move down, check special blocks
+              // Mushroom
+              if ((py-1) mod 5=4) and (Entities.EntityAt[px,py+1] is TMushroom) then begin
+                // If mushroom accepts bug
+                if TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
+                  // Decrease moving bug count
+                  dec(CurrentMovingBugs);
+                  // If the bug did not start flying out, it will be idling on the mushroom
+                  if fState<>bsFlying then fState:=bsIdle;
+                end else  // Turn back
+                  fDirection:=DIR_UP;
+              end else
+              // Color blocker
               if (py mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_UP;
               end;
             end;
           end;
           DIR_UP:begin
-            if not CanMoveUp(px,py) then begin
+            if not CanMoveUp(px,py) then begin  // Can't move up any more
               if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else if CanMoveLeft(px,py) then fDirection:=DIR_LEFT
               else if CanMoveDown(px,py) then fDirection:=DIR_DOWN
-              else fDirection:=DIR_NONE;
-            end else begin
+              else fDirection:=DIR_NONE;  // This shouldn't be happening ever
+            end else begin  // Can move up, check special blocks
+              // Mushroom
+              if ((py-1) mod 5=0) and (Entities.EntityAt[px,py-1] is TMushroom) then begin
+                // If mushroom accepts bug
+                if TMushRoom(Entities.EntityAt[px,py-1]).AddBug(Self,DIR_DOWN) then begin
+                  // Decrease moving bug count
+                  dec(CurrentMovingBugs);
+                  // If the bug did not start flying out, it will be idling on the mushroom
+                  if fState<>bsFlying then fState:=bsIdle;
+                end else  // turn back
+                  fDirection:=DIR_DOWN;
+              end;
+              // Color blocker
               if (py mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
+                // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_DOWN;
               end;
             end;
           end;
         end;
       end;
-      if (Y mod 16)=8 then begin
-        case fDirection of
-          DIR_DOWN:begin
-            if ((py-1) mod 5=0) and (Entities.EntityAt[px,py+1] is TMushroom) then begin
-              if TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
-                if fState<>bsFlying then fState:=bsIdle;
-                if py>1 then dec(CurrentMovingBugs);
-              end else begin
-                fDirection:=DIR_UP;
-              end;
-            end;
-          end;
-          DIR_UP:begin
-            if ((py-1) mod 5=3) and (Entities.EntityAt[px,py] is TMushroom) then begin
-              if TMushRoom(Entities.EntityAt[px,py]).AddBug(Self,DIR_DOWN) then begin
-                if fState<>bsFlying then fState:=bsIdle;
-                dec(CurrentMovingBugs);
-              end else begin
-                fDirection:=DIR_DOWN;
-              end;
-            end;
-          end;
-        end;
-      end;
+      // If direction changed, set animation accordingly.
       if predir<>fDirection then SetAnimByDirection;
     end;
     bsFlying:begin
