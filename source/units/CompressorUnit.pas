@@ -103,6 +103,9 @@
 //    * BUGFIX: Global compressionlevel was not used.
 //  V1.26: Gilby - 2024.04.24
 //    * Stopped using MKToolBox.Replace since it's deprecated.
+//  V1.27: Gilby - 2025.06.11
+//    * Fix in showing last compression.
+//    * Removed bad destructor.
 
 {$ifdef fpc}
   {$mode delphi}
@@ -119,7 +122,6 @@ uses Classes;
 
 type TCompressor=class
        constructor Create;
-       destructor Free;
        function Compress(iSource:TStream;{%H-}iCompressionLevel:integer=-1;{%H-}iCompressionMethod:integer=-1):TStream;
        procedure CompressFile(iSource,iTarget:string;iCompressionLevel:integer=-1;iCompressionMethod:integer=-1);
        function UnCompress(iSource:TStream):TStream; overload;
@@ -149,15 +151,11 @@ uses
 
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.26';
+  Version='1.27';
 
 constructor TCompressor.Create;
 begin
   fCompressionLevel:=1;
-end;
-
-destructor TCompressor.Free;
-begin
 end;
 
 procedure TCompressor.SetCompressionLevel(iLevel:integer);
@@ -335,7 +333,7 @@ begin
           fLastCompression:='';
           if ipp>0 then fLastCompression+=PPNames[ipp]+'+';
           if ic1>0 then fLastCompression+=C1Names[ic1]+'+';
-          if ic2>0 then fLastCompression+=C2Names[ic1];
+          if ic2>0 then fLastCompression+=C2Names[ic2];
 
           if (length(fLastCompression)>0) and (fLastCompression[length(fLastCompression)]='+') then delete(fLastCompression,length(fLastCompression),1);
           if length(fLastCompression)=0 then fLastCompression:='None';
@@ -391,7 +389,7 @@ begin
   afterC1:=TMemoryStream.Create;
   case (b shr 3) and 7 of
     0:begin
-        FreeAndNil(afterC1);
+        afterC1.Free;
         afterC1:=afterC2;
         afterC2:=nil;
       end;
@@ -498,17 +496,13 @@ end;
 
 initialization
 begin
-//  Log.LogStatus('Creating Compressor class...','CompressorUnit.pas, Initialization');
   Log.LogStatus(Fstr+'version '+Version,'uses');
   Compressor:=TCompressor.Create;
-//  Log.LogStatus('Compressor class created...','CompressorUnit.pas, Initialization');
 end;
 
 finalization
 begin
-//  Log.LogStatus('Freeing Compressor class...','CompressorUnit.pas, Finalization');
   Compressor.Free;
-//  Log.LogStatus('Compressor class freed...','CompressorUnit.pas, Finalization');
 end;
 
 end.
