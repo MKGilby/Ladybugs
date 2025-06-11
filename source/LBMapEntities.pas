@@ -27,7 +27,7 @@ type
     // Draws static background image onto pBack.
     procedure DrawBack(const pBack:TARGBImage); virtual;
   protected
-    fLeft,fTop:integer;
+//    fLeft,fTop:integer;
     fX,fY:integer;
     fMap:TMap;
     fZIndex:TZIndex;
@@ -71,7 +71,7 @@ type
     procedure DrawBack(const pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
     // procedure Move(const pElapsedTime:double); override;
-  private
+  protected
     fExits:integer;
   end;
 
@@ -174,7 +174,16 @@ type
     procedure Draw; override;
     // Move entity for no more than MAXTIMESLICE
     procedure Move(const pElapsedTime:double); override;
-    procedure AddTarget(pTeleport:TTeleport);
+    // Add another teleport that can be the target of this teleport
+    procedure AddTarget(const pTeleport:TTeleport);
+    // Can be the target of another teleport having pExits as exits.
+    // True, when bug can continue moving without changing direction
+    // after teleporting.
+    function HasCompatibleExits(pExits:integer):boolean;
+    // Get bug new position (in pixels)
+    procedure GetNewCoords(out x,y:integer);
+    // Log target coordinates for debugging purposes.
+    procedure LogTargets;
   private
     fAnimation:TAnimation;
     fGroup:integer;
@@ -749,6 +758,10 @@ constructor TTeleport.Create(iMap:TMap; ipX,ipY:integer; pJ:TJSONData);
 var i:integer;
 begin
   inherited Create(iMap,ipX,ipY);
+  fMap.Tiles[fX*5+2,fY*5+1+1]:=0;
+  fMap.Tiles[fX*5+3,fY*5+1+2]:=0;
+  fMap.Tiles[fX*5+2,fY*5+1+3]:=0;
+  fMap.Tiles[fX*5+1,fY*5+1+2]:=0;
   fAnimation:=MM.Animations['Teleport'].SpawnAnimation;
   if Assigned(pJ.FindPath('Group')) then
     fGroup:=pJ.FindPath('Group').AsInteger
@@ -758,7 +771,7 @@ begin
   SetLength(fTargets,0);
   for i:=0 to Entities.Count-1 do
     if (Entities[i] is TTeleport) then
-      if TTeleport(Entities[i]).Group=fGroup then begin
+      if (TTeleport(Entities[i]).Group=fGroup) and (TTeleport(Entities[i]).HasCompatibleExits(fExits)) then begin
         AddTarget(TTeleport(Entities[i]));
         TTeleport(Entities[i]).AddTarget(Self);
       end;
@@ -780,10 +793,38 @@ begin
   inherited Move(pElapsedTime);
 end;
 
-procedure TTeleport.AddTarget(pTeleport: TTeleport);
+procedure TTeleport.AddTarget(const pTeleport:TTeleport);
 begin
   SetLength(fTargets,length(fTargets)+1);
   fTargets[length(fTargets)-1]:=pTeleport;
+end;
+
+function TTeleport.HasCompatibleExits(pExits:integer):boolean;
+begin
+  Result:=
+    ((fExits and MAP_DIR_BIT_UP<>0) and (pExits and MAP_DIR_BIT_DOWN<>0)) or
+    ((fExits and MAP_DIR_BIT_RIGHT<>0) and (pExits and MAP_DIR_BIT_LEFT<>0)) or
+    ((fExits and MAP_DIR_BIT_DOWN<>0) and (pExits and MAP_DIR_BIT_UP<>0)) or
+    ((fExits and MAP_DIR_BIT_LEFT<>0) and (pExits and MAP_DIR_BIT_RIGHT<>0));
+end;
+
+procedure TTeleport.GetNewCoords(out x,y:integer);
+var i:integer;
+begin
+  if length(fTargets)>0 then begin
+    i:=random(length(fTargets));
+    X:=(fTargets[i].X*5+2)*16;
+    Y:=(fTargets[i].Y*5+2+1)*16;
+  end else
+    raise Exception.Create('Teleport has no pair!');
+end;
+
+procedure TTeleport.LogTargets;
+var i:integer;
+begin
+  Log.LogDebug(Format('Listing pairs of teleport at %d,%d:',[X,Y]));
+  for i:=0 to length(fTargets)-1 do
+    Log.LogDebug(Format('  %d,%d',[TTeleport(fTargets[i]).X,TTeleport(fTargets[i]).Y]));
 end;
 
 {$endregion}

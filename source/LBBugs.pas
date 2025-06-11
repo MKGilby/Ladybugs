@@ -126,9 +126,8 @@ begin
         case predir of
           DIR_LEFT:begin
             // If moving in the top row and can hop onto a mushroom
-            // (we ensure at map loading that only mushrooms are accessible
-            // from top row!)
             if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
+                (Entities.EntityAt[px,py+1] is TMushroom) and
                 TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
               // If the bug did not start flying out, it will be idling on the mushroom
               if fState<>bsFlying then fState:=bsIdle;
@@ -143,7 +142,7 @@ begin
               else if CanMoveRight(px,py) then fDirection:=DIR_RIGHT
               else fDirection:=DIR_NONE;  // This shouldn't be happening ever
             end else begin  // Can move to the left, check special blocks
-              // Mushroow
+              // Mushroom
               if (px mod 5=0) and (Entities.EntityAt[px-1,py] is TMushroom) then begin
                 // If mushroom accepts bug
                 if TMushRoom(Entities.EntityAt[px-1,py]).AddBug(Self,DIR_RIGHT) then begin
@@ -158,14 +157,21 @@ begin
               if (px mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_RIGHT;
+              end else
+              // Teleport
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TTeleport) then begin
+                // Teleport bug to new position
+                TTeleport(Entities.EntityAt[px,py]).GetNewCoords(x,y);
+                dec(X);  // To prevent re-teleporting
+                fdX:=X;
+                fdY:=Y;
               end;
             end;
           end;
           DIR_RIGHT:begin
             // If moving in the top row and can hop onto a mushroom
-            // (we ensure at map loading that only mushrooms are accessible
-            // from top row!)
             if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
+                (Entities.EntityAt[px,py+1] is TMushroom) and
                 TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
               // If the bug did not start flying out, it will be idling on the mushroom
               if fState<>bsFlying then fState:=bsIdle;
@@ -195,11 +201,20 @@ begin
               if (px mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_LEFT;
+              end else
+              // Teleport
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TTeleport) then begin
+                // Teleport bug to new position
+                TTeleport(Entities.EntityAt[px,py]).GetNewCoords(x,y);
+                inc(X);  // To prevent re-teleporting
+                fdX:=X;
+                fdY:=Y;
               end;
             end;
           end;
         end;
       end;
+      // When standing on whole block vertically
       if (Y mod 16)=0 then begin
         case predir of
           DIR_DOWN:begin
@@ -224,6 +239,14 @@ begin
               if (py mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_UP;
+              end else
+              // Teleport
+              if ((py-1) mod 5=2) and (Entities.EntityAt[px,py] is TTeleport) then begin
+                // Teleport bug to new position
+                TTeleport(Entities.EntityAt[px,py]).GetNewCoords(x,y);
+                inc(Y);  // To prevent re-teleporting
+                fdX:=X;
+                fdY:=Y;
               end;
             end;
           end;
@@ -249,6 +272,14 @@ begin
               if (py mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_DOWN;
+              end else
+              // Teleport
+              if ((py-1) mod 5=2) and (Entities.EntityAt[px,py] is TTeleport) then begin
+                // Teleport bug to new position
+                TTeleport(Entities.EntityAt[px,py]).GetNewCoords(x,y);
+                dec(Y);  // To prevent re-teleporting
+                fdX:=X;
+                fdY:=Y;
               end;
             end;
           end;
@@ -279,10 +310,8 @@ begin
       end;
       X:=trunc(fdX);
       Y:=trunc(fdY);
-      if (X<-16) or (X>WINDOWWIDTH) or (Y<-16) or (Y>WINDOWHEIGHT) then begin
+      if (X<-16) or (X>WINDOWWIDTH) or (Y<-16) or (Y>WINDOWHEIGHT) then
         Bugs.Delete(Bugs.IndexOf(Self));
-//        fState:=bsIdle;
-      end;
     end;
   end;
 end;

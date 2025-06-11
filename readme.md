@@ -19,27 +19,34 @@ PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 MKConv2, MAD4, FontBuild2, BuildBugs and BuildMushrooms tools are made by me.
 
 ## Compiling in windows environment
-1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder 
+1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder
 containing your fpc.exe
 2. Go into folder "tools\source" and run BuildTools.bat
 3. Go into folder "work" and run BuildData.bat
 4. Go into folder "source" and run BuildRelease_x64.bat (or x86 as you wish.)
    You need Lazarus cross compiler libraries to be installed
    to compile x64 on x86 systems and vice-versa.
-5. Download and extract the latest SDL2.dll into \release\x64 or x86 
+5. Download and extract the latest SDL2.dll into \release\x64 or x86
    (be aware of bitness!). The latest DLLs can be found on the [SDL releases page](https://github.com/libsdl-org/SDL/releases).
    Scroll down to the latest 2.xx version, click assets and download file.
-   At the time of writing of this document the latest SDL2 version is 2.32.6.      
+   At the time of writing of this document the latest SDL2 version is 2.32.6.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.14.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.14.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.15.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.15.zip "Download x86 version").
 
 ## What's new
 
+### 2025.06.11 - Build 15
+- Teleports are working. You can specify teleport groups, bug will teleport
+  beetween teleports belonging the same group. (Now all the teleports look
+  the same, planning to add customization options.)
+- If more than one teleport suitable to receive the bug one will be chosen randomly.
+- Fixed an invalid typecast error when top row bug moved over a non-mushroom object.
+
 ### 2025.06.10 - Build 14
 - Mushrooms are made bigger. They reach the edges of the tile.
-- Moving reworked: If a bug reaches (but not yet crosses) the egde of the tile 
+- Moving reworked: If a bug reaches (but not yet crosses) the egde of the tile
   and the next tile is mushroom it instantly jumps into the mushroom slot or 
   turns back if slot is occupied or mushroom is rotating.
 - The same when jumping out of mushrooms: bug starts moving entirely out of the 
