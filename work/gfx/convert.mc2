@@ -11,6 +11,8 @@ w png next.png 1
 m createatlas 1216 640 1 2
 r png mushroom.png 1
 m addall 1 2
+r png painters.png 1
+m addall 1 2
 r png bugs.png 1
 m addall 1 2
 

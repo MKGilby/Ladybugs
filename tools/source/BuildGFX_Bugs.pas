@@ -1,16 +1,22 @@
-program BuildBugs;
+unit BuildGFX_Bugs;
 
-{$mode delphi}
+{$mode Delphi}
+
+interface
 
 uses
-  SysUtils, ARGBImageUnit, ARGBImagepngReaderUnit, ARGBImagePNGWriterUnit,
-  TextureAtlasGeneratorUnit, AnimationDataUnit, MKStream;
+  SysUtils,
+  ARGBImageUnit,
+  ARGBImagePNGReaderUnit,
+  ARGBImagePNGWriterUnit,
+  TextureAtlasGeneratorUnit,
+  AnimationDataUnit;
 
 type
 
-  { TMain }
+  { TBugBuilder }
 
-  TMain=class
+  TBugBuilder=class
     constructor Create;
     destructor Destroy; override;
     procedure Run;
@@ -22,16 +28,15 @@ type
     procedure GenerateBug2(cnt,r,g,b:integer);
   end;
 
-{ TMain }
+implementation
 
-constructor TMain.Create;
+uses BuildGFX_Shared;
+
+{ TBugBuilder }
+
+constructor TBugBuilder.Create;
 var fBaseBug:TARGBImage;
 begin
-  {$ifdef DEBUG}
-  MKStreamOpener.AddDirectory('..\data',0);
-  {$else}
-  MKStreamOpener.AddDirectory('.\data',0);
-  {$endif}
   fBaseBug:=TARGBImage.Create('ladybug_base.png');
   try
     fBug1:=TARGBImage.Create(16,16);
@@ -58,7 +63,7 @@ begin
   fAtlas:=TTextureAtlasGenerator.Create(640-24,480,1);
 end;
 
-destructor TMain.Destroy;
+destructor TBugBuilder.Destroy;
 begin
   if Assigned(fAtlas) then begin
     fAtlas.Crop;
@@ -73,47 +78,50 @@ begin
   inherited Destroy;
 end;
 
-procedure TMain.Run;
+procedure TBugBuilder.Run;
 begin
-  GenerateBug(1,240,40,20);
-  GenerateBug2(1,240,40,20);
-  GenerateBug(2,240,200,20);
-  GenerateBug2(2,240,200,20);
-  GenerateBug(3,20,96,240);
-  GenerateBug2(3,20,96,240);
-  GenerateBug(4,20,240,64);
-  GenerateBug2(4,20,240,64);
-  GenerateBug(5,200,20,240);
-  GenerateBug2(5,200,20,240);
+  GenerateBug(1,COLORS[1,0],COLORS[1,1],COLORS[1,2]);
+  GenerateBug2(1,COLORS[1,0],COLORS[1,1],COLORS[1,2]);
+  GenerateBug(2,COLORS[2,0],COLORS[2,1],COLORS[2,2]);
+  GenerateBug2(2,COLORS[2,0],COLORS[2,1],COLORS[2,2]);
+  GenerateBug(3,COLORS[3,0],COLORS[3,1],COLORS[3,2]);
+  GenerateBug2(3,COLORS[3,0],COLORS[3,1],COLORS[3,2]);
+  GenerateBug(4,COLORS[4,0],COLORS[4,1],COLORS[4,2]);
+  GenerateBug2(4,COLORS[4,0],COLORS[4,1],COLORS[4,2]);
+//  GenerateBug(5,COLORS[5,0],COLORS[5,1],COLORS[5,2]);
+//  GenerateBug2(5,COLORS[5,0],COLORS[5,1],COLORS[5,2]);
 end;
 
-procedure TMain.GenerateBug(cnt, r, g, b: integer);
+procedure TBugBuilder.GenerateBug(cnt, r, g, b: integer);
 var tmp:TARGBImage;tmpA:TFrameBasedAnimationData;i:integer;
 begin
   tmp:=TARGBImage.Create(64,16);
-  for i:=0 to 3 do begin
-    fBug1.CopyTo(0,0,16,16,i*16,0,tmp);
-    fBug1.Rotate(1);
+  try
+    for i:=0 to 3 do begin
+      fBug1.CopyTo(0,0,16,16,i*16,0,tmp);
+      fBug1.Rotate(1);
+    end;
+    tmp.RecolorRGB(r,g,b);
+    for i:=0 to 3 do begin
+      fBug2.CopyTo(0,0,16,16,i*16,0,tmp,true);
+      fBug2.Rotate(1);
+    end;
+    tmp.SetColorkey(0,0,0);
+    tmpA:=TFrameBasedAnimationData.Create(16,16);
+    tmpA.Paused:=true;
+    tmpA.AddFrame(0,0);
+    tmpA.AddFrame(16,0);
+    tmpA.AddFrame(32,0);
+    tmpA.AddFrame(48,0);
+    tmpA.Name:='Bug'+inttostr(cnt);
+    tmp.Animations.AddObject(tmpA.Name,tmpA);
+    fAtlas.AddImage(tmp);
+  finally
+    tmp.Free;
   end;
-  tmp.RecolorRGB(r,g,b);
-  for i:=0 to 3 do begin
-    fBug2.CopyTo(0,0,16,16,i*16,0,tmp,true);
-    fBug2.Rotate(1);
-  end;
-  tmp.SetColorkey(0,0,0);
-  tmpA:=TFrameBasedAnimationData.Create(16,16);
-  tmpA.Paused:=true;
-  tmpA.AddFrame(0,0);
-  tmpA.AddFrame(16,0);
-  tmpA.AddFrame(32,0);
-  tmpA.AddFrame(48,0);
-  tmpA.Name:='Bug'+inttostr(cnt);
-  tmp.Animations.AddObject(tmpA.Name,tmpA);
-  fAtlas.AddImage(tmp);
-  FreeAndNil(tmp);
 end;
 
-procedure TMain.GenerateBug2(cnt, r, g, b: integer);
+procedure TBugBuilder.GenerateBug2(cnt, r, g, b: integer);
 var tmp:TARGBImage;tmpA:TTimeBasedAnimationData;
 begin
   tmp:=TARGBImage.Create(96,48);
@@ -190,11 +198,5 @@ begin
   end;
 end;
 
-begin
-  with TMain.Create do try
-    Run;
-  finally
-    Free;
-  end;
 end.
 

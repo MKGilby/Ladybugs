@@ -150,7 +150,7 @@ type
   public
     property TextureAtlas:TARGBImage read fGetTextureAtlas;
     property FreeImage:boolean read fGetFreeImage write fSetFreeimage;
-  end deprecated 'Use TTextureAtlasGeneratorLines instead';
+  end;
 
 implementation
 
