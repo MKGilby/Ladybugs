@@ -192,6 +192,23 @@ type
     property Group:integer read fGroup;
   end;
 
+  { TPainter }
+
+  TPainter=class(TSimplePath)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(const pElapsedTime:double); override;
+  private
+    fAnimation:TAnimation;
+    fColor:integer;
+  public
+    property Color:integer read fColor;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -825,6 +842,45 @@ begin
   Log.LogDebug(Format('Listing pairs of teleport at %d,%d:',[X,Y]));
   for i:=0 to length(fTargets)-1 do
     Log.LogDebug(Format('  %d,%d',[TTeleport(fTargets[i]).X,TTeleport(fTargets[i]).Y]));
+end;
+
+{$endregion}
+
+{ TPainter }
+{$region /fold}
+
+constructor TPainter.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+var s:String;
+begin
+  inherited Create(iMap,ipX,ipY);
+  if Assigned(pJ.FindPath('Color')) then begin
+    s:=pJ.FindPath('Color').AsString;
+    if uppercase(s)='RED' then fColor:=1
+    else if uppercase(s)='YELLOW' then fColor:=2
+    else if uppercase(s)='BLUE' then fColor:=3
+    else if UpperCase(s)='GREEN' then fColor:=4
+    else raise Exception.Create(Format('Unknown color in painter! (%s)',[s]));
+  end else
+    raise Exception.Create('Color is not specified in painter!');
+  fMap.Tiles[ipX*5+2,ipY*5+2]:=fMap.Tiles[ipX*5+2,ipY*5+2] or MAP_BIT_BLOCKER;
+  fAnimation:=MM.Animations[Format('Painter%d',[fColor])].SpawnAnimation;
+  fZIndex:=ziForeground;
+end;
+
+destructor TPainter.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TPainter.Draw;
+begin
+  fAnimation.PutFrame(fLeft+24,fTop+24);
+end;
+
+procedure TPainter.Move(const pElapsedTime: double);
+begin
+  fAnimation.Animate(pElapsedTime);
 end;
 
 {$endregion}

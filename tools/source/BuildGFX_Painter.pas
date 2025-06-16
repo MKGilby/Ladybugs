@@ -81,6 +81,7 @@ begin
   tmpA.Name:=Format('Painter%d',[pNumber]);
   tmpA.RandomStart:=true;
   tmpA.Paused:=false;
+  tmpA.Looped:=true;
   tmpA.FPS:=FPS;
   try
     for f:=0 to ANIMFRAMECOUNT-1 do begin

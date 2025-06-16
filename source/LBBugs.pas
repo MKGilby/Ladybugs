@@ -33,6 +33,7 @@ type
     fAnimation:TAnimation;
     fState:(bsIdle,bsMovingOnPath,bsLeavingMushroom,bsFlying);
     procedure SetAnimByDirection;
+    procedure SetAnimByColor;
   public
     X:integer;
     Y:integer;
@@ -70,8 +71,10 @@ begin
   if iColor<1 then iColor:=1
   else if iColor>4 then iColor:=4;
   fColor:=iColor;
-  fAnimation:=MM.Animations[Format('Bug%d',[iColor])].SpawnAnimation;
-  fAnimation.LogData;
+  fAnimation:=nil;
+  SetAnimByColor;
+//  fAnimation:=MM.Animations[Format('Bug%d',[fColor])].SpawnAnimation;
+//  fAnimation.LogData;
   fDirection:=DIR_LEFT;
   fState:=bsMovingOnPath;
   SetAnimByDirection;
@@ -165,6 +168,12 @@ begin
                 dec(X);  // To prevent re-teleporting
                 fdX:=X;
                 fdY:=Y;
+              end else
+              // Painter
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TPainter) then begin
+                // Recolor bug
+                fColor:=TPainter(Entities.EntityAt[px,py]).Color;
+                SetAnimByColor;
               end;
             end;
           end;
@@ -209,6 +218,12 @@ begin
                 inc(X);  // To prevent re-teleporting
                 fdX:=X;
                 fdY:=Y;
+              end else
+              // Painter
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TPainter) then begin
+                // Recolor bug
+                fColor:=TPainter(Entities.EntityAt[px,py]).Color;
+                SetAnimByColor;
               end;
             end;
           end;
@@ -247,6 +262,12 @@ begin
                 inc(Y);  // To prevent re-teleporting
                 fdX:=X;
                 fdY:=Y;
+              end else
+              // Painter
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TPainter) then begin
+                // Recolor bug
+                fColor:=TPainter(Entities.EntityAt[px,py]).Color;
+                SetAnimByColor;
               end;
             end;
           end;
@@ -280,6 +301,12 @@ begin
                 dec(Y);  // To prevent re-teleporting
                 fdX:=X;
                 fdY:=Y;
+              end else
+              // Painter
+              if (px mod 5=2) and (Entities.EntityAt[px,py] is TPainter) then begin
+                // Recolor bug
+                fColor:=TPainter(Entities.EntityAt[px,py]).Color;
+                SetAnimByColor;
               end;
             end;
           end;
@@ -363,6 +390,13 @@ begin
   else if fDirection=DIR_RIGHT then fAnimation.Timer.CurrentFrameIndex:=1
   else if fDirection=DIR_DOWN then fAnimation.Timer.CurrentFrameIndex:=2
   else if fDirection=DIR_LEFT then fAnimation.Timer.CurrentFrameIndex:=3;
+end;
+
+procedure TBug.SetAnimByColor;
+begin
+  if Assigned(fAnimation) then fAnimation.Free;
+  fAnimation:=MM.Animations[Format('Bug%d',[fColor])].SpawnAnimation;
+  SetAnimByDirection;
 end;
 
 { TBugs }

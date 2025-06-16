@@ -16,7 +16,7 @@ The rest of source code is licensed under GNU GPL v3 (or later).
 ## Tools
 PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 
-MKConv2, MAD4, FontBuild2, BuildBugs and BuildMushrooms tools are made by me.
+MKConv2, MAD4, FontBuild2, BuildGFX tools are made by me.
 
 ## Compiling in windows environment
 1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder
@@ -32,10 +32,14 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.6.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.15.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.15.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.16.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.16.zip "Download x86 version").
 
 ## What's new
+
+### 2025.06.16 - Build 16
+- Added painter to game. It paints the passing bug to the color of the painter.
+- Added a brush to the top of the painter graphics.
 
 ### 2025.06.11 - Build 15
 - Teleports are working. You can specify teleport groups, bug will teleport

@@ -124,7 +124,9 @@ begin
     else if UpperCase(EntityType)='BLOCKER' then
       Entities.Add(TBlocker.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='TELEPORT' then
-      Entities.Add(TTeleport.Create(Self,pX,pY,JD));
+      Entities.Add(TTeleport.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='PAINTER' then
+      Entities.Add(TPainter.Create(Self,pX,pY,JD));
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;
