@@ -251,7 +251,7 @@ begin
                   fDirection:=DIR_UP;
               end else
               // Color blocker
-              if (py mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
+              if ((py-1) mod 5=1) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_UP;
               end else
@@ -290,7 +290,7 @@ begin
                   fDirection:=DIR_DOWN;
               end;
               // Color blocker
-              if (py mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
+              if ((py-1) mod 5=3) and (Entities.EntityAt[px,py] is TBlocker) then begin
                 // If bug color doesn't match blocker color, turn back
                 if TBlocker(Entities.EntityAt[px,py]).Color<>fColor then fDirection:=DIR_DOWN;
               end else

@@ -66,11 +66,12 @@ begin
 end;
 
 procedure TPainterBuilder.BuildPainter(pNumber, r, g, b: integer);
-var tmp:TARGBImage;grad:TGradient;c:uint32;f,i,j:integer;tmpA:TTimeBasedAnimationData;
+var tmp:TARGBImage;grad:TGradient;c,c2:uint32;f,i,j:integer;tmpA:TTimeBasedAnimationData;
 begin
   tmp:=TARGBImage.Create(ANIMFRAMECOUNT*PAINTERSIZE,PAINTERSIZE);
   c:=$FF000000+(r and $ff)<<16+(g and $ff)<<8+(b and $ff);
-  grad:=TGradient.Create($FFFFFFFF,$FF111111);
+  c2:=$FF000000+(r and $fe)<<15+(g and $fe)<<7+(b and $fe)>>1;
+  grad:=TGradient.Create(c2,c2);
   grad.Colors[3]:=c;
   grad.ColorPositions[3]:=0.7;
   grad.ColorUsed[3]:=true;

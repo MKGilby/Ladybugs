@@ -85,7 +85,7 @@ end;
 procedure TMain.Run;
 var Play1Map:TPlay1Map;
 begin
-  Play1Map:=TPlay1Map.Create('map08.json');
+  Play1Map:=TPlay1Map.Create('map07.json');
   try
     Play1Map.Run;
   finally

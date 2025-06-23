@@ -32,10 +32,13 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.6.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.16.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.16.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.17.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.17.zip "Download x86 version").
 
 ## What's new
+
+### 2025.06.23 - Build 17
+- Added traffic light to the game. The bugs will only fly in the order of the lights.
 
 ### 2025.06.16 - Build 16
 - Added painter to game. It paints the passing bug to the color of the painter.

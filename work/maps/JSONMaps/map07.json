@@ -1,0 +1,43 @@
+{
+  "Path" : [
+    "2C000068",
+    "05004050",
+    "05001050",
+    "05040050",
+    "03ABAA90"
+  ],
+  "Tiles" : [
+    "OO.T..OO",
+    "....O...",
+    "..L.tC.N",
+    "...t....",
+    ".O.OO.O."
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 810
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "78" : {
+      "Type" : "Next"
+    }
+  }
+}

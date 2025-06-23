@@ -8,6 +8,9 @@ w png grass.png 1
 r png data\next.png 1
 w png next.png 1
 
+r png data\trafficlightbase.png 1
+w png trafficlightbase.png 1
+
 m createatlas 1216 640 1 2
 r png mushroom.png 1
 m addall 1 2
@@ -33,6 +36,11 @@ m addall 1 2
 
 r png data\teleport.png 1
 r json data\teleport.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+r png data\trafficlights.png 1
+r json data\trafficlights.json 1
 m setcolorkey 0 0 0 1
 m addall 1 2
 

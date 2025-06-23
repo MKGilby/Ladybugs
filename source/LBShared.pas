@@ -43,6 +43,13 @@ const
   MAP_DIR_BIT_ALL=MAP_DIR_BIT_UP or MAP_DIR_BIT_RIGHT or MAP_DIR_BIT_DOWN or MAP_DIR_BIT_LEFT;
   MAP_BIT_BLOCKER=16;
 
+  // Color constants
+  COLOR_RED=1;
+  COLOR_YELLOW=2;
+  COLOR_BLUE=3;
+  COLOR_GREEN=4;
+  COLOR_ANY=255;
+
   PATHIMAGEINDEX:array[1..15] of integer=(0,1,6,0,0,3,8,1,5,1,9,4,10,7,2);
 
   // Center positions of slots rotating around the mushroom.
@@ -81,9 +88,11 @@ var
   CurrentMovingBugs:integer;
   Paused:boolean;
   NextBugColor:integer;
+  TrafficLight:TTrafficLight;
 
 procedure LoadAssets;
 procedure FreeAssets;
+function ValidColor(pColor:integer):boolean;
 
 implementation
 
@@ -100,6 +109,7 @@ begin
   MM.Images['Grass4'].Rotate(3);
   MM.Load('paths.png','Paths');
   MM.Load('next.png','Next');
+  MM.Load('TrafficLightBase.png','TrafficLightBase');
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
   MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);
@@ -108,6 +118,17 @@ end;
 procedure FreeAssets;
 begin
   MM.Free;
+end;
+
+function ValidColor(pColor: integer): boolean;
+var c:integer;
+begin
+  if Assigned(TrafficLight) then begin
+    c:=TrafficLight.NextColor;
+    if c=pColor then TrafficLight.Step;
+    Result:=(c=pColor) or (c=COLOR_ANY);
+  end else
+    Result:=true;
 end;
 
 end.

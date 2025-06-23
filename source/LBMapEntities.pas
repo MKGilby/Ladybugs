@@ -89,6 +89,9 @@ type
     function AddBug(pBug:TBug;pFromDirection:integer):boolean;
     // Move entity for no more than MAXTIMESLICE
     procedure Move(const pElapsedTime:double); override;
+    // Check if there is four same coloured bug in the mushroom.
+    // Also checks traffic light and combination lock too.
+    procedure CheckCompleteness;
   private
     fAnimation:TAnimation;
     fMovingState:(mstIdle,mstRotating,mstTransitioning);
@@ -122,8 +125,6 @@ type
     destructor Destroy; override;
     // Draw the non-static part of the entity.
     procedure Draw; override;
-    // Draws static background image onto pBack.
-    // procedure DrawBack(pBack:TARGBImage); override;
     // Move entity for no more than MAXTIMESLICE
     procedure Move(const pElapsedTime:double); override;
   private
@@ -207,6 +208,30 @@ type
     fColor:integer;
   public
     property Color:integer read fColor;
+  end;
+
+  { TTrafficLight }
+
+  TTrafficLight=class(TMapEntity)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(const pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(const pElapsedTime:double); override;
+    // Next color to assemble (or COLOR_ANY if no color request)
+    function NextColor:integer;
+    // Color assembled, step to the next color.
+    procedure Step;
+  private
+    fAnimation:TAnimation;
+    fColors:array [0..2] of integer;
+    fMaxTime,fTime:double;
+    // Set the traffic light to three different colors.
+    procedure Fill;
   end;
 
 implementation
@@ -430,7 +455,6 @@ begin
 end;
 
 function TMushroom.AddBug(pBug:TBug; pFromDirection:integer):boolean;
-var i:integer;
 
   procedure BugToSlot(pSlot:integer;pBug:TBug;pDirection:integer);
   begin
@@ -457,29 +481,6 @@ begin
   else if pFromDirection=DIR_RIGHT then BugToSlot(1,pBug,pFromDirection)
   else if pFromDirection=DIR_DOWN then BugToSlot(2,pBug,pFromDirection)
   else if pFromDirection=DIR_LEFT then BugToSlot(3,pBug,pFromDirection);
-  // Check if all slots have the bugs of same color
-  if Assigned(fBugs[0]) and Assigned(fBugs[1]) and Assigned(fBugs[2]) and Assigned(fBugs[3]) then
-    if (fBugs[0].Color=fBugs[1].Color) and
-       (fBugs[1].Color=fBugs[2].Color) and
-       (fBugs[2].Color=fBugs[3].Color) then begin
-      // If mushroom is not yet lighted
-      if fVisualState=vstDark then begin
-        // Moving state is transitioning, no clicking is allowed
-        fMovingState:=mstTransitioning;
-        // Free previous animation
-        fAnimation.Free;
-        // Set animation to transitioning mushroom
-        fAnimation:=MM.Animations['MushroomC'].SpawnAnimation;
-        // Unpause animation
-        fAnimation.Timer.Paused:=false;
-      end;
-      // Release bugs from mushroom and free up slot in map
-      for i:=0 to 3 do begin
-        fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
-        fBugs[i]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
-      end;
-    end;
   Result:=true;
 end;
 
@@ -534,6 +535,34 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TMushroom.CheckCompleteness;
+var i:integer;
+begin
+  // Check if all slots have the bugs of same color
+  if Assigned(fBugs[0]) and Assigned(fBugs[1]) and Assigned(fBugs[2]) and Assigned(fBugs[3]) then
+    if (fBugs[0].Color=fBugs[1].Color) and
+       (fBugs[1].Color=fBugs[2].Color) and
+       (fBugs[2].Color=fBugs[3].Color) and ValidColor(fBugs[0].Color) then begin
+      // If mushroom is not yet lighted
+      if fVisualState=vstDark then begin
+        // Moving state is transitioning, no clicking is allowed
+        fMovingState:=mstTransitioning;
+        // Free previous animation
+        fAnimation.Free;
+        // Set animation to transitioning mushroom
+        fAnimation:=MM.Animations['MushroomC'].SpawnAnimation;
+        // Unpause animation
+        fAnimation.Timer.Paused:=false;
+      end;
+      // Release bugs from mushroom and free up slot in map
+      for i:=0 to 3 do begin
+        fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
+        fBugs[i]:=nil;
+        fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
+      end;
+    end;
 end;
 
 procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
@@ -738,10 +767,10 @@ begin
   inherited Create(iMap,ipX,ipY);
   if Assigned(pJ.FindPath('Color')) then begin
     s:=pJ.FindPath('Color').AsString;
-    if uppercase(s)='RED' then fColor:=1
-    else if uppercase(s)='YELLOW' then fColor:=2
-    else if uppercase(s)='BLUE' then fColor:=3
-    else if UpperCase(s)='GREEN' then fColor:=4
+    if uppercase(s)='RED' then fColor:=COLOR_RED
+    else if uppercase(s)='YELLOW' then fColor:=COLOR_YELLOW
+    else if uppercase(s)='BLUE' then fColor:=COLOR_BLUE
+    else if UpperCase(s)='GREEN' then fColor:=COLOR_GREEN
     else raise Exception.Create(Format('Unknown color in blocker! (%s)',[s]));
   end else
     raise Exception.Create('Color is not specified in blocker!');
@@ -855,10 +884,10 @@ begin
   inherited Create(iMap,ipX,ipY);
   if Assigned(pJ.FindPath('Color')) then begin
     s:=pJ.FindPath('Color').AsString;
-    if uppercase(s)='RED' then fColor:=1
-    else if uppercase(s)='YELLOW' then fColor:=2
-    else if uppercase(s)='BLUE' then fColor:=3
-    else if UpperCase(s)='GREEN' then fColor:=4
+    if uppercase(s)='RED' then fColor:=COLOR_RED
+    else if uppercase(s)='YELLOW' then fColor:=COLOR_YELLOW
+    else if uppercase(s)='BLUE' then fColor:=COLOR_BLUE
+    else if UpperCase(s)='GREEN' then fColor:=COLOR_GREEN
     else raise Exception.Create(Format('Unknown color in painter! (%s)',[s]));
   end else
     raise Exception.Create('Color is not specified in painter!');
@@ -881,6 +910,82 @@ end;
 procedure TPainter.Move(const pElapsedTime: double);
 begin
   fAnimation.Animate(pElapsedTime);
+end;
+
+{$endregion}
+
+{ TTrafficLight }
+{$region /fold}
+
+constructor TTrafficLight.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+begin
+  inherited Create(iMap,ipX,ipY);
+  if Assigned(pJ.FindPath('RefillSeconds')) then
+    fMaxTime:=pJ.FindPath('RefillSeconds').AsFloat
+  else begin
+    Log.LogWarning('TrafficLight.RefillSeconds is not specified in map! Setting it to -1 (never refill).');
+    fTime:=-1;
+  end;
+  Fill;
+  fAnimation:=MM.Animations['TrafficLights'].SpawnAnimation;
+end;
+
+destructor TTrafficLight.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TTrafficLight.Draw;
+var i:integer;
+begin
+  for i:=0 to 2 do
+    if fColors[i]>0 then fAnimation.PutFrame(fLeft+34,fTop+20+i*14,fColors[i]-1);
+end;
+
+procedure TTrafficLight.DrawBack(const pBack: TARGBImage);
+var tmp:TARGBImage;
+begin
+  tmp:=MM.Images['TrafficLightBase'];
+  pBack.PutImage(fLeft+(80-tmp.Width) div 2,fTop+(80-tmp.Height) div 2,tmp,true);
+end;
+
+procedure TTrafficLight.Move(const pElapsedTime: double);
+begin
+  inherited Move(pElapsedTime);
+  if fTime>0 then begin
+    fTime:=fTime-pElapsedTime;
+    if fTime<0 then Fill;
+  end;
+end;
+
+function TTrafficLight.NextColor: integer;
+begin
+  if fColors[0]<>-1 then Result:=fColors[0]
+  else if fColors[1]<>-1 then Result:=fColors[1]
+  else if fColors[2]<>-1 then Result:=fColors[2]
+  else Result:=COLOR_ANY;
+end;
+
+procedure TTrafficLight.Step;
+begin
+  if fColors[0]<>-1 then fColors[0]:=-1
+  else if fColors[1]<>-1 then fColors[1]:=-1
+  else if fColors[2]<>-1 then begin
+    fColors[2]:=-1;
+    fTime:=fMaxTime;
+  end;
+end;
+
+procedure TTrafficLight.Fill;
+begin
+  fColors[0]:=random(4)+1;
+  repeat
+    fColors[1]:=random(4)+1;
+  until fColors[0]<>fColors[1];
+  repeat
+    fColors[2]:=random(4)+1;
+  until (fColors[0]<>fColors[2]) and (fColors[1]<>fColors[2]);
 end;
 
 {$endregion}

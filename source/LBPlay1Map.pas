@@ -35,6 +35,7 @@ uses LBShared, LBMapEntities, sdl2, ARGBImageUnit, LBBugs;
 constructor TPlay1Map.Create(iMapFilename:string);
 begin
   Entities:=TMapEntities.Create;
+  TrafficLight:=nil;
   Bugs:=TBugs.Create;
   fMap:=TMap.Create;
   fMap.LoadFromFile(iMapFilename);
@@ -52,7 +53,7 @@ begin
 end;
 
 function TPlay1Map.Run:integer;
-var pre,now:QWord;
+var pre,now:QWord;i:integer;
 begin
   ShouldCreateNewBug:=true;
   pre:=GetTickCount64;
@@ -63,6 +64,9 @@ begin
     if not Paused then begin
       Entities.Move((now-pre)/1000);
       Bugs.Move((now-pre)/1000);
+      for i:=0 to Entities.Count-1 do
+        if Entities[i] is TMushroom then
+          TMushroom(Entities[i]).CheckCompleteness;
     end;
     pre:=now;
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);

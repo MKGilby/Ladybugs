@@ -126,7 +126,14 @@ begin
     else if UpperCase(EntityType)='TELEPORT' then
       Entities.Add(TTeleport.Create(Self,pX,pY,JD))
     else if UpperCase(EntityType)='PAINTER' then
-      Entities.Add(TPainter.Create(Self,pX,pY,JD));
+      Entities.Add(TPainter.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='TRAFFICLIGHT' then begin
+      Entities.Add(TTrafficLight.Create(Self,pX,pY,JD));
+      if not Assigned(TrafficLight) then
+        TrafficLight:=TTrafficLight(Entities[Entities.Count-1])
+      else
+        raise Exception.Create('Only one traffic light allowed on a map!');
+    end;
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;
