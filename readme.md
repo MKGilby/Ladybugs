@@ -39,6 +39,7 @@ containing your fpc.exe
 
 ### 2025.06.23 - Build 17
 - Added traffic light to the game. The bugs will only fly in the order of the lights.
+- Fixed a bug with vertical blocker.
 
 ### 2025.06.16 - Build 16
 - Added painter to game. It paints the passing bug to the color of the painter.
