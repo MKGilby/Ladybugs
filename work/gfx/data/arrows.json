@@ -1,0 +1,17 @@
+{ "Animations" : [
+  { "Type" : "TimeBased",
+    "Name" : "Arrows",
+    "Width" : 22,
+    "Height" : 22,
+    "HotPoint" : { "x" : 0, "y" : 0 },
+    "FPS" : 1,
+    "LoopDelay" : 0,
+    "StartFrame" : 0,
+    "Paused" : true,
+    "Frames" : [
+      { "x" : 0, "y" : 0 },
+      { "x" : 22, "y" : 0 },
+      { "x" : 44, "y" : 0 },
+      { "x" : 66, "y" : 0 }
+    ] }
+] }

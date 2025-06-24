@@ -32,10 +32,14 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.6.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.17.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.17.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.18.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.18.zip "Download x86 version").
 
 ## What's new
+
+### 2025.06.24 - Build 18
+- Added arrow graphics.
+- Added right arrow and map 9 and 10.
 
 ### 2025.06.23 - Build 17
 - Added traffic light to the game. The bugs will only fly in the order of the lights.
@@ -55,7 +59,7 @@ containing your fpc.exe
 ### 2025.06.10 - Build 14
 - Mushrooms are made bigger. They reach the edges of the tile.
 - Moving reworked: If a bug reaches (but not yet crosses) the egde of the tile
-  and the next tile is mushroom it instantly jumps into the mushroom slot or 
+  and the next tile is mushroom it instantly jumps into the mushroom slot or
   turns back if slot is occupied or mushroom is rotating.
 - The same when jumping out of mushrooms: bug starts moving entirely out of the 
   mushroom tile. If the adjacent tile is another mushroom with free slot, 

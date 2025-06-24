@@ -234,6 +234,18 @@ type
     procedure Fill;
   end;
 
+  { TArrow }
+
+  TArrow=class(TSimplePath)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+  private
+    fAnimation:TAnimation;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -336,43 +348,54 @@ end;
 {$region /fold}
 
 constructor TSimplePath.Create(iMap: TMap; ipX, ipY: integer);
+var px,py:integer;
 begin
   inherited Create(iMap,ipX,ipY);
   fExits:=fMap.OrigTiles[ipX,ipY];
-end;
-
-procedure TSimplePath.DrawBack(const pBack:TARGBImage);
-var tmp:TARGBImage;px,py:integer;
-begin
   px:=fX*5;
   py:=fY*5+1;
-  tmp:=MM.Images.ItemByName['Paths'];
   if (fExits and MAP_DIR_BIT_UP)=MAP_DIR_BIT_UP then begin
     fMap.Tiles[pX+2,pY]:=0;
     fMap.Tiles[pX+2,pY+1]:=0;
-    pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,tmp,true);
-    pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,tmp,true);
   end;
   if (fExits and MAP_DIR_BIT_RIGHT)=MAP_DIR_BIT_RIGHT then begin
     fMap.Tiles[pX+3,pY+2]:=0;
     fMap.Tiles[pX+4,pY+2]:=0;
-    pBack.PutImagePart(fLeft+48,fTop+32,16,0,16,16,tmp,true);
-    pBack.PutImagePart(fLeft+64,fTop+32,16,0,16,16,tmp,true);
   end;
   if (fExits and MAP_DIR_BIT_DOWN)=MAP_DIR_BIT_DOWN then begin
     fMap.Tiles[pX+2,pY+3]:=0;
     fMap.Tiles[pX+2,pY+4]:=0;
-    pBack.PutImagePart(fLeft+32,fTop+48,0,0,16,16,tmp,true);
-    pBack.PutImagePart(fLeft+32,fTop+64,0,0,16,16,tmp,true);
   end;
   if (fExits and MAP_DIR_BIT_LEFT)=MAP_DIR_BIT_LEFT then begin
     fMap.Tiles[pX,pY+2]:=0;
     fMap.Tiles[pX+1,pY+2]:=0;
+  end;
+  if fExits>0 then begin
+    fMap.Tiles[pX+2,pY+2]:=0;
+  end;
+end;
+
+procedure TSimplePath.DrawBack(const pBack:TARGBImage);
+var tmp:TARGBImage;
+begin
+  tmp:=MM.Images.ItemByName['Paths'];
+  if (fExits and MAP_DIR_BIT_UP)=MAP_DIR_BIT_UP then begin
+    pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,tmp,true);
+    pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,tmp,true);
+  end;
+  if (fExits and MAP_DIR_BIT_RIGHT)=MAP_DIR_BIT_RIGHT then begin
+    pBack.PutImagePart(fLeft+48,fTop+32,16,0,16,16,tmp,true);
+    pBack.PutImagePart(fLeft+64,fTop+32,16,0,16,16,tmp,true);
+  end;
+  if (fExits and MAP_DIR_BIT_DOWN)=MAP_DIR_BIT_DOWN then begin
+    pBack.PutImagePart(fLeft+32,fTop+48,0,0,16,16,tmp,true);
+    pBack.PutImagePart(fLeft+32,fTop+64,0,0,16,16,tmp,true);
+  end;
+  if (fExits and MAP_DIR_BIT_LEFT)=MAP_DIR_BIT_LEFT then begin
     pBack.PutImagePart(fLeft   ,fTop+32,16,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+16,fTop+32,16,0,16,16,tmp,true);
   end;
   if fExits>0 then begin
-    fMap.Tiles[pX+2,pY+2]:=0;
     pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits]*16,0,16,16,tmp,true);
   end;
 end;
@@ -986,6 +1009,42 @@ begin
   repeat
     fColors[2]:=random(4)+1;
   until (fColors[0]<>fColors[2]) and (fColors[1]<>fColors[2]);
+end;
+
+{$endregion}
+
+{ TArrow }
+{$region /fold}
+
+constructor TArrow.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+var s:string;px,py:integer;
+begin
+  inherited Create(iMap,ipX,ipY);
+  px:=fX*5;
+  py:=fY*5+1;
+  fAnimation:=MM.Animations['Arrows'].SpawnAnimation;
+  if Assigned(pJ.FindPath('Direction')) then begin
+    s:=pJ.FindPath('Direction').AsString;
+    if UpperCase(s)='RIGHT' then begin
+      fMap.Tiles[pX+2,pY+3]:=fMap.Tiles[pX+2,pY+3] or MAP_DIR_BIT_DOWN;
+      fMap.Tiles[pX+2,pY+1]:=fMap.Tiles[pX+2,pY+1] or MAP_DIR_BIT_UP;
+      fMap.Tiles[pX+1,pY+2]:=fMap.Tiles[pX+1,pY+2] or MAP_DIR_BIT_LEFT;
+      fAnimation.Timer.CurrentFrameIndex:=1;
+    end;
+  end else
+    raise Exception.Create('Arrow.Direction is not specified in map!');
+  fZIndex:=ziForeground;
+end;
+
+destructor TArrow.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TArrow.Draw;
+begin
+  fAnimation.PutFrame(Left+29,Top+29);
 end;
 
 {$endregion}

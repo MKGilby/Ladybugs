@@ -133,7 +133,9 @@ begin
         TrafficLight:=TTrafficLight(Entities[Entities.Count-1])
       else
         raise Exception.Create('Only one traffic light allowed on a map!');
-    end;
+    end
+    else if UpperCase(EntityType)='ARROW' then
+      Entities.Add(TArrow.Create(Self,pX,pY,JD))
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;
