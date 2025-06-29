@@ -1,0 +1,51 @@
+{
+  "Path" : [
+    "40400404",
+    "56FEEFC5",
+    "57D557D5",
+    "3F9553F9",
+    "01039010"
+  ],
+  "Tiles" : [
+    "O.OLCONO",
+    ".OaOOcO.",
+    ".OO..OO.",
+    "ObO..OdO",
+    ".O.OO.O."
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    },
+    "99" : {
+      "Type" : "Blocker",
+      "Color" : "Blue"
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    }
+  }
+}

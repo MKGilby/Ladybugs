@@ -1,0 +1,67 @@
+{
+  "Path" : [
+    "000006EC",
+    "2AEA8555",
+    "00500555",
+    "0052AFD5",
+    "001003B9"
+  ],
+  "Tiles" : [
+    ".T.N.OOO",
+    "OatbO...",
+    "......c.",
+    "C.dOh.O.",
+    "..O..itj"
+  ],
+  "TileDefinitions" : {
+    "46" : {
+      "Type" : "Empty"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 540
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "99" : {
+      "Type" : "Blocker",
+      "Color" : "Blue"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    },
+    "104" : {
+      "Type" : "Painter",
+      "Color" : "Green"
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    }
+  }
+}

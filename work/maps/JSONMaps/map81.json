@@ -1,0 +1,39 @@
+{
+  "Path" : [
+    "40000000",
+    "56AAAAAC",
+    "7FAAA805",
+    "53AAAA85",
+    "3AAAAAA9"
+  ],
+  "Tiles" : [
+    "O..LCTN.",
+    ".O.....O",
+    "O.O..O..",
+    ".O....O.",
+    "O......O"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 270
+    },
+    "78" : {
+      "Type" : "Next"
+    }
+  }
+}

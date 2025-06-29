@@ -1,0 +1,39 @@
+{
+  "Path" : [
+    "00040000",
+    "00050000",
+    "00050000",
+    "00050000",
+    "02ABA800"
+  ],
+  "Tiles" : [
+    "..CORTN.",
+    "........",
+    "........",
+    "........",
+    ".O.O.O.."
+  ],
+  "TileDefinitions" : {
+    "46" : {
+      "Type" : "Empty"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "82" : {
+      "Type" : "PatternLock",
+      "RefillSeconds" : 90
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 180
+    },
+    "78" : {
+      "Type" : "Next"
+    }
+  }
+}

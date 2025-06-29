@@ -1,0 +1,63 @@
+{
+  "Path" : [
+    "0006EEAC",
+    "046FF905",
+    "6FFFFAED",
+    "7F951055",
+    "3BABAAB9"
+  ],
+  "Tiles" : [
+    "T.COOl.O",
+    ".tlb.jN.",
+    "lOjb..OO",
+    "OiO.tR..",
+    "iOtktOOO"
+  ],
+  "TileDefinitions" : {
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 900
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "82" : {
+      "Type" : "PatternLock",
+      "RefillSeconds" : 90
+    },
+    "107" : {
+      "Type" : "Arrow",
+      "Direction" : "Up"
+    }
+  }
+}

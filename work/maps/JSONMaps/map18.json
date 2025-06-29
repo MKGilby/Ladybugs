@@ -1,0 +1,47 @@
+{
+  "Path" : [
+    "6C00002C",
+    "11000029",
+    "00000000",
+    "6A800054",
+    "38000039"
+  ],
+  "Tiles" : [
+    "OO....OO",
+    "Ot.N..tO",
+    "...TC.t.",
+    "Obt...aO",
+    "OO....OO"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 540
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    }
+  }
+}

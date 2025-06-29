@@ -1,0 +1,44 @@
+{
+  "Path" : [
+    "2AAAAAAC",
+    "02AAAAAD",
+    "6AAAAAA9",
+    "7AAAAA80",
+    "3AAAAAA8"
+  ],
+  "Tiles" : [
+    "O......O",
+    "COa....O",
+    "O......O",
+    "O....cOT",
+    "O.....bO"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    },
+    "99" : {
+      "Type" : "Blocker",
+      "Color" : "Blue"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 450
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    }
+  }
+}

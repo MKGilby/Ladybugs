@@ -36,6 +36,7 @@ constructor TPlay1Map.Create(iMapFilename:string);
 begin
   Entities:=TMapEntities.Create;
   TrafficLight:=nil;
+  PatternLock:=nil;
   Bugs:=TBugs.Create;
   fMap:=TMap.Create;
   fMap.LoadFromFile(iMapFilename);

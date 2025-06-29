@@ -1,0 +1,41 @@
+{
+  "Path" : [
+    "6EEEEEEC",
+    "7FFFFFFD",
+    "7FFFFFFD",
+    "3FFFFFFD",
+    "03BBBBB9"
+  ],
+  "Tiles" : [
+    "llOOOOOO",
+    "Oikjiljl",
+    "kkljijlj",
+    "kjjkjiil",
+    "Cjkjkjjj"
+  ],
+  "TileDefinitions" : {
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "107" : {
+      "Type" : "Arrow",
+      "Direction" : "Up"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "Path" : [
+    "6AAAAAAC",
+    "506AEC05",
+    "7AFABFAD",
+    "50500505",
+    "3ABAABA9"
+  ],
+  "Tiles" : [
+    "Oi.....O",
+    "lCOdjOTl",
+    "Oi..O.jO",
+    "l.k.NkLl",
+    "OiOiaOjO"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 720
+    },
+    "107" : {
+      "Type" : "Arrow",
+      "Direction" : "Up"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    }
+  }
+}

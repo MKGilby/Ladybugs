@@ -1,0 +1,53 @@
+{
+  "Path" : [
+    "6EEAAEEC",
+    "7FD007FD",
+    "7FFEAFFD",
+    "7FFFAFFD",
+    "3BBBABB9"
+  ],
+  "Tiles" : [
+    "OOOOOOOO",
+    "lllCRiij",
+    "llOiaOij",
+    "lOiicOij",
+    "OiiidOij"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "82" : {
+      "Type" : "PatternLock",
+      "RefillSeconds" : 90
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    },
+    "99" : {
+      "Type" : "Blocker",
+      "Color" : "Blue"
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    }
+  }
+}

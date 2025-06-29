@@ -136,6 +136,15 @@ begin
     end
     else if UpperCase(EntityType)='ARROW' then
       Entities.Add(TArrow.Create(Self,pX,pY,JD))
+    else if UpperCase(EntityType)='PATTERNLOCK' then begin
+      Entities.Add(TPatternLock.Create(Self,pX,pY,JD));
+      if not Assigned(PatternLock) then
+        PatternLock:=TPatternLock(Entities[Entities.Count-1])
+      else
+        raise Exception.Create('Only one pattern lock allowed on a map!');
+    end
+    else
+      raise Exception.Create(Format('Unknown tile type! (%s)',[EntityType]));
   end else
     raise Exception.Create(Format('Tile definition not found! (%s)',[pTileDef]));
 end;

@@ -32,10 +32,17 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.6.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.18.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.18.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.19.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.19.zip "Download x86 version").
 
 ## What's new
+
+### 2025.06.29 - Build 19
+- Added the 3 remaining arrow tiles.
+- Arrow color changed to black.
+- Added color pattern lock. (That cross thing with four colors.)
+- Added all original maps. Not all will work, one tile is not yet working.
+  (Simple path down from the top row, introduced on map 58.)
 
 ### 2025.06.24 - Build 18
 - Added arrow graphics.

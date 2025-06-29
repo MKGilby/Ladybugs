@@ -1,0 +1,72 @@
+{
+  "Path" : [
+    "2AAAAAAC",
+    "06AEAEAD",
+    "07AFAFAD",
+    "07AFAFAD",
+    "03ABABA9"
+  ],
+  "Tiles" : [
+    "O.O.O.OO",
+    "TObOeOfO",
+    "COcOhOgO",
+    "LOaOfOeO",
+    "ROdOgOhO"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 900
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "101" : {
+      "Type" : "Painter",
+      "Color" : "Red"
+    },
+    "102" : {
+      "Type" : "Painter",
+      "Color" : "Yellow"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "99" : {
+      "Type" : "Blocker",
+      "Color" : "Blue"
+    },
+    "104" : {
+      "Type" : "Painter",
+      "Color" : "Green"
+    },
+    "103" : {
+      "Type" : "Painter",
+      "Color" : "Blue"
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    },
+    "82" : {
+      "Type" : "PatternLock",
+      "RefillSeconds" : 90
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    }
+  }
+}

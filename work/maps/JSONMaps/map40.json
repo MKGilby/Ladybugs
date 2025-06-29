@@ -1,0 +1,51 @@
+{
+  "Path" : [
+    "2EC006E8",
+    "07FAEFD0",
+    "6F9053FC",
+    "51005015",
+    "3AAABAA9"
+  ],
+  "Tiles" : [
+    "OOOCTOOO",
+    ".l..O.lL",
+    "OdON.OaO",
+    ".O....O.",
+    "O...O..O"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 720
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "97" : {
+      "Type" : "Blocker",
+      "Color" : "Red"
+    }
+  }
+}

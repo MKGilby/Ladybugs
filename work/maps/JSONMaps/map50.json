@@ -1,0 +1,52 @@
+{
+  "Path" : [
+    "6EEEEEEC",
+    "55555555",
+    "55555555",
+    "51539515",
+    "3A9003A9"
+  ],
+  "Tiles" : [
+    "OOlOOlOO",
+    "ktl..ltk",
+    "O..bd..O",
+    ".O.OO.O.",
+    "O.OCLO.O"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "107" : {
+      "Type" : "Arrow",
+      "Direction" : "Up"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "98" : {
+      "Type" : "Blocker",
+      "Color" : "Yellow"
+    },
+    "100" : {
+      "Type" : "Blocker",
+      "Color" : "Green"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "76" : {
+      "Type" : "TrafficLight",
+      "RefillSeconds" : -1
+    }
+  }
+}

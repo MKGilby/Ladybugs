@@ -1,0 +1,48 @@
+{
+  "Path" : [
+    "6AAEAEEC",
+    "56ABAB95",
+    "53AAAAA9",
+    "3AAAAA80",
+    "02AAAAA8"
+  ],
+  "Tiles" : [
+    "O..j.jlO",
+    ".l.O.Oj.",
+    ".i..t..j",
+    "i.....OC",
+    "TO..t..O"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    },
+    "105" : {
+      "Type" : "Arrow",
+      "Direction" : "Right"
+    },
+    "116" : {
+      "Type" : "Teleport",
+      "Group" : 1
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 540
+    }
+  }
+}

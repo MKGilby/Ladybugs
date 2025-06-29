@@ -1,0 +1,39 @@
+{
+  "Path" : [
+    "00555555",
+    "00555555",
+    "6C555555",
+    "55555555",
+    "3BBBBBB9"
+  ],
+  "Tiles" : [
+    "NT......",
+    "C.......",
+    "OO......",
+    "........",
+    "OOjjjjjj"
+  ],
+  "TileDefinitions" : {
+    "78" : {
+      "Type" : "Next"
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 360
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "106" : {
+      "Type" : "Arrow",
+      "Direction" : "Left"
+    }
+  }
+}

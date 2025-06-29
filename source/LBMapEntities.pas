@@ -246,6 +246,28 @@ type
     fAnimation:TAnimation;
   end;
 
+  { TPatternLock }
+
+  TPatternLock=class(TMapEntity)
+    // ipX, ipY is in big blocks (0..7,0..4)
+    constructor Create(iMap:TMap;ipX,ipY:integer;pJ:TJSONData);
+    destructor Destroy; override;
+    // Draw the non-static part of the entity.
+    procedure Draw; override;
+    // Draws static background image onto pBack.
+    procedure DrawBack(const pBack:TARGBImage); override;
+    // Move entity for no more than MAXTIMESLICE
+    procedure Move(const pElapsedTime:double); override;
+    // Checks if the four color matches the pattern lock. // 0-No, 1-Yes, 2-No lock yet
+    function CheckPattern(pColorUp,pColorRight,pColorDown,pColorLeft:integer):integer;
+  private
+    fAnimation:TAnimation;
+    fColors:array [0..3] of integer;
+    fMaxTime,fTime:double;
+    // Set the pattern lock to a combination containing more than one color.
+    procedure Fill;
+  end;
+
 implementation
 
 uses LBShared, Logger, SDL2, MKToolbox;
@@ -561,31 +583,38 @@ begin
 end;
 
 procedure TMushroom.CheckCompleteness;
-var i:integer;
+var i,pl:integer;
 begin
-  // Check if all slots have the bugs of same color
-  if Assigned(fBugs[0]) and Assigned(fBugs[1]) and Assigned(fBugs[2]) and Assigned(fBugs[3]) then
-    if (fBugs[0].Color=fBugs[1].Color) and
+  // If all slots have bugs
+  if Assigned(fBugs[0]) and Assigned(fBugs[1]) and Assigned(fBugs[2]) and Assigned(fBugs[3]) then begin
+    // 1. Check if there is pattern lock and we matched the pattern.
+    if Assigned(PatternLock) then begin
+      pl:=PatternLock.CheckPattern(fBugs[0].Color,fBugs[1].Color,fBugs[2].Color,fBugs[3].Color);
+    end else pl:=2;  // no lock.
+    // Check if all slots have the bugs of same color and traffic light allows this color
+    if (pl=1) or ((pl=2) and
+       (fBugs[0].Color=fBugs[1].Color) and
        (fBugs[1].Color=fBugs[2].Color) and
-       (fBugs[2].Color=fBugs[3].Color) and ValidColor(fBugs[0].Color) then begin
-      // If mushroom is not yet lighted
-      if fVisualState=vstDark then begin
-        // Moving state is transitioning, no clicking is allowed
-        fMovingState:=mstTransitioning;
-        // Free previous animation
-        fAnimation.Free;
-        // Set animation to transitioning mushroom
-        fAnimation:=MM.Animations['MushroomC'].SpawnAnimation;
-        // Unpause animation
-        fAnimation.Timer.Paused:=false;
+       (fBugs[2].Color=fBugs[3].Color) and ValidColor(fBugs[0].Color)) then begin
+        // If mushroom is not yet lighted
+        if fVisualState=vstDark then begin
+          // Moving state is transitioning, no clicking is allowed
+          fMovingState:=mstTransitioning;
+          // Free previous animation
+          fAnimation.Free;
+          // Set animation to transitioning mushroom
+          fAnimation:=MM.Animations['MushroomC'].SpawnAnimation;
+          // Unpause animation
+          fAnimation.Timer.Paused:=false;
+        end;
+        // Release bugs from mushroom and free up slot in map
+        for i:=0 to 3 do begin
+          fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
+          fBugs[i]:=nil;
+          fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
+        end;
       end;
-      // Release bugs from mushroom and free up slot in map
-      for i:=0 to 3 do begin
-        fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
-        fBugs[i]:=nil;
-        fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
-      end;
-    end;
+  end;
 end;
 
 procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);
@@ -947,8 +976,9 @@ begin
     fMaxTime:=pJ.FindPath('RefillSeconds').AsFloat
   else begin
     Log.LogWarning('TrafficLight.RefillSeconds is not specified in map! Setting it to -1 (never refill).');
-    fTime:=-1;
+    fMaxTime:=-1;
   end;
+  fTime:=0;
   Fill;
   fAnimation:=MM.Animations['TrafficLights'].SpawnAnimation;
 end;
@@ -975,10 +1005,12 @@ end;
 
 procedure TTrafficLight.Move(const pElapsedTime: double);
 begin
-  inherited Move(pElapsedTime);
   if fTime>0 then begin
     fTime:=fTime-pElapsedTime;
-    if fTime<0 then Fill;
+    if fTime<=0 then begin
+      Fill;
+      fTime:=0;
+    end;
   end;
 end;
 
@@ -1025,12 +1057,31 @@ begin
   fAnimation:=MM.Animations['Arrows'].SpawnAnimation;
   if Assigned(pJ.FindPath('Direction')) then begin
     s:=pJ.FindPath('Direction').AsString;
+    if UpperCase(s)='UP' then begin
+      fMap.Tiles[pX+2,pY+3]:=fMap.Tiles[pX+2,pY+3] or MAP_DIR_BIT_DOWN;
+      fMap.Tiles[pX+1,pY+2]:=fMap.Tiles[pX+1,pY+2] or MAP_DIR_BIT_LEFT;
+      fMap.Tiles[pX+3,pY+2]:=fMap.Tiles[pX+3,pY+2] or MAP_DIR_BIT_RIGHT;
+      fAnimation.Timer.CurrentFrameIndex:=0;
+    end else
     if UpperCase(s)='RIGHT' then begin
       fMap.Tiles[pX+2,pY+3]:=fMap.Tiles[pX+2,pY+3] or MAP_DIR_BIT_DOWN;
       fMap.Tiles[pX+2,pY+1]:=fMap.Tiles[pX+2,pY+1] or MAP_DIR_BIT_UP;
       fMap.Tiles[pX+1,pY+2]:=fMap.Tiles[pX+1,pY+2] or MAP_DIR_BIT_LEFT;
       fAnimation.Timer.CurrentFrameIndex:=1;
-    end;
+    end else
+    if UpperCase(s)='DOWN' then begin
+      fMap.Tiles[pX+2,pY+1]:=fMap.Tiles[pX+2,pY+1] or MAP_DIR_BIT_UP;
+      fMap.Tiles[pX+1,pY+2]:=fMap.Tiles[pX+1,pY+2] or MAP_DIR_BIT_LEFT;
+      fMap.Tiles[pX+3,pY+2]:=fMap.Tiles[pX+3,pY+2] or MAP_DIR_BIT_RIGHT;
+      fAnimation.Timer.CurrentFrameIndex:=2;
+    end else
+    if UpperCase(s)='LEFT' then begin
+      fMap.Tiles[pX+2,pY+3]:=fMap.Tiles[pX+2,pY+3] or MAP_DIR_BIT_DOWN;
+      fMap.Tiles[pX+2,pY+1]:=fMap.Tiles[pX+2,pY+1] or MAP_DIR_BIT_UP;
+      fMap.Tiles[pX+3,pY+2]:=fMap.Tiles[pX+3,pY+2] or MAP_DIR_BIT_RIGHT;
+      fAnimation.Timer.CurrentFrameIndex:=3;
+    end else
+      raise Exception.Create(Format('Unknown direction in Arrow! (%s)',[s]));
   end else
     raise Exception.Create('Arrow.Direction is not specified in map!');
   fZIndex:=ziForeground;
@@ -1045,6 +1096,85 @@ end;
 procedure TArrow.Draw;
 begin
   fAnimation.PutFrame(Left+29,Top+29);
+end;
+
+{$endregion}
+
+{ TPatternLock }
+{$region /fold}
+
+constructor TPatternLock.Create(iMap: TMap; ipX, ipY: integer; pJ: TJSONData);
+begin
+  inherited Create(iMap,ipX,ipY);
+  if Assigned(pJ.FindPath('RefillSeconds')) then
+    fMaxTime:=pJ.FindPath('RefillSeconds').AsFloat
+  else begin
+    Log.LogWarning('PatternLock.RefillSeconds is not specified in map! Setting it to -1 (never refill).');
+    fMaxTime:=-1;
+  end;
+  fTime:=0;
+  Fill;
+  fAnimation:=MM.Animations['TrafficLights'].SpawnAnimation;
+end;
+
+destructor TPatternLock.Destroy;
+begin
+  fAnimation.Free;
+  inherited Destroy;
+end;
+
+procedure TPatternLock.Draw;
+begin
+  if fTime=0 then begin
+    fAnimation.PutFrame(fLeft+34,fTop+20,fColors[0]-1);
+    fAnimation.PutFrame(fLeft+48,fTop+34,fColors[1]-1);
+    fAnimation.PutFrame(fLeft+34,fTop+48,fColors[2]-1);
+    fAnimation.PutFrame(fLeft+20,fTop+34,fColors[3]-1);
+  end;
+end;
+
+procedure TPatternLock.DrawBack(const pBack: TARGBImage);
+var tmp:TARGBImage;
+begin
+  tmp:=MM.Images['LockBase'];
+  pBack.PutImage(fLeft+(80-tmp.Width) div 2,fTop+(80-tmp.Height) div 2,tmp,true);
+end;
+
+procedure TPatternLock.Move(const pElapsedTime: double);
+begin
+  if fTime>0 then begin
+    fTime:=fTime-pElapsedTime;
+    if fTime<=0 then begin
+      Fill;
+      fTime:=0;
+    end;
+  end;
+end;
+
+function TPatternLock.CheckPattern(pColorUp, pColorRight, pColorDown,
+  pColorLeft: integer): integer;
+begin
+  if fTime=0 then begin // Pattern lock is filled
+    if (fColors[0]=pColorUp) and (fColors[1]=pColorRight) and
+       (fColors[2]=pColorDown) and (fColors[3]=pColorLeft) then begin
+      Result:=1;
+      fTime:=fMaxTime;
+    end else
+      Result:=0;
+  end else Result:=2;  // No lock
+end;
+
+procedure TPatternLock.Fill;
+var i,c,s:integer;
+begin
+  repeat
+    s:=0;
+    for i:=0 to 3 do begin
+      c:=random(4)+1;
+      fColors[i]:=c;
+      inc(s,c);
+    end;
+  until s mod 4<>0;
 end;
 
 {$endregion}

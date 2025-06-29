@@ -1,0 +1,35 @@
+{
+  "Path" : [
+    "40004004",
+    "50005005",
+    "7AC052AD",
+    "52FABA85",
+    "3A9002A9"
+  ],
+  "Tiles" : [
+    "O.N.O..O",
+    "........",
+    "O.O..O.O",
+    ".O..O.O.",
+    "O.OCTO.O"
+  ],
+  "TileDefinitions" : {
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 720
+    }
+  }
+}

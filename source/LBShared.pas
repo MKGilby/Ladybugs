@@ -77,6 +77,7 @@ var
   Paused:boolean;
   NextBugColor:integer;
   TrafficLight:TTrafficLight;
+  PatternLock:TPatternLock;
 
 procedure LoadAssets;
 procedure FreeAssets;
@@ -97,7 +98,8 @@ begin
   MM.Images['Grass4'].Rotate(3);
   MM.Load('paths.png','Paths');
   MM.Load('next.png','Next');
-  MM.Load('TrafficLightBase.png','TrafficLightBase');
+  MM.Load('trafficlightbase.png','TrafficLightBase');
+  MM.Load('lockbase.png','LockBase');
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
   MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);

@@ -1,0 +1,47 @@
+{
+  "Path" : [
+    "05040404",
+    "6FEFEFC5",
+    "557FD555",
+    "3FBFBF95",
+    "03ABABA9"
+  ],
+  "Tiles" : [
+    "T.NOCORO",
+    "O.O.O.O.",
+    "..kOl...",
+    "O.O.O.O.",
+    ".O.O.O.O"
+  ],
+  "TileDefinitions" : {
+    "84" : {
+      "Type" : "Timer",
+      "Seconds" : 900
+    },
+    "46" : {
+      "Type" : "Empty"
+    },
+    "78" : {
+      "Type" : "Next"
+    },
+    "79" : {
+      "Type" : "Mushroom"
+    },
+    "67" : {
+      "Type" : "Counter",
+      "Maximum" : 4
+    },
+    "82" : {
+      "Type" : "PatternLock",
+      "RefillSeconds" : 90
+    },
+    "107" : {
+      "Type" : "Arrow",
+      "Direction" : "Up"
+    },
+    "108" : {
+      "Type" : "Arrow",
+      "Direction" : "Down"
+    }
+  }
+}
