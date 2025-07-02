@@ -13,6 +13,7 @@
     "ObO..f..",
     ".O.i.Otj"
   ],
+  "BugTimeMultiplier" : 10,
   "TileDefinitions" : {
     "76" : {
       "Type" : "TrafficLight",

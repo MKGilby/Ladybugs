@@ -13,6 +13,7 @@
     "iOd.jigO",
     "iOcjih.O"
   ],
+  "BugTimeMultiplier" : 8,
   "TileDefinitions" : {
     "67" : {
       "Type" : "Counter",

@@ -13,6 +13,7 @@
     "..C.....",
     "O..ji..O"
   ],
+  "BugTimeMultiplier" : 7,
   "TileDefinitions" : {
     "79" : {
       "Type" : "Mushroom"

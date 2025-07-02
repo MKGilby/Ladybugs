@@ -13,6 +13,7 @@
     "kjjkjiil",
     "Cjkjkjjj"
   ],
+  "BugTimeMultiplier" : 1,
   "TileDefinitions" : {
     "108" : {
       "Type" : "Arrow",

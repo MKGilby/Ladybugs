@@ -13,6 +13,7 @@
     ".O...Oj.",
     "O...Oj.."
   ],
+  "BugTimeMultiplier" : 7,
   "TileDefinitions" : {
     "67" : {
       "Type" : "Counter",

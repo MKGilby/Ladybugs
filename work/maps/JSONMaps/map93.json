@@ -13,6 +13,7 @@
     "i......j",
     "CiO..OjT"
   ],
+  "BugTimeMultiplier" : 4,
   "TileDefinitions" : {
     "82" : {
       "Type" : "PatternLock",

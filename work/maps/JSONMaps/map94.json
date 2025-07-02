@@ -13,6 +13,7 @@
     "t..ad..t",
     "iOtOO..j"
   ],
+  "BugTimeMultiplier" : 6,
   "TileDefinitions" : {
     "67" : {
       "Type" : "Counter",

@@ -23,7 +23,10 @@ type
     procedure LoadFromFile(iFilename:string);
     procedure ShowValues;
   private
+    fBugTimeMultiplier:integer;
     procedure CreateEntity(pX,pY:integer;pTileDef:string;pJ:TJSONData);
+  public
+    property BugTimeMultiplier:integer read fBugTimeMultiplier;
   end;
 
 implementation
@@ -36,6 +39,7 @@ constructor TMap.Create;
 begin
   inherited Create(MAPWIDTH,MAPHEIGHT);
   ResetMap;
+  fBugTimeMultiplier:=20;
 end;
 
 destructor TMap.Destroy;
@@ -90,6 +94,12 @@ begin
       end;
     end else
       raise Exception.Create('No Tiles data found in map!');
+    if Assigned(J.FindPath('BugTimeMultiplier')) then
+      fBugTimeMultiplier:=J.FindPath('BugTimeMultiplier').AsInteger
+    else begin
+      Log.LogWarning('No BugTimeMultiplier found in map, setting it to 20.');
+      fBugTimeMultiplier:=20;
+    end;
   finally
     J.Free;
   end;

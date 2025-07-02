@@ -13,6 +13,7 @@
     "........",
     "OOjjjjjj"
   ],
+  "BugTimeMultiplier" : 2,
   "TileDefinitions" : {
     "78" : {
       "Type" : "Next"

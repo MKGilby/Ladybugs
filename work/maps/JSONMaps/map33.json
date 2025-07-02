@@ -13,6 +13,7 @@
     "....N...",
     ".OiOiOiO"
   ],
+  "BugTimeMultiplier" : 5,
   "TileDefinitions" : {
     "46" : {
       "Type" : "Empty"

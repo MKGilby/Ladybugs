@@ -10,7 +10,7 @@ unit LBShared;
 interface
 
 uses
-  GFXManagerUnit, LBMapEntities, LBBugs;
+  GFXManagerUnit, LBMapEntities, LBBugs, LBBugTimer;
 
 const
   DATAFILE='Ladybugs.data';
@@ -23,7 +23,7 @@ const
   MAPHEIGHT=BIGTILEMAPHEIGHT*5+1;
   REALMAPTOP=32;
 
-  BUGWALKINGSPEED=64;  // pixels per second
+  BUGWALKINGSPEED=96;  // pixels per second
   BUGFLYINGSPEED=96;
   MAXTIMESLICE=1/128;
 
@@ -78,6 +78,7 @@ var
   NextBugColor:integer;
   TrafficLight:TTrafficLight;
   PatternLock:TPatternLock;
+  BugTimer:TBugTimer;
 
 procedure LoadAssets;
 procedure FreeAssets;

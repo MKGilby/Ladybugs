@@ -13,6 +13,7 @@
     "tk.jTlj.",
     "O..OCO.O"
   ],
+  "BugTimeMultiplier" : 5,
   "TileDefinitions" : {
     "46" : {
       "Type" : "Empty"

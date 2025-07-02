@@ -13,6 +13,7 @@
     "l.....Oj",
     "O.O..OLC"
   ],
+  "BugTimeMultiplier" : 15,
   "TileDefinitions" : {
     "79" : {
       "Type" : "Mushroom"

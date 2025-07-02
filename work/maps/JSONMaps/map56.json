@@ -13,6 +13,7 @@
     "kO.OO.Ok",
     "TiON.Oj."
   ],
+  "BugTimeMultiplier" : 5,
   "TileDefinitions" : {
     "67" : {
       "Type" : "Counter",

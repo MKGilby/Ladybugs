@@ -13,6 +13,7 @@
     "Oi...O.O",
     "Ob.O.t.O"
   ],
+  "BugTimeMultiplier" : 7,
   "TileDefinitions" : {
     "116" : {
       "Type" : "Teleport",

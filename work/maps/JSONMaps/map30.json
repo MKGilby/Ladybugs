@@ -13,6 +13,7 @@
     "OilOcOdO",
     "kjj..t.."
   ],
+  "BugTimeMultiplier" : 7,
   "TileDefinitions" : {
     "116" : {
       "Type" : "Teleport",

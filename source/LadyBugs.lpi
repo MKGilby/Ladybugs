@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <BuildNr Value="19"/>
+      <BuildNr Value="20"/>
       <StringTable CompanyName="MKSZTSZ" ProductName="Ladybugs"/>
     </VersionInfo>
     <BuildModes>
@@ -130,6 +130,10 @@
       </Unit>
       <Unit>
         <Filename Value="LBBugs.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="LBBugTimer.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>

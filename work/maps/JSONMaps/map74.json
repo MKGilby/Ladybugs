@@ -13,6 +13,7 @@
     "lfefehgj",
     "iOOOOOO."
   ],
+  "BugTimeMultiplier" : 3,
   "TileDefinitions" : {
     "46" : {
       "Type" : "Empty"

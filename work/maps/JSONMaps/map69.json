@@ -13,6 +13,7 @@
     "ak.kk.kc",
     "OOiOOjOO"
   ],
+  "BugTimeMultiplier" : 9,
   "TileDefinitions" : {
     "108" : {
       "Type" : "Arrow",

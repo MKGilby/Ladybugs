@@ -13,6 +13,7 @@
     "O.O.O...",
     "CNO..jjj"
   ],
+  "BugTimeMultiplier" : 8,
   "TileDefinitions" : {
     "84" : {
       "Type" : "Timer",

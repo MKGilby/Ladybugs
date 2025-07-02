@@ -13,6 +13,7 @@
     ".ON..TO.",
     "O..OO..O"
   ],
+  "BugTimeMultiplier" : 4,
   "TileDefinitions" : {
     "105" : {
       "Type" : "Arrow",

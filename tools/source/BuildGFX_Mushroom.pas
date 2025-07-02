@@ -41,7 +41,7 @@ implementation
 
 const
   MUSHROOMSIZE=80;
-  FPS=48;
+  FPS=64;
 
 { TMushroomBuilder }
 

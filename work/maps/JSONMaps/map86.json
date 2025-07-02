@@ -13,6 +13,7 @@
     "OiO.tR..",
     "iOtktOOO"
   ],
+  "BugTimeMultiplier" : 8,
   "TileDefinitions" : {
     "84" : {
       "Type" : "Timer",

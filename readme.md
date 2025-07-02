@@ -29,14 +29,24 @@ containing your fpc.exe
 5. Download and extract the latest SDL2.dll into \release\x64 or x86
    (be aware of bitness!). The latest DLLs can be found on the [SDL releases page](https://github.com/libsdl-org/SDL/releases).
    Scroll down to the latest 2.xx version, click assets and download file.
-   At the time of writing of this document the latest SDL2 version is 2.32.6.
+   At the time of writing of this document the latest SDL2 version is 2.32.8.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.19.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.19.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.20.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.20.zip "Download x86 version").
 
 ## What's new
 
+### 2025.07.02 - Build 20
+- Increased bug moving speed.
+- Increased mushroom rotating speed.
+- Added bug timeout multiplier values to map files. This value specifies how 
+  many times a bug can move move along the upper row before you lose the map. 
+  This counter resets with every new bug.
+- Added bug multiplier timeout. The path where the bugs appear gradually
+  darkened from right to left. Once the whole path is dark you will lose
+  the map.    
+  
 ### 2025.06.29 - Build 19
 - Added the 3 remaining arrow tiles.
 - Arrow color changed to black.

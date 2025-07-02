@@ -10,7 +10,7 @@ unit LBPlay1Map;
 interface
 
 uses
-  SysUtils, LBMap, mk_sdl2;
+  SysUtils, LBMap, mk_sdl2, LBBugTimer;
 
 type
 
@@ -42,10 +42,12 @@ begin
   fMap.LoadFromFile(iMapFilename);
   NextBugColor:=TBugs.GetRandomBugColor;
   CreateBack;
+  BugTimer:=TBugTimer.Create(fMap.BugTimeMultiplier);
 end;
 
 destructor TPlay1Map.Destroy;
 begin
+  BugTimer.Free;
   fBack.Free;
   fMap.Free;
   Bugs.Free;
@@ -65,6 +67,7 @@ begin
     if not Paused then begin
       Entities.Move((now-pre)/1000);
       Bugs.Move((now-pre)/1000);
+      BugTimer.Move((now-pre)/1000);
       for i:=0 to Entities.Count-1 do
         if Entities[i] is TMushroom then
           TMushroom(Entities[i]).CheckCompleteness;
@@ -73,6 +76,7 @@ begin
     SDL_SetRenderDrawColor(PrimaryWindow.Renderer,64,16,24,255);
     SDL_RenderClear(PrimaryWindow.Renderer);
     PutTexture(0,0,fBack);
+    BugTimer.Draw;
     Entities.DrawBackground;
     Bugs.Draw;
     Entities.DrawForeground;

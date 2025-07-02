@@ -138,6 +138,8 @@ begin
               ShouldCreateNewBug:=true;
               // Bug faces upwards
               fDirection:=DIR_UP;
+              // Reset bug timer
+              BugTimer.Reset;
             end else
             if not CanMoveLeft(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
@@ -188,6 +190,8 @@ begin
               ShouldCreateNewBug:=true;
               // Bug faces upwards
               fDirection:=DIR_UP;
+              // Reset bug timer
+              BugTimer.Reset;
             end else
             if not CanMoveRight(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN

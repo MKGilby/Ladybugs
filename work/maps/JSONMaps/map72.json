@@ -13,6 +13,7 @@
     ".kOO..O.",
     "O..kOO.j"
   ],
+  "BugTimeMultiplier" : 4,
   "TileDefinitions" : {
     "82" : {
       "Type" : "PatternLock",
