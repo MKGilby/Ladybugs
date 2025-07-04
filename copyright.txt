@@ -16,3 +16,14 @@ You should have received a copy of the GNU General Public License along with
 Ladybugs. If not, see <https://www.gnu.org/licenses/>.
 
 Source code is available at GitHub: https://github.com/MKGilby/Ladybugs
+
+Graphics is created by me and licensed under CC BY-NC 4.0:  
+(Creative Commons Attribution-NonCommercial 4.0 International: 
+ - Credit must be given
+ - Only noncommercial use is permitted)
+
+You should have received a copy of the CC BY-NC 4.0 License along with
+Ladybugs. If not, see <https://creativecommons.org/licenses/by-nc/4.0/>.
+
+Main font are drawn by me based on font "So" by Apostrophic Laboratories.
+(I found "So" here: https://www.1001fonts.com/so-font.html)

@@ -18,6 +18,12 @@ PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 
 MKConv2, MAD4, FontBuild2, BuildGFX tools are made by me.
 
+## Graphics and fonts
+Graphics is created by me and licensed under CC BY-NC 4.0 
+
+Main font are drawn by me based on font "So" by Apostrophic Laboratories.
+(I found "So" here: [1001fonts](https://www.1001fonts.com/so-font.html))
+
 ## Compiling in windows environment
 1. Go into folder "work" and edit setenv.bat, set FPCDIR to point to the folder
 containing your fpc.exe
