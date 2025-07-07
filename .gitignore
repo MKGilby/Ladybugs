@@ -42,3 +42,4 @@ backup.bat
 backup.txt
 *.ini
 *.bpimg
+*.cfg
