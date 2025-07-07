@@ -65,7 +65,7 @@ var J:TJSONData;Xs:TStream;JA:TJSONArray;x,y:integer;s:string;
 
 begin
   ResetMap;
-  Xs:=MKStreamOpener.OpenStream(iFilename);
+  Xs:=MKStreamOpener.OpenStream('maps/'+iFilename);
   try
     J:=GetJSON(Xs);
   finally

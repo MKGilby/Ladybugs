@@ -4,6 +4,7 @@ rem This is required before building a release version!
 
 call setenv.bat
 if not exist %SOURCEDATADIR%\ (mkdir %SOURCEDATADIR%) else (del /Q %SOURCEDATADIR%\*)
+if not exist %SOURCEDATADIR%\maps (mkdir %SOURCEDATADIR%\maps) else (del /Q %SOURCEDATADIR%\maps\*)
 
 cd gfx
 call run.bat

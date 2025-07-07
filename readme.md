@@ -38,21 +38,31 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.8.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.20.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.20.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.21.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.21.zip "Download x86 version").
 
 ## What's new
+
+### 2025.07.07 - Build 21
+- Added logo.
+- Added font.
+- Added password lists.
+- Added Virtual Memory Unit (a glorious config file).
+- Added first run choice of passwords. You can choose old passwords or new passwords.
+  Old passwords are the ones are used in Logical and Cat's Eye Chaos. New passwords
+  are generated for this game by Copilot.
+- Mushrooms are put into a separated PNG, datafile size decreased.   
 
 ### 2025.07.02 - Build 20
 - Increased bug moving speed.
 - Increased mushroom rotating speed.
-- Added bug timeout multiplier values to map files. This value specifies how 
-  many times a bug can move move along the upper row before you lose the map. 
+- Added bug timeout multiplier values to map files. This value specifies how
+  many times a bug can move move along the upper row before you lose the map.
   This counter resets with every new bug.
 - Added bug multiplier timeout. The path where the bugs appear gradually
   darkened from right to left. Once the whole path is dark you will lose
-  the map.    
-  
+  the map.
+
 ### 2025.06.29 - Build 19
 - Added the 3 remaining arrow tiles.
 - Arrow color changed to black.

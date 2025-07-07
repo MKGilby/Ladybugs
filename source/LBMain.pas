@@ -27,7 +27,8 @@ type
 implementation
 
 uses
-  MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map
+  MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map,
+  LBMenu, LBVMU, LBFirstRun
   {$ifndef debug},MAD4MidLevelUnit{$endif};
 
 { TMain }
@@ -63,6 +64,7 @@ begin
   SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, '1');
   SDL_SetHint(SDL_HINT_RENDER_VSYNC,'1');
   SDL_Init(SDL_INIT_VIDEO);
+  VMU:=TVMU.Create(VMUFILENAME);
 
   fMainWindow:=TWindow.CreateDoubleSized(
     SDL_WINDOWPOS_CENTERED,
@@ -78,18 +80,36 @@ destructor TMain.Destroy;
 begin
   FreeAssets;
   fMainWindow.Free;
+  VMU.Free;
   SDL_Quit;
   inherited Destroy;
 end;
 
 procedure TMain.Run;
-var Play1Map:TPlay1Map;
+var Play1Map:TPlay1Map;Menu:TMenu;
 begin
-  Play1Map:=TPlay1Map.Create('map14.json');
-  try
-    Play1Map.Run;
-  finally
-    Play1Map.Free;
+  if VMU.FirstRun then begin
+    with TFirstRun.Create do
+      try
+        if Run=1 then VMU.FirstRun:=false;
+      finally
+        Free;
+      end;
+  end;
+  if not Terminate then begin
+    Menu:=TMenu.Create;
+    try
+      Menu.Run;
+    finally
+      Menu.Free;
+    end;
+{    Play1Map:=TPlay1Map.Create('map14.json');
+    try
+      Play1Map.Run;
+    finally
+      Play1Map.Free;
+    end;}
+
   end;
 end;
 

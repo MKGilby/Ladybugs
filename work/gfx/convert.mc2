@@ -15,22 +15,17 @@ r png data\lockbase.png 1
 m setcolorkey 0 0 0 1
 w png lockbase.png 1
 
-m createatlas 1216 640 1 2
-r png mushroom.png 1
-m addall 1 2
+r png data\logo.png 1
+m setcolorkey 0 0 0 1
+w png logo.png 1
+
+;m createatlas 1216 640 1 2
+m createatlas 496 640 1 2
+;r png mushroom.png 1
+;m addall 1 2
 r png painters.png 1
 m addall 1 2
 r png bugs.png 1
-m addall 1 2
-
-r png data\pot.png 1
-r json data\pot.json 1
-m setcolorkey 0 0 0 1
-m addall 1 2
-
-r png data\flower.png 1
-r json data\flower.json 1
-m setcolorkey 0 0 0 1
 m addall 1 2
 
 r png data\blocker.png 1
@@ -54,6 +49,16 @@ m addall 1 2
 
 r png data\graypath.png 1
 r json data\graypath.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+r png data\pot.png 1
+r json data\pot.json 1
+m setcolorkey 0 0 0 1
+m addall 1 2
+
+r png data\flower.png 1
+r json data\flower.json 1
 m setcolorkey 0 0 0 1
 m addall 1 2
 

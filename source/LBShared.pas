@@ -10,10 +10,11 @@ unit LBShared;
 interface
 
 uses
-  GFXManagerUnit, LBMapEntities, LBBugs, LBBugTimer;
+  GFXManagerUnit, LBMapEntities, LBBugs, LBBugTimer, LBVMU;
 
 const
   DATAFILE='Ladybugs.data';
+  VMUFILENAME='Ladybugs.cfg';
   WINDOWWIDTH=640;
   WINDOWHEIGHT=480;
   WINDOWCAPTION='Ladybugs V%s (%s)';
@@ -79,6 +80,7 @@ var
   TrafficLight:TTrafficLight;
   PatternLock:TPatternLock;
   BugTimer:TBugTimer;
+  VMU:TVMU;
 
 procedure LoadAssets;
 procedure FreeAssets;
@@ -86,10 +88,20 @@ function ValidColor(pColor:integer):boolean;
 
 implementation
 
+procedure LoadFont(pName:string;r,g,b:integer);
+begin
+  MM.Load('font.png',pName,MM_DONTKEEPIMAGE);
+  MM.Fonts[pName].SetColorkey(0,0,0);
+  MM.Fonts[pName].SetColor(r,g,b);
+  MM.Fonts[pName].LetterSpace:=1;
+  MM.Fonts[pName].SpaceSpace:=8;
+end;
+
 procedure LoadAssets;
 begin
   MM:=TGFXManager.Create;
   MM.Load('sprites.png','Sprites',MM_DONTKEEPIMAGE);
+  MM.Load('mushroom.png','Mushroom',MM_DONTKEEPIMAGE);
   MM.Load('grass.png','Grass1');
   MM.Load('grass.png','Grass2');
   MM.Images['Grass2'].Rotate(1);
@@ -101,9 +113,14 @@ begin
   MM.Load('next.png','Next');
   MM.Load('trafficlightbase.png','TrafficLightBase');
   MM.Load('lockbase.png','LockBase');
+  LoadFont('White',255,255,255);
+  LoadFont('Red',255,64,64);
+  LoadFont('Yellow',255,255,64);
+  LoadFont('Blue',64,64,255);
+  MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
-  MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);
+  MM.Load('logo.png','Logo',MM_CREATETEXTUREONLY);
 end;
 
 procedure FreeAssets;
