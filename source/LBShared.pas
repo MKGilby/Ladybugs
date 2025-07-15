@@ -10,7 +10,7 @@ unit LBShared;
 interface
 
 uses
-  GFXManagerUnit, LBMapEntities, LBBugs, LBBugTimer, LBVMU;
+  Classes, GFXManagerUnit, LBMapEntities, LBBugs, LBBugTimer, LBVMU;
 
 const
   DATAFILE='Ladybugs.data';
@@ -81,12 +81,20 @@ var
   PatternLock:TPatternLock;
   BugTimer:TBugTimer;
   VMU:TVMU;
+  CurrentLevel:integer;
+  Passwords:TStringList;
 
 procedure LoadAssets;
 procedure FreeAssets;
 function ValidColor(pColor:integer):boolean;
+procedure LoadPasswords;
 
 implementation
+
+uses MKStream;
+
+const
+  PassFiles:array[0..1] of string=('pass_org.txt','pass_new.txt');
 
 procedure LoadFont(pName:string;r,g,b:integer);
 begin
@@ -120,7 +128,8 @@ begin
   MM.Load('timerfont.png','Timer',MM_DONTKEEPIMAGE);
   MM.Load('npi69.mkr','Small',MM_DONTKEEPIMAGE);
   MM.Fonts['Small'].SetColorKey(0,0,0);
-  MM.Load('logo.png','Logo',MM_CREATETEXTUREONLY);
+  // Don't load, try to reduce memory footprint
+//  MM.Load('logo.png','Logo',MM_CREATETEXTUREONLY);
 end;
 
 procedure FreeAssets;
@@ -137,6 +146,18 @@ begin
     Result:=(c=pColor) or (c=COLOR_ANY);
   end else
     Result:=true;
+end;
+
+procedure LoadPasswords;
+var Xs:TStream;
+begin
+  Passwords:=TStringList.Create;
+  Xs:=MKStreamOpener.OpenStream('maps\'+PassFiles[VMU.PassFileIndex]);
+  try
+    Passwords.LoadFromStream(Xs);
+  finally
+    Xs.Free
+  end;
 end;
 
 end.

@@ -28,7 +28,7 @@ implementation
 
 uses
   MKStream, Logger, sdl2, MKToolbox, LBShared, ARGBImageUnit, LBPlay1Map,
-  LBMenu, LBVMU, LBFirstRun
+  LBMenu, LBVMU, LBFirstRun, MKMouse2, LBGetPassword
   {$ifndef debug},MAD4MidLevelUnit{$endif};
 
 { TMain }
@@ -74,6 +74,7 @@ begin
     Format(WINDOWCAPTION,[iVersion,iBuildDate]));
 
   LoadAssets;
+  CurrentLevel:=1;
 end;
 
 destructor TMain.Destroy;
@@ -86,7 +87,7 @@ begin
 end;
 
 procedure TMain.Run;
-var Play1Map:TPlay1Map;Menu:TMenu;
+var Play1Map:TPlay1Map;Menu:TMenu;res:integer;
 begin
   if VMU.FirstRun then begin
     with TFirstRun.Create do
@@ -97,19 +98,24 @@ begin
       end;
   end;
   if not Terminate then begin
-    Menu:=TMenu.Create;
-    try
-      Menu.Run;
-    finally
-      Menu.Free;
-    end;
-{    Play1Map:=TPlay1Map.Create('map14.json');
-    try
-      Play1Map.Run;
-    finally
-      Play1Map.Free;
-    end;}
-
+    LoadPasswords;
+    repeat
+      res:=-1;
+      with TMenu.Create do try res:=Run; finally Free; end;
+      case res of
+        1:begin
+            with TPlay1Map.Create(Format('map%.2d.json',[CurrentLevel])) do try
+              Run;
+            finally
+              Free;
+            end;
+          end;
+        2:begin
+            with TGetPassword.Create do try Run; finally Free; end;
+          end;
+      end;
+    until (res<0) or Terminate;
+    Passwords.Free;
   end;
 end;
 

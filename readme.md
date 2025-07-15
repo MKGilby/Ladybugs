@@ -38,10 +38,20 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.8.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.21.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.21.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.22.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.22.zip "Download x86 version").
 
 ## What's new
+
+### 2025.07.15 - Build 22
+- Added menu.
+- Clicking "Play" starts level indicated in "Current level".
+- Clicking "Enter password" let's you enter a password. If it matches any
+  password from the selected password list, the "Current level" indicator
+  refreshes, button changes to OK and "Enter password" changes to "Correct
+  password!".
+- Clicking "Exit" closes the game.
+- Font expanded with underscore "_".
 
 ### 2025.07.07 - Build 21
 - Added logo.

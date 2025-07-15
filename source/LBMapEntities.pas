@@ -460,6 +460,7 @@ end;
 
 destructor TMushroom.Destroy;
 begin
+  MouseObjects.Remove(Self);
   fAnimation.Free;
   inherited Destroy;
 end;

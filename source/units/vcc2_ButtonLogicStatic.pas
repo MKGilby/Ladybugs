@@ -25,6 +25,8 @@
 //
 //  V1.00: Gilby - 2023.11.17
 //    * Initial creation from vcc2_Button
+//  V1.01: Gilby - 2025.07.15
+//    * Redraw occurs when Caption, TextAlignX or TextOffsetY changes.
 
 {$mode delphi}
 {$smartlink on}
@@ -57,13 +59,15 @@ type
     procedure fSetTop(value:integer);
     procedure fSetWidth(value:integer); override;
     procedure fSetTextAlignX(value:integer);
+    procedure fSetTextOffsetY(value:integer);
+    procedure fSetCaption(value:string);
   public
     property Left:integer read fLeft write fSetLeft;
     property Top:integer read fTop write fSetTop;
     property Width:integer read fWidth write fSetWidth;
     property TextAlignX:integer read fTextAlignX write fSetTextAlignX;
-    property TextOffsetY:integer read fTextOffsetY write fTextOffsetY;
-    property Caption:string read fCaption write fCaption;
+    property TextOffsetY:integer read fTextOffsetY write fSetTextOffsetY;
+    property Caption:string read fCaption write fSetCaption;
   end;
      
 implementation
@@ -72,7 +76,7 @@ uses SysUtils, Font2Unit, MKToolBox, Logger;
      
 const
   Fstr={$I %FILE%}+', ';
-  Version='1.00';
+  Version='1.01';
 
 constructor TButtonLogic.Create;
 begin
@@ -146,11 +150,30 @@ end;
 procedure TButtonLogic.fSetTextAlignX(value:integer);
 begin
   if (value<>1) and (value<>2) then value:=0;
-  fTextAlignX:=value;
-  case fTextAlignX of
-    mjLeft:fTextAlignPointX:=fLeft;
-    mjCenter:fTextAlignPointX:=fLeft+fWidth div 2;
-    mjRight:fTextAlignPointX:=fLeft+fWidth-1;
+  if fTextAlignX<>value then begin
+    fTextAlignX:=value;
+    case fTextAlignX of
+      mjLeft:fTextAlignPointX:=fLeft;
+      mjCenter:fTextAlignPointX:=fLeft+fWidth div 2;
+      mjRight:fTextAlignPointX:=fLeft+fWidth-1;
+    end;
+    fNeedRedraw:=true;
+  end;
+end;
+
+procedure TButtonLogic.fSetTextOffsetY(value:integer);
+begin
+  if value<>fTextOffsetY then begin
+    fTextOffsetY:=value;
+    fNeedRedraw:=true;
+  end;
+end;
+
+procedure TButtonLogic.fSetCaption(value:string);
+begin
+  if value<>fCaption then begin
+    fCaption:=value;
+    fNeedRedraw:=true;
   end;
 end;
 

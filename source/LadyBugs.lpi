@@ -17,7 +17,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <BuildNr Value="21"/>
+      <BuildNr Value="22"/>
       <StringTable CompanyName="MKSZTSZ" ProductName="Ladybugs"/>
     </VersionInfo>
     <BuildModes>
@@ -146,6 +146,18 @@
       </Unit>
       <Unit>
         <Filename Value="LBFirstRun.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="LBButton.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="LBGetPassword.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\ColorUnit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
