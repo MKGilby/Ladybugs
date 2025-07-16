@@ -1,3 +1,8 @@
+{
+  This file is part of the source code of Ladybugs.
+  See "copyright.txt" for details.
+}
+
 unit LBMenu;
 
 {$mode Delphi}
