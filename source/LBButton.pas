@@ -10,7 +10,7 @@ unit LBButton;
 interface
 
 uses
-  SysUtils, vcc2_ButtonStatic, Font2Unit, ColorUnit;
+  SysUtils, vcc2_ButtonStatic, vcc2_ButtonLogicStatic, Font2Unit, ColorUnit;
 
 type
 
@@ -18,12 +18,9 @@ type
 
   TLBButton=class(TButton)
     constructor Create(iX,iY,iWidth,iHeight:integer;iColor:UInt32;iName,iCaption:string;iFont:TFont);
-    procedure MouseEnter(Sender:TObject);
-    procedure MouseLeave(Sender:TObject);
   protected
     procedure ReDraw; override;
   private
-    fOver:boolean;
     fColor:TColor;
   end;
 
@@ -45,29 +42,14 @@ begin
   fName:=iName;
   Font:=iFont;
   fNeedRedraw:=true;
-  OnMouseEnter:=MouseEnter;
-  OnMouseLeave:=MouseLeave;
-  fOver:=false;
   fColor.Color32:=iColor;
-end;
-
-procedure TLBButton.MouseEnter(Sender:TObject);
-begin
-  fOver:=true;
-  fNeedRedraw:=true;
-end;
-
-procedure TLBButton.MouseLeave(Sender:TObject);
-begin
-  fOver:=false;
-  fNeedRedraw:=true;
 end;
 
 procedure TLBButton.ReDraw;
 var c:array[0..4] of TColor;
 begin
   with fImage do begin
-    if fOver then begin
+    if fState=cHighlighted then begin
       c[0]:=fColor.Brighten(0.3);
       c[1]:=fColor.Brighten(0.2);
       c[2]:=fColor.Brighten(0.1);
