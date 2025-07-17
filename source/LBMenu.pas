@@ -77,7 +77,7 @@ end;
 function TMenu.Run:integer;
 const TEXTTOP=100;
 begin
-  Result:=0;
+  Result:=RES_NONE;
   fButtonClicked:=-1;
   ClearKeys;
   repeat
@@ -99,12 +99,12 @@ begin
     HandleMessages;
     if keys[SDL_SCANCODE_ESCAPE] then Terminate:=True;
     case fButtonClicked of
-      0:Result:=1;
-      1:Result:=2;
+      0:Result:=RES_PLAYLEVEL;
+      1:Result:=RES_GETPASSWORD;
       2:Terminate:=true;
     end;
-    if Terminate then Result:=-1;
-  until Result<>0;
+    if Terminate then Result:=RES_TERMINATE;
+  until Result<>RES_NONE;
 end;
 
 procedure TMenu.Click(Sender: TObject; x, y, buttons: integer);

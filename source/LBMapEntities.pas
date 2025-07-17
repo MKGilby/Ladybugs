@@ -92,6 +92,8 @@ type
     // Check if there is four same coloured bug in the mushroom.
     // Also checks traffic light and combination lock too.
     procedure CheckCompleteness;
+    // Make all bugs fly from the mushroom.
+    procedure ReleaseBugs;
   private
     fAnimation:TAnimation;
     fMovingState:(mstIdle,mstRotating,mstTransitioning);
@@ -456,6 +458,7 @@ begin
   OnMouseDown:=MouseDown;
   Name:=Format('Mushroom (%d,%d)',[fX,fY]);
   MouseObjects.Add(Self);
+  inc(MushroomNeeded);
 end;
 
 destructor TMushroom.Destroy;
@@ -578,6 +581,8 @@ begin
         fAnimation.Free;
         // Set animation to light mushroom.
         fAnimation:=MM.Animations['MushroomL'].SpawnAnimation;
+        // Decrease count of mushrooms needed to flip.
+        dec(MushroomNeeded);
       end;
     end;
   end;
@@ -608,14 +613,24 @@ begin
           // Unpause animation
           fAnimation.Timer.Paused:=false;
         end;
-        // Release bugs from mushroom and free up slot in map
-        for i:=0 to 3 do begin
-          fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
-          fBugs[i]:=nil;
+        // Release bugs from mushroom
+        ReleaseBugs;
+        // Free up slots in map
+        for i:=0 to 3 do
           fMap.Tiles[fX*5+SLOTMAPPOS[i,0],fY*5+1+SLOTMAPPOS[i,1]]:=0;
-        end;
       end;
   end;
+end;
+
+procedure TMushroom.ReleaseBugs;
+var i:integer;
+begin
+  // Release bugs from mushroom
+  for i:=0 to 3 do
+    if Assigned(fBugs[i]) then begin
+      fBugs[i].StartFly(fX*80+BUGSTARTFLYPOS[i,0],fY*80+BUGSTARTFLYPOS[i,1]+32);
+      fBugs[i]:=nil;
+    end;
 end;
 
 procedure TMushroom.MouseDown(Sender:TObject; x,y,buttons:integer);

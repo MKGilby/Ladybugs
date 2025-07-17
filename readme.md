@@ -19,7 +19,7 @@ PNGOut tool is by Ken Silverman [His homepage](http://advsys.net/ken)
 MKConv2, MAD4, FontBuild2, BuildGFX tools are made by me.
 
 ## Graphics and fonts
-Graphics is created by me and licensed under CC BY-NC 4.0 
+Graphics is created by me and licensed under CC BY-NC 4.0
 
 Main font are drawn by me based on font "So" by Apostrophic Laboratories.
 (I found "So" here: [1001fonts](https://www.1001fonts.com/so-font.html))
@@ -38,10 +38,17 @@ containing your fpc.exe
    At the time of writing of this document the latest SDL2 version is 2.32.8.
 
 ## Compiled binaries from current build with datafiles and DLLs
-[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.22.zip "Download x64 version") or
-[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.22.zip "Download x86 version").
+[x64](https://mksztsz.hu/tmpfiles/Ladybugs_0.0.0.23.zip "Download x64 version") or
+[x86](https://mksztsz.hu/tmpfiles/Ladybugs_x86_0.0.0.23.zip "Download x86 version").
 
 ## What's new
+
+### 2025.07.17 - Build 23
+- Added wait for a click before starting level. This gives you time to study
+  the level an make a strategy.
+- Level number and password are visible at the bottom of the level.
+- You can complete levels. When all mushrooms are flipped the remaining
+  bugs flies away. You can click then to proceed to the next level.
 
 ### 2025.07.15 - Build 22
 - Added menu.

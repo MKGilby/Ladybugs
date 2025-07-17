@@ -72,6 +72,7 @@ begin
     WINDOWWIDTH,
     WINDOWHEIGHT,
     Format(WINDOWCAPTION,[iVersion,iBuildDate]));
+  SDL_SetRenderDrawBlendMode(fMainWindow.Renderer,SDL_BLENDMODE_BLEND);
 
   LoadAssets;
   CurrentLevel:=1;
@@ -87,7 +88,7 @@ begin
 end;
 
 procedure TMain.Run;
-var Play1Map:TPlay1Map;Menu:TMenu;res:integer;
+var res:integer;
 begin
   if VMU.FirstRun then begin
     with TFirstRun.Create do
@@ -99,22 +100,24 @@ begin
   end;
   if not Terminate then begin
     LoadPasswords;
+    res:=RES_ESCAPED;
     repeat
-      res:=-1;
-      with TMenu.Create do try res:=Run; finally Free; end;
+      if res=RES_ESCAPED then
+        with TMenu.Create do try res:=Run; finally Free; end;
       case res of
-        1:begin
+        RES_PLAYLEVEL:begin
             with TPlay1Map.Create(Format('map%.2d.json',[CurrentLevel])) do try
-              Run;
+              res:=Run;
             finally
               Free;
             end;
           end;
-        2:begin
+        RES_GETPASSWORD:begin
             with TGetPassword.Create do try Run; finally Free; end;
+            res:=RES_ESCAPED;
           end;
       end;
-    until (res<0) or Terminate;
+    until (res=RES_TERMINATE);
     Passwords.Free;
   end;
 end;

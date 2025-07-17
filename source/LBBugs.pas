@@ -14,6 +14,8 @@ uses
 
 type
 
+  TBugState=(bsIdle,bsMovingOnPath,bsFlying);
+
   { TBug }
 
   TBug=class
@@ -31,13 +33,14 @@ type
     fMap:TMap;
     fDirection:integer;
     fAnimation:TAnimation;
-    fState:(bsIdle,bsMovingOnPath,bsLeavingMushroom,bsFlying);
+    fState:TBugState;
     procedure SetAnimByDirection;
     procedure SetAnimByColor;
   public
     X:integer;
     Y:integer;
     property Color:integer read fColor;
+    property State:TBugState read fState;
   end;
 
   { TBugs }
@@ -112,7 +115,7 @@ var predir,px,py:integer;
 begin
   case fState of
     bsIdle: ; // No moving
-    bsMovingOnPath,bsLeavingMushroom:begin
+    bsMovingOnPath:begin
       predir:=fDirection;
       case fDirection of
         DIR_UP:fdY:=fdY-BUGWALKINGSPEED*pElapsedTime;

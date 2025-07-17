@@ -51,6 +51,13 @@ const
   COLOR_GREEN=4;
   COLOR_ANY=255;
 
+  // Various function result constants
+  RES_TERMINATE=-1;
+  RES_NONE=0;  // Should not give it back, this is the starter value
+  RES_PLAYLEVEL=1;
+  RES_GETPASSWORD=2;
+  RES_ESCAPED=3;
+
   PATHIMAGEINDEX:array[1..15] of integer=(0,1,6,0,0,3,8,1,5,1,9,4,10,7,2);
 
   // Center positions of slots rotating around the mushroom.
@@ -75,7 +82,6 @@ var
   ShouldCreateNewBug:boolean;
   MaximumMovingBugs:integer;
   CurrentMovingBugs:integer;
-  Paused:boolean;
   NextBugColor:integer;
   TrafficLight:TTrafficLight;
   PatternLock:TPatternLock;
@@ -83,6 +89,7 @@ var
   VMU:TVMU;
   CurrentLevel:integer;
   Passwords:TStringList;
+  MushroomNeeded:integer;
 
 procedure LoadAssets;
 procedure FreeAssets;
@@ -110,13 +117,7 @@ begin
   MM:=TGFXManager.Create;
   MM.Load('sprites.png','Sprites',MM_DONTKEEPIMAGE);
   MM.Load('mushroom.png','Mushroom',MM_DONTKEEPIMAGE);
-  MM.Load('grass.png','Grass1');
-  MM.Load('grass.png','Grass2');
-  MM.Images['Grass2'].Rotate(1);
-  MM.Load('grass.png','Grass3');
-  MM.Images['Grass3'].Rotate(2);
-  MM.Load('grass.png','Grass4');
-  MM.Images['Grass4'].Rotate(3);
+  MM.Load('grass.png','Grass');
   MM.Load('paths.png','Paths');
   MM.Load('next.png','Next');
   MM.Load('trafficlightbase.png','TrafficLightBase');
