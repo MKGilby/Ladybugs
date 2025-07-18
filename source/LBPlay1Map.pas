@@ -94,7 +94,7 @@ begin
   ShouldCreateNewBug:=true;
   pre:=GetTickCount64;
   leveltxt:=Format(#0'Level: '#2'%d',[CurrentLevel]);
-  passwordtxt:=Format(#0'Password: '#2'%s',[Passwords[CurrentLevel]]);
+  passwordtxt:=Format(#0'Password: '#2'%s',[Passwords[CurrentLevel-1]]);
   Result:=RES_NONE;
   repeat
     now:=GetTickCount64;

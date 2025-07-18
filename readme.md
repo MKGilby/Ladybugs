@@ -43,6 +43,10 @@ containing your fpc.exe
 
 ## What's new
 
+### 2025.07.18 - Build 24
+- Bugfix in release mode (could not open level file).
+- Wrong password was displayed on level.
+
 ### 2025.07.17 - Build 23
 - Added wait for a click before starting level. This gives you time to study
   the level an make a strategy.
