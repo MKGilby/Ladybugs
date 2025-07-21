@@ -131,18 +131,31 @@ begin
       if (X mod 16)=0 then begin
         case predir of
           DIR_LEFT:begin
-            // If moving in the top row and can hop onto a mushroom
-            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
-                (Entities.EntityAt[px,py+1] is TMushroom) and
-                TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
-              // If the bug did not start flying out, it will be idling on the mushroom
-              if fState<>bsFlying then fState:=bsIdle;
-              // We should create a new bug to the upper row
-              ShouldCreateNewBug:=true;
-              // Bug faces upwards
-              fDirection:=DIR_UP;
-              // Reset bug timer
-              BugTimer.Reset;
+            // If moving in the top row and could move down
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
+              // If can hop onto a mushroom
+              if (Entities.EntityAt[px,py+1] is TMushroom) and
+                  TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
+                // If the bug did not start flying out, it will be idling on the mushroom
+                if fState<>bsFlying then fState:=bsIdle;
+                // We should create a new bug to the upper row
+                ShouldCreateNewBug:=true;
+                // Bug faces upwards
+                fDirection:=DIR_UP;
+                // Reset bug timer
+                BugTimer.Reset;
+              end else
+              // If more than 1 free bug slot available, move down.
+              if CurrentMovingBugs<MaximumMovingBugs-1 then begin
+                // Increase moving bug number
+                inc(CurrentMovingBugs);
+                // We should create a new bug to the upper row
+                ShouldCreateNewBug:=true;
+                // Bug faces upwards
+                fDirection:=DIR_DOWN;
+                // Reset bug timer
+                BugTimer.Reset;
+              end;
             end else
             if not CanMoveLeft(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN
@@ -183,18 +196,31 @@ begin
             end;
           end;
           DIR_RIGHT:begin
-            // If moving in the top row and can hop onto a mushroom
-            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) and
-                (Entities.EntityAt[px,py+1] is TMushroom) and
+            // If moving in the top row and could move down
+            if (py=0) and (fMap.Tiles[px,py+1] and MAP_DIR_BIT_DOWN=0) then begin
+              // If can hop onto a mushroom
+              if (Entities.EntityAt[px,py+1] is TMushroom) and
                 TMushRoom(Entities.EntityAt[px,py+1]).AddBug(Self,DIR_UP) then begin
-              // If the bug did not start flying out, it will be idling on the mushroom
-              if fState<>bsFlying then fState:=bsIdle;
-              // We should create a new bug to the upper row
-              ShouldCreateNewBug:=true;
-              // Bug faces upwards
-              fDirection:=DIR_UP;
-              // Reset bug timer
-              BugTimer.Reset;
+                // If the bug did not start flying out, it will be idling on the mushroom
+                if fState<>bsFlying then fState:=bsIdle;
+                // We should create a new bug to the upper row
+                ShouldCreateNewBug:=true;
+                // Bug faces upwards
+                fDirection:=DIR_UP;
+                // Reset bug timer
+                BugTimer.Reset;
+              end else
+              // If more than 1 free bug slot available, move down.
+              if CurrentMovingBugs<MaximumMovingBugs-1 then begin
+                // Increase moving bug number
+                inc(CurrentMovingBugs);
+                // We should create a new bug to the upper row
+                ShouldCreateNewBug:=true;
+                // Bug faces upwards
+                fDirection:=DIR_DOWN;
+                // Reset bug timer
+                BugTimer.Reset;
+              end;
             end else
             if not CanMoveRight(px,py) then begin  // Can't move left any more
               if CanMoveDown(px,py) then fDirection:=DIR_DOWN

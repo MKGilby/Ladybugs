@@ -75,7 +75,7 @@ begin
   SDL_SetRenderDrawBlendMode(fMainWindow.Renderer,SDL_BLENDMODE_BLEND);
 
   LoadAssets;
-  CurrentLevel:=1;
+  CurrentLevel:=58;
 end;
 
 destructor TMain.Destroy;

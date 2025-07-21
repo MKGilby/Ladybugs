@@ -406,6 +406,9 @@ begin
   if (fExits and MAP_DIR_BIT_UP)=MAP_DIR_BIT_UP then begin
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,tmp,true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,tmp,true);
+    if fY=0 then begin
+      pBack.PutImagePart(fLeft+32,fTop-16,PATHIMAGEINDEX[14]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
+    end;
   end;
   if (fExits and MAP_DIR_BIT_RIGHT)=MAP_DIR_BIT_RIGHT then begin
     pBack.PutImagePart(fLeft+48,fTop+32,16,0,16,16,tmp,true);
@@ -492,15 +495,20 @@ end;
 
 procedure TMushroom.DrawBack(const pBack: TARGBImage);
 begin
-  inherited DrawBack(pBack);
   if fY=0 then begin
+    fExits:=fExits or MAP_DIR_BIT_UP;
+    fMap.Tiles[fX*5+2,fY*5+1]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
+    fMap.Tiles[fX*5+2,fY*5+2]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
+  end;
+  inherited DrawBack(pBack);
+{  if fY=0 then begin
     fMap.Tiles[fX*5+2,fY*5+1]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
     fMap.Tiles[fX*5+2,fY*5+2]:=MAP_DIR_BIT_ALL xor MAP_DIR_BIT_DOWN;
     pBack.PutImagePart(fLeft+32,fTop-16,PATHIMAGEINDEX[14]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop   ,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+16,0,0,16,16,MM.Images.ItemByName['Paths'],true);
     pBack.PutImagePart(fLeft+32,fTop+32,PATHIMAGEINDEX[fExits or MAP_DIR_BIT_UP]*16,0,16,16,MM.Images.ItemByName['Paths'],true);
-  end;
+  end;}
 end;
 
 function TMushroom.AddBug(pBug:TBug; pFromDirection:integer):boolean;
